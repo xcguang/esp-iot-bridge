@@ -25,11 +25,11 @@ extern "C" {
 *
 */
 #define DEFINE_RETRY_CMD(name, retry, super_type) \
-        esp_err_t name(esp_modem_dce_t *dce, void *param, void *result) \
-        { \
-            super_type *super = __containerof(dce, super_type, parent); \
-            return super->retry->run(super->retry, param, result);      \
-        }
+    esp_err_t name(esp_modem_dce_t *dce, void *param, void *result) \
+    { \
+        super_type *super = __containerof(dce, super_type, parent); \
+        return super->retry->run(super->retry, param, result);      \
+    }
 
 
 /**

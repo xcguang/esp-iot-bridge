@@ -54,6 +54,7 @@ esp_err_t esp_bridge_wifi_set(wifi_mode_t mode,
     if (mode & WIFI_MODE_STA) {
         memcpy((char *)wifi_cfg.sta.ssid, ssid, sizeof(wifi_cfg.sta.ssid));
         strlcpy((char *)wifi_cfg.sta.password, password, sizeof(wifi_cfg.sta.password));
+
         if (bssid != NULL) {
             wifi_cfg.sta.bssid_set = 1;
             memcpy((char *)wifi_cfg.sta.bssid, bssid, sizeof(wifi_cfg.sta.bssid));
