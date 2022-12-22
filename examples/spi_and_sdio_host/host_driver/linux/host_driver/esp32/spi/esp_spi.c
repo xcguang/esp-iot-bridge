@@ -50,8 +50,8 @@ static char hardware_type = 0;
 static atomic_t tx_pending;
 
 static struct esp_if_ops if_ops = {
-    .read		= read_packet,
-    .write		= write_packet,
+    .read        = read_packet,
+    .write        = write_packet,
 };
 
 static DEFINE_MUTEX(spi_lock);
@@ -291,12 +291,12 @@ static void esp_spi_work(struct work_struct *work)
             memset(&trans, 0, sizeof(trans));
 
             /* Setup and execute SPI transaction
-             * 	Tx_buf: Check if tx_q has valid buffer for transmission,
-             * 		else keep it blank
+             *     Tx_buf: Check if tx_q has valid buffer for transmission,
+             *         else keep it blank
              *
-             * 	Rx_buf: Allocate memory for incoming data. This will be freed
-             *		immediately if received buffer is invalid.
-             *		If it is a valid buffer, upper layer will free it.
+             *     Rx_buf: Allocate memory for incoming data. This will be freed
+             *        immediately if received buffer is invalid.
+             *        If it is a valid buffer, upper layer will free it.
              * */
 
             /* Configure TX buffer if available */

@@ -617,7 +617,7 @@ static int esp_init_net_dev(struct net_device *ndev, struct esp_private *priv)
 {
     int ret = 0;
     /* Set netdev */
-    /*	SET_NETDEV_DEV(ndev, &adapter->context.func->dev);*/
+    /*  SET_NETDEV_DEV(ndev, &adapter->context.func->dev);*/
 
     /* set net dev ops */
     ndev->netdev_ops = &esp_netdev_ops;
@@ -632,7 +632,7 @@ static int esp_init_net_dev(struct net_device *ndev, struct esp_private *priv)
     /* register netdev */
     ret = register_netdev(ndev);
 
-    /*	netif_start_queue(ndev);*/
+    /*  netif_start_queue(ndev);*/
     /* ndev->needs_free_netdev = true; */
 
     /* set watchdog timeout */
@@ -824,7 +824,7 @@ static struct esp_adapter *init_adapter(void)
 static int __init esp_init(void)
 {
     int ret = 0;
-    struct esp_adapter	*adapter = NULL;
+    struct esp_adapter  *adapter = NULL;
 
     /* Reset ESP, Clean start ESP */
     esp_reset();

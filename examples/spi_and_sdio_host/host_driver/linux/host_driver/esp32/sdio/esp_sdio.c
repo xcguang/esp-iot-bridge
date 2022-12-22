@@ -37,9 +37,9 @@
 #define TX_MAX_PENDING_COUNT    200
 #define TX_RESUME_THRESHOLD     (TX_MAX_PENDING_COUNT/5)
 
-#define CHECK_SDIO_RW_ERROR(ret) do {			\
-        if (ret)						\
-            printk(KERN_ERR "%s: CMD53 read/write error at %d\n", __func__, __LINE__);	\
+#define CHECK_SDIO_RW_ERROR(ret) do {           \
+        if (ret)                        \
+            printk(KERN_ERR "%s: CMD53 read/write error at %d\n", __func__, __LINE__);  \
     } while (0);
 
 struct esp_sdio_context sdio_context;
@@ -321,8 +321,8 @@ static void esp_remove(struct sdio_func *func)
 }
 
 static struct esp_if_ops if_ops = {
-    .read		= read_packet,
-    .write		= write_packet,
+    .read       = read_packet,
+    .write      = write_packet,
 };
 
 static int init_context(struct esp_sdio_context *context)
@@ -804,10 +804,10 @@ static int esp_probe(struct sdio_func *func,
 
 /* SDIO driver structure to be registered with kernel */
 static struct sdio_driver esp_sdio_driver = {
-    .name		= "esp_sdio",
-    .id_table	= esp_devices,
-    .probe		= esp_probe,
-    .remove		= esp_remove,
+    .name       = "esp_sdio",
+    .id_table   = esp_devices,
+    .probe      = esp_probe,
+    .remove     = esp_remove,
 };
 
 int esp_init_interface_layer(struct esp_adapter *adapter)
