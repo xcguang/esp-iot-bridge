@@ -55,7 +55,7 @@ typedef struct {
         sdio_slave_buf_handle_t sdio_buf_handle;
 #endif
 #endif
-        wlan_buf_handle_t	wlan_buf_handle;
+        wlan_buf_handle_t   wlan_buf_handle;
         void *priv_buffer_handle;
     };
     uint8_t if_type;

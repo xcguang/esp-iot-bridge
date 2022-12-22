@@ -16,14 +16,14 @@
  */
 
 /*
- * ndis.h 
- * 
+ * ndis.h
+ *
  * Modified by Colin O'Flynn <coflynn@newae.com>
  * ntddndis.h modified by Benedikt Spranger <b.spranger@pengutronix.de>
- * 
- * Thanks to the cygwin development team, 
+ *
+ * Thanks to the cygwin development team,
  * espacially to Casper S. Hornstrup <chorns@users.sourceforge.net>
- * 
+ *
  * THIS SOFTWARE IS NOT COPYRIGHTED
  *
  * This source code is offered for use in the public domain. You may
@@ -53,18 +53,18 @@
 #define OID_PNP_ENABLE_WAKE_UP                  0xFD010106
 
 enum NDIS_DEVICE_POWER_STATE {
-	NdisDeviceStateUnspecified = 0,
-	NdisDeviceStateD0,
-	NdisDeviceStateD1,
-	NdisDeviceStateD2,
-	NdisDeviceStateD3,
-	NdisDeviceStateMaximum
+    NdisDeviceStateUnspecified = 0,
+    NdisDeviceStateD0,
+    NdisDeviceStateD1,
+    NdisDeviceStateD2,
+    NdisDeviceStateD3,
+    NdisDeviceStateMaximum
 };
 
 struct NDIS_PM_WAKE_UP_CAPABILITIES {
-	enum NDIS_DEVICE_POWER_STATE  MinMagicPacketWakeUp;
-	enum NDIS_DEVICE_POWER_STATE  MinPatternWakeUp;
-	enum NDIS_DEVICE_POWER_STATE  MinLinkChangeWakeUp;
+    enum NDIS_DEVICE_POWER_STATE  MinMagicPacketWakeUp;
+    enum NDIS_DEVICE_POWER_STATE  MinPatternWakeUp;
+    enum NDIS_DEVICE_POWER_STATE  MinLinkChangeWakeUp;
 };
 
 /* NDIS_PNP_CAPABILITIES.Flags constants */

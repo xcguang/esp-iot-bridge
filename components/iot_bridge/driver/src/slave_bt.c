@@ -37,7 +37,7 @@ extern QueueHandle_t to_host_queue[MAX_PRIORITY_QUEUES];
 #if BLUETOOTH_HCI
 /* ***** HCI specific part ***** */
 
-#define VHCI_MAX_TIMEOUT_MS 	2000
+#define VHCI_MAX_TIMEOUT_MS     2000
 static SemaphoreHandle_t vhci_send_sem;
 
 static void controller_rcv_pkt_ready(void)

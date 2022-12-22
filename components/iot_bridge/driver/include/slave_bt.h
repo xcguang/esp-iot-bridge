@@ -54,16 +54,16 @@
 
 #ifdef BLUETOOTH_UART
 #include "driver/uart.h"
-#define BT_TX_PIN	5
-#define BT_RX_PIN	18
-#define BT_RTS_PIN	19
+#define BT_TX_PIN   5
+#define BT_RX_PIN   18
+#define BT_RTS_PIN  19
 #ifdef CONFIG_IDF_TARGET_ESP32C3
-#define BT_CTS_PIN	8
+#define BT_CTS_PIN  8
 #define GPIO_OUTPUT_PIN_SEL  ((1ULL<<BT_TX_PIN) | (1ULL<<BT_RTS_PIN))
 #define GPIO_INPUT_PIN_SEL   ((1ULL<<BT_RX_PIN) | (1ULL<<BT_CTS_PIN))
 #define UART_RX_THRS       (120)
 #else
-#define BT_CTS_PIN	23
+#define BT_CTS_PIN  23
 #endif
 #elif BLUETOOTH_HCI
 void process_hci_rx_pkt(uint8_t *payload, uint16_t payload_len);

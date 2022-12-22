@@ -281,8 +281,8 @@ static uint8_t *get_next_tx_buffer(uint32_t *len)
     struct esp_payload_header *header = NULL;
 
     /* Get or create new tx_buffer
-     *	1. Check if SPI TX queue has pending buffers. Return if valid buffer is obtained.
-     *	2. Create a new empty tx buffer and return */
+     *  1. Check if SPI TX queue has pending buffers. Return if valid buffer is obtained.
+     *  2. Create a new empty tx buffer and return */
 
     /* Get buffer from SPI Tx queue */
     if (uxQueueMessagesWaiting(spi_tx_queue[PRIO_Q_OTHERS])) {
