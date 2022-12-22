@@ -207,41 +207,41 @@ static void uart_event_task_entry(void *param)
     while (xEventGroupGetBits(esp_dte->process_group) & ESP_MODEM_START_BIT) {
         if (xQueueReceive(esp_dte->event_queue, &event, pdMS_TO_TICKS(100))) {
             switch (event.type) {
-                case UART_DATA:
-                    esp_handle_uart_data(esp_dte);
-                    break;
+            case UART_DATA:
+                esp_handle_uart_data(esp_dte);
+                break;
 
-                case UART_FIFO_OVF:
-                    ESP_LOGW(TAG, "HW FIFO Overflow");
-                    uart_flush_input(esp_dte->uart_port);
-                    xQueueReset(esp_dte->event_queue);
-                    break;
+            case UART_FIFO_OVF:
+                ESP_LOGW(TAG, "HW FIFO Overflow");
+                uart_flush_input(esp_dte->uart_port);
+                xQueueReset(esp_dte->event_queue);
+                break;
 
-                case UART_BUFFER_FULL:
-                    ESP_LOGW(TAG, "Ring Buffer Full");
-                    uart_flush_input(esp_dte->uart_port);
-                    xQueueReset(esp_dte->event_queue);
-                    break;
+            case UART_BUFFER_FULL:
+                ESP_LOGW(TAG, "Ring Buffer Full");
+                uart_flush_input(esp_dte->uart_port);
+                xQueueReset(esp_dte->event_queue);
+                break;
 
-                case UART_BREAK:
-                    ESP_LOGW(TAG, "Rx Break");
-                    break;
+            case UART_BREAK:
+                ESP_LOGW(TAG, "Rx Break");
+                break;
 
-                case UART_PARITY_ERR:
-                    ESP_LOGE(TAG, "Parity Error");
-                    break;
+            case UART_PARITY_ERR:
+                ESP_LOGE(TAG, "Parity Error");
+                break;
 
-                case UART_FRAME_ERR:
-                    ESP_LOGE(TAG, "Frame Error");
-                    break;
+            case UART_FRAME_ERR:
+                ESP_LOGE(TAG, "Frame Error");
+                break;
 
-                case UART_PATTERN_DET:
-                    esp_handle_uart_pattern(esp_dte);
-                    break;
+            case UART_PATTERN_DET:
+                esp_handle_uart_pattern(esp_dte);
+                break;
 
-                default:
-                    ESP_LOGW(TAG, "unknown uart event type: %d", event.type);
-                    break;
+            default:
+                ESP_LOGW(TAG, "unknown uart event type: %d", event.type);
+                break;
             }
         }
 
@@ -367,23 +367,23 @@ static esp_err_t esp_modem_dte_change_mode(esp_modem_dte_t *dte, esp_modem_mode_
 
     // (or restored on failure)
     switch (new_mode) {
-        case ESP_MODEM_PPP_MODE:
-            ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
-            uart_disable_pattern_det_intr(esp_dte->uart_port);
-            uart_set_rx_full_threshold(esp_dte->uart_port, 64);
-            uart_enable_rx_intr(esp_dte->uart_port);
-            break;
+    case ESP_MODEM_PPP_MODE:
+        ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
+        uart_disable_pattern_det_intr(esp_dte->uart_port);
+        uart_set_rx_full_threshold(esp_dte->uart_port, 64);
+        uart_enable_rx_intr(esp_dte->uart_port);
+        break;
 
-        case ESP_MODEM_COMMAND_MODE:
-            ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
-            uart_disable_rx_intr(esp_dte->uart_port);
-            uart_flush(esp_dte->uart_port);
-            uart_enable_pattern_det_baud_intr(esp_dte->uart_port, '\n', 1, MIN_PATTERN_INTERVAL, MIN_POST_IDLE, MIN_PRE_IDLE);
-            uart_pattern_queue_reset(esp_dte->uart_port, esp_dte->pattern_queue_size);
-            break;
+    case ESP_MODEM_COMMAND_MODE:
+        ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
+        uart_disable_rx_intr(esp_dte->uart_port);
+        uart_flush(esp_dte->uart_port);
+        uart_enable_pattern_det_baud_intr(esp_dte->uart_port, '\n', 1, MIN_PATTERN_INTERVAL, MIN_POST_IDLE, MIN_PRE_IDLE);
+        uart_pattern_queue_reset(esp_dte->uart_port, esp_dte->pattern_queue_size);
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
     return ESP_OK;

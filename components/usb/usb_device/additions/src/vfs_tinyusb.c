@@ -233,18 +233,18 @@ static int tusb_fcntl(int fd, int cmd, int arg)
     int result = 0;
 
     switch (cmd) {
-        case F_GETFL:
-            result = s_vfstusb.flags;
-            break;
+    case F_GETFL:
+        result = s_vfstusb.flags;
+        break;
 
-        case F_SETFL:
-            s_vfstusb.flags = arg;
-            break;
+    case F_SETFL:
+        s_vfstusb.flags = arg;
+        break;
 
-        default:
-            result = -1;
-            errno = ENOSYS;
-            break;
+    default:
+        result = -1;
+        errno = ENOSYS;
+        break;
     }
 
     return result;

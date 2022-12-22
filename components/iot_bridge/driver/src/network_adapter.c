@@ -331,29 +331,29 @@ void recv_task(void *pvParameters)
 int event_handler(uint8_t val)
 {
     switch (val) {
-        case ESP_OPEN_DATA_PATH:
-            datapath = 1;
+    case ESP_OPEN_DATA_PATH:
+        datapath = 1;
 
-            if (if_handle) {
-                if_handle->state = ACTIVE;
-                ESP_EARLY_LOGI(TAG, "Start Data Path");
-            } else {
-                ESP_EARLY_LOGI(TAG, "Failed to Start Data Path");
-            }
+        if (if_handle) {
+            if_handle->state = ACTIVE;
+            ESP_EARLY_LOGI(TAG, "Start Data Path");
+        } else {
+            ESP_EARLY_LOGI(TAG, "Failed to Start Data Path");
+        }
 
-            break;
+        break;
 
-        case ESP_CLOSE_DATA_PATH:
-            datapath = 0;
+    case ESP_CLOSE_DATA_PATH:
+        datapath = 0;
 
-            if (if_handle) {
-                ESP_EARLY_LOGI(TAG, "Stop Data Path");
-                if_handle->state = DEACTIVE;
-            } else {
-                ESP_EARLY_LOGI(TAG, "Failed to Stop Data Path");
-            }
+        if (if_handle) {
+            ESP_EARLY_LOGI(TAG, "Stop Data Path");
+            if_handle->state = DEACTIVE;
+        } else {
+            ESP_EARLY_LOGI(TAG, "Failed to Stop Data Path");
+        }
 
-            break;
+        break;
     }
 
     return 0;

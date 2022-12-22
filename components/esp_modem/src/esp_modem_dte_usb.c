@@ -298,17 +298,17 @@ static esp_err_t esp_modem_dte_change_mode(esp_modem_dte_t *dte, esp_modem_mode_
 
     // (or restored on failure)
     switch (new_mode) {
-        case ESP_MODEM_PPP_MODE:
-            ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
-            break;
+    case ESP_MODEM_PPP_MODE:
+        ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
+        break;
 
-        case ESP_MODEM_COMMAND_MODE:
-            ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
-            //TODO:usb_flush();
-            break;
+    case ESP_MODEM_COMMAND_MODE:
+        ESP_MODEM_ERR_CHECK(dce->set_working_mode(dce, new_mode) == ESP_OK, "set new working mode:%d failed", err_restore_mode, new_mode);
+        //TODO:usb_flush();
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
     return ESP_OK;

@@ -188,25 +188,25 @@ esp_err_t tinyusb_cdcacm_register_callback(tinyusb_cdcacm_itf_t itf,
 
     if (acm) {
         switch (event_type) {
-            case CDC_EVENT_RX:
-                acm->callback_rx = callback;
-                return ESP_OK;
+        case CDC_EVENT_RX:
+            acm->callback_rx = callback;
+            return ESP_OK;
 
-            case CDC_EVENT_RX_WANTED_CHAR:
-                acm->callback_rx_wanted_char = callback;
-                return ESP_OK;
+        case CDC_EVENT_RX_WANTED_CHAR:
+            acm->callback_rx_wanted_char = callback;
+            return ESP_OK;
 
-            case CDC_EVENT_LINE_STATE_CHANGED:
-                acm->callback_line_state_changed = callback;
-                return ESP_OK;
+        case CDC_EVENT_LINE_STATE_CHANGED:
+            acm->callback_line_state_changed = callback;
+            return ESP_OK;
 
-            case CDC_EVENT_LINE_CODING_CHANGED:
-                acm->callback_line_coding_changed = callback;
-                return ESP_OK;
+        case CDC_EVENT_LINE_CODING_CHANGED:
+            acm->callback_line_coding_changed = callback;
+            return ESP_OK;
 
-            default:
-                ESP_LOGE(TAG, "Wrong event type");
-                return ESP_ERR_INVALID_ARG;
+        default:
+            ESP_LOGE(TAG, "Wrong event type");
+            return ESP_ERR_INVALID_ARG;
         }
     } else {
         ESP_LOGE(TAG, "CDC-ACM is not initialized");
@@ -226,25 +226,25 @@ esp_err_t tinyusb_cdcacm_unregister_callback(tinyusb_cdcacm_itf_t itf,
     }
 
     switch (event_type) {
-        case CDC_EVENT_RX:
-            acm->callback_rx = NULL;
-            return ESP_OK;
+    case CDC_EVENT_RX:
+        acm->callback_rx = NULL;
+        return ESP_OK;
 
-        case CDC_EVENT_RX_WANTED_CHAR:
-            acm->callback_rx_wanted_char = NULL;
-            return ESP_OK;
+    case CDC_EVENT_RX_WANTED_CHAR:
+        acm->callback_rx_wanted_char = NULL;
+        return ESP_OK;
 
-        case CDC_EVENT_LINE_STATE_CHANGED:
-            acm->callback_line_state_changed = NULL;
-            return ESP_OK;
+    case CDC_EVENT_LINE_STATE_CHANGED:
+        acm->callback_line_state_changed = NULL;
+        return ESP_OK;
 
-        case CDC_EVENT_LINE_CODING_CHANGED:
-            acm->callback_line_coding_changed = NULL;
-            return ESP_OK;
+    case CDC_EVENT_LINE_CODING_CHANGED:
+        acm->callback_line_coding_changed = NULL;
+        return ESP_OK;
 
-        default:
-            ESP_LOGE(TAG, "Wrong event type");
-            return ESP_ERR_INVALID_ARG;
+    default:
+        ESP_LOGE(TAG, "Wrong event type");
+        return ESP_ERR_INVALID_ARG;
     }
 }
 

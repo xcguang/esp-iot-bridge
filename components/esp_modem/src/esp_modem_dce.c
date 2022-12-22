@@ -163,17 +163,17 @@ err:
 esp_err_t esp_modem_dce_set_working_mode(esp_modem_dce_t *dce, esp_modem_mode_t mode)
 {
     switch (mode) {
-        case ESP_MODEM_COMMAND_MODE:
-            ESP_MODEM_ERR_CHECK(esp_modem_switch_to_command_mode(dce) == ESP_OK, "Setting command mode failed", err);
-            break;
+    case ESP_MODEM_COMMAND_MODE:
+        ESP_MODEM_ERR_CHECK(esp_modem_switch_to_command_mode(dce) == ESP_OK, "Setting command mode failed", err);
+        break;
 
-        case ESP_MODEM_PPP_MODE:
-            ESP_MODEM_ERR_CHECK(esp_modem_switch_to_data_mode(dce) == ESP_OK, "Setting data mode failed", err);
-            break;
+    case ESP_MODEM_PPP_MODE:
+        ESP_MODEM_ERR_CHECK(esp_modem_switch_to_data_mode(dce) == ESP_OK, "Setting data mode failed", err);
+        break;
 
-        default:
-            ESP_LOGW(TAG, "unsupported working mode: %d", mode);
-            goto err;
+    default:
+        ESP_LOGW(TAG, "unsupported working mode: %d", mode);
+        goto err;
     }
 
     return ESP_OK;

@@ -168,21 +168,21 @@ esp_err_t esp_modem_dce_init(esp_modem_dce_t *dce, esp_modem_dce_config_t *confi
     }
 
     switch (config->device) {
-        case ESP_MODEM_DEVICE_SIM800:
-            err = esp_modem_sim800_specific_init(dce);
-            break;
+    case ESP_MODEM_DEVICE_SIM800:
+        err = esp_modem_sim800_specific_init(dce);
+        break;
 
-        case ESP_MODEM_DEVICE_SIM7600:
-            err = esp_modem_sim7600_specific_init(dce);
-            break;
+    case ESP_MODEM_DEVICE_SIM7600:
+        err = esp_modem_sim7600_specific_init(dce);
+        break;
 
-        case ESP_MODEM_DEVICE_BG96:
-            err = esp_modem_bg96_specific_init(dce);
-            break;
+    case ESP_MODEM_DEVICE_BG96:
+        err = esp_modem_bg96_specific_init(dce);
+        break;
 
-        default:
-        case ESP_MODEM_DEVICE_UNSPECIFIED:
-            break;
+    default:
+    case ESP_MODEM_DEVICE_UNSPECIFIED:
+        break;
     }
 
     ESP_MODEM_ERR_CHECK(err == ESP_OK, "dce specific initialization has failed for %d type device", err, config->device);

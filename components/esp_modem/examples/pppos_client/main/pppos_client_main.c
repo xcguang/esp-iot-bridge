@@ -135,21 +135,21 @@ err:
 static void modem_event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     switch (event_id) {
-        case ESP_MODEM_EVENT_PPP_START:
-            ESP_LOGI(TAG, "Modem PPP Started");
-            break;
+    case ESP_MODEM_EVENT_PPP_START:
+        ESP_LOGI(TAG, "Modem PPP Started");
+        break;
 
-        case ESP_MODEM_EVENT_PPP_STOP:
-            ESP_LOGI(TAG, "Modem PPP Stopped");
-            xEventGroupSetBits(event_group, STOP_BIT);
-            break;
+    case ESP_MODEM_EVENT_PPP_STOP:
+        ESP_LOGI(TAG, "Modem PPP Stopped");
+        xEventGroupSetBits(event_group, STOP_BIT);
+        break;
 
-        case ESP_MODEM_EVENT_UNKNOWN:
-            ESP_LOGW(TAG, "Unknow line received: %s", (char *)event_data);
-            break;
+    case ESP_MODEM_EVENT_UNKNOWN:
+        ESP_LOGW(TAG, "Unknow line received: %s", (char *)event_data);
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -159,44 +159,44 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
     int msg_id;
 
     switch (event->event_id) {
-        case MQTT_EVENT_CONNECTED:
-            ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            msg_id = esp_mqtt_client_subscribe(client, "/topic/esp-pppos", 0);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-            break;
+    case MQTT_EVENT_CONNECTED:
+        ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+        msg_id = esp_mqtt_client_subscribe(client, "/topic/esp-pppos", 0);
+        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+        break;
 
-        case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
-            break;
+    case MQTT_EVENT_DISCONNECTED:
+        ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+        break;
 
-        case MQTT_EVENT_SUBSCRIBED:
-            ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-            msg_id = esp_mqtt_client_publish(client, "/topic/esp-pppos", "esp32-pppos", 0, 0, 0);
-            ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
-            break;
+    case MQTT_EVENT_SUBSCRIBED:
+        ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
+        msg_id = esp_mqtt_client_publish(client, "/topic/esp-pppos", "esp32-pppos", 0, 0, 0);
+        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+        break;
 
-        case MQTT_EVENT_UNSUBSCRIBED:
-            ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
-            break;
+    case MQTT_EVENT_UNSUBSCRIBED:
+        ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
+        break;
 
-        case MQTT_EVENT_PUBLISHED:
-            ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
-            break;
+    case MQTT_EVENT_PUBLISHED:
+        ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+        break;
 
-        case MQTT_EVENT_DATA:
-            ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
-            xEventGroupSetBits(event_group, GOT_DATA_BIT);
-            break;
+    case MQTT_EVENT_DATA:
+        ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+        printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
+        printf("DATA=%.*s\r\n", event->data_len, event->data);
+        xEventGroupSetBits(event_group, GOT_DATA_BIT);
+        break;
 
-        case MQTT_EVENT_ERROR:
-            ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
-            break;
+    case MQTT_EVENT_ERROR:
+        ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
+        break;
 
-        default:
-            ESP_LOGI(TAG, "MQTT other event id: %d", event->event_id);
-            break;
+    default:
+        ESP_LOGI(TAG, "MQTT other event id: %d", event->event_id);
+        break;
     }
 
     return ESP_OK;

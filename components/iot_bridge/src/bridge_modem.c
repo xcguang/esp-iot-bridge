@@ -106,47 +106,47 @@ static void on_modem_event(void *arg, esp_event_base_t event_base,
         }
     } else if (event_base == ESP_MODEM_EVENT) {
         switch (event_id) {
-            case ESP_MODEM_EVENT_PPP_START:
-                ESP_LOGI(TAG, "Modem PPP Started");
-                break;
+        case ESP_MODEM_EVENT_PPP_START:
+            ESP_LOGI(TAG, "Modem PPP Started");
+            break;
 
-            case ESP_MODEM_EVENT_PPP_STOP:
-                ESP_LOGI(TAG, "Modem PPP Stopped");
-                break;
+        case ESP_MODEM_EVENT_PPP_STOP:
+            ESP_LOGI(TAG, "Modem PPP Stopped");
+            break;
 
-            default:
-                ESP_LOGW(TAG, "Modem event! %d", event_id);
-                break;
+        default:
+            ESP_LOGW(TAG, "Modem event! %d", event_id);
+            break;
         }
     } else if (event_base == WIFI_EVENT) {
         //wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
         switch (event_id) {
-            case WIFI_EVENT_AP_STACONNECTED:
-                if (++active_station_num > 0) {
-                    if (led_wifi_handle) {
-                        led_indicator_start(led_wifi_handle, BLINK_CONNECTED);
-                    }
+        case WIFI_EVENT_AP_STACONNECTED:
+            if (++active_station_num > 0) {
+                if (led_wifi_handle) {
+                    led_indicator_start(led_wifi_handle, BLINK_CONNECTED);
+                }
+            }
+
+            //ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
+            break;
+
+        case WIFI_EVENT_AP_STADISCONNECTED:
+            if (--active_station_num == 0) {
+                if (led_wifi_handle) {
+                    led_indicator_stop(led_wifi_handle, BLINK_CONNECTED);
                 }
 
-                //ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
-                break;
-
-            case WIFI_EVENT_AP_STADISCONNECTED:
-                if (--active_station_num == 0) {
-                    if (led_wifi_handle) {
-                        led_indicator_stop(led_wifi_handle, BLINK_CONNECTED);
-                    }
-
-                    if (led_wifi_handle) {
-                        led_indicator_start(led_wifi_handle, BLINK_CONNECTING);
-                    }
+                if (led_wifi_handle) {
+                    led_indicator_start(led_wifi_handle, BLINK_CONNECTING);
                 }
+            }
 
-                //ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
-                break;
+            //ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
     } else if (event_base == NETIF_PPP_STATUS) {
         if (event_id < NETIF_PP_PHASE_OFFSET) {

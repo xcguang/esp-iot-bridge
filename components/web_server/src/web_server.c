@@ -1373,28 +1373,28 @@ static esp_err_t config_wifi_get_handler(httpd_req_t *req)
     json_len += sprintf(temp_json_str + json_len, "\"sta_password\":\"%s\",", (char *)connect_config->password);
 
     switch (connection_info->config_status) {
-        case ESP_BRIDGE_WIFI_STA_NOT_START:
-            strcpy(temp_str, "waiting config");
-            break;
+    case ESP_BRIDGE_WIFI_STA_NOT_START:
+        strcpy(temp_str, "waiting config");
+        break;
 
-        case ESP_BRIDGE_WIFI_STA_CONFIG_DONE:
-            strcpy(temp_str, "config done");
-            break;
+    case ESP_BRIDGE_WIFI_STA_CONFIG_DONE:
+        strcpy(temp_str, "config done");
+        break;
 
-        case ESP_BRIDGE_WIFI_STA_CONNECTING:
-            strcpy(temp_str, "connecting");
-            break;
+    case ESP_BRIDGE_WIFI_STA_CONNECTING:
+        strcpy(temp_str, "connecting");
+        break;
 
-        case ESP_BRIDGE_WIFI_STA_CONNECT_FAIL:
-            strcpy(temp_str, "connect fail");
-            break;
+    case ESP_BRIDGE_WIFI_STA_CONNECT_FAIL:
+        strcpy(temp_str, "connect fail");
+        break;
 
-        case ESP_BRIDGE_WIFI_STA_CONNECT_OK:
-            strcpy(temp_str, "connect OK");
-            break;
+    case ESP_BRIDGE_WIFI_STA_CONNECT_OK:
+        strcpy(temp_str, "connect OK");
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
     json_len += sprintf(temp_json_str + json_len, "\"message\":\"%s\"}", temp_str);
@@ -1418,46 +1418,46 @@ static esp_err_t accept_wifi_result_post_handler(httpd_req_t *req)
     ESP_LOGD(TAG, "detect web close pages");
 
     switch (connection_info->config_status) {
-        case ESP_BRIDGE_WIFI_STA_NOT_START:
-            break;
+    case ESP_BRIDGE_WIFI_STA_NOT_START:
+        break;
 
-        case ESP_BRIDGE_WIFI_STA_CONFIG_DONE:
-        case ESP_BRIDGE_WIFI_STA_CONNECTING:
-            // esp_at_port_write_data((uint8_t*)s_wifi_conncet_finish_response, strlen(s_wifi_conncet_finish_response));
-            printf("%s\r\n", s_wifi_conncet_finish_response);
-            break;
+    case ESP_BRIDGE_WIFI_STA_CONFIG_DONE:
+    case ESP_BRIDGE_WIFI_STA_CONNECTING:
+        // esp_at_port_write_data((uint8_t*)s_wifi_conncet_finish_response, strlen(s_wifi_conncet_finish_response));
+        printf("%s\r\n", s_wifi_conncet_finish_response);
+        break;
 
-        case ESP_BRIDGE_WIFI_STA_CONNECT_FAIL:
-        case ESP_BRIDGE_WIFI_STA_CONNECT_OK:
-            if (recv_post_data(req, buf) != ESP_OK) {
-                esp_web_response_error(req, HTTPD_500);
-                ESP_LOGE(TAG, "recv post data error");
-                return ESP_FAIL;
-            }
+    case ESP_BRIDGE_WIFI_STA_CONNECT_FAIL:
+    case ESP_BRIDGE_WIFI_STA_CONNECT_OK:
+        if (recv_post_data(req, buf) != ESP_OK) {
+            esp_web_response_error(req, HTTPD_500);
+            ESP_LOGE(TAG, "recv post data error");
+            return ESP_FAIL;
+        }
 
-            str_len = esp_web_find_arg(buf, "received", (char *) temp, sizeof(temp));
+        str_len = esp_web_find_arg(buf, "received", (char *) temp, sizeof(temp));
 
-            if (str_len == -1) {
-                ESP_LOGE(TAG, "received flag is abnormal");
-                goto error_handle;
-            } else {
-                received_flag = atoi(temp);
-                ESP_LOGD(TAG, "received_flag is %d", received_flag);
-            }
+        if (str_len == -1) {
+            ESP_LOGE(TAG, "received flag is abnormal");
+            goto error_handle;
+        } else {
+            received_flag = atoi(temp);
+            ESP_LOGD(TAG, "received_flag is %d", received_flag);
+        }
 
-            // clear wifi connect config and status info
-            wifi_connection_info.config_status = ESP_BRIDGE_WIFI_STA_NOT_START;
+        // clear wifi connect config and status info
+        wifi_connection_info.config_status = ESP_BRIDGE_WIFI_STA_NOT_START;
 
-            esp_web_clear_sta_connect_config();
-            esp_web_update_sta_connection_info(&wifi_connection_info);
+        esp_web_clear_sta_connect_config();
+        esp_web_update_sta_connection_info(&wifi_connection_info);
 
-            // send a message to MCU
-            // esp_at_port_write_data((uint8_t*)s_wifi_conncet_finish_response, strlen(s_wifi_conncet_finish_response));
-            printf("%s\r\n", s_wifi_conncet_finish_response);
-            break;
+        // send a message to MCU
+        // esp_at_port_write_data((uint8_t*)s_wifi_conncet_finish_response, strlen(s_wifi_conncet_finish_response));
+        printf("%s\r\n", s_wifi_conncet_finish_response);
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 
     esp_web_response_ok(req);

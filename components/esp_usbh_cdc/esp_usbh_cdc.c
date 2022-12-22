@@ -269,29 +269,29 @@ static hcd_port_event_t _usb_port_event_dflt_process(hcd_port_handle_t port_hdl,
     hcd_port_event_t actual_evt = hcd_port_handle_event(port_hdl);
 
     switch (actual_evt) {
-        case HCD_PORT_EVENT_CONNECTION:
-            ESP_LOGI(TAG, "line %u HCD_PORT_EVENT_CONNECTION", __LINE__);
-            break;
+    case HCD_PORT_EVENT_CONNECTION:
+        ESP_LOGI(TAG, "line %u HCD_PORT_EVENT_CONNECTION", __LINE__);
+        break;
 
-        case HCD_PORT_EVENT_DISCONNECTION:
-            ESP_LOGW(TAG, "line %u HCD_PORT_EVENT_DISCONNECTION", __LINE__);
-            break;
+    case HCD_PORT_EVENT_DISCONNECTION:
+        ESP_LOGW(TAG, "line %u HCD_PORT_EVENT_DISCONNECTION", __LINE__);
+        break;
 
-        case HCD_PORT_EVENT_ERROR:
-            ESP_LOGW(TAG, "line %u HCD_PORT_EVENT_ERROR", __LINE__);
-            break;
+    case HCD_PORT_EVENT_ERROR:
+        ESP_LOGW(TAG, "line %u HCD_PORT_EVENT_ERROR", __LINE__);
+        break;
 
-        case HCD_PORT_EVENT_OVERCURRENT:
-            ESP_LOGW(TAG, "line %u HCD_PORT_EVENT_OVERCURRENT", __LINE__);
-            break;
+    case HCD_PORT_EVENT_OVERCURRENT:
+        ESP_LOGW(TAG, "line %u HCD_PORT_EVENT_OVERCURRENT", __LINE__);
+        break;
 
-        case HCD_PORT_EVENT_NONE:
-            ESP_LOGD(TAG, "line %u HCD_PORT_EVENT_NONE", __LINE__);
-            break;
+    case HCD_PORT_EVENT_NONE:
+        ESP_LOGD(TAG, "line %u HCD_PORT_EVENT_NONE", __LINE__);
+        break;
 
-        default:
-            ESP_LOGE(TAG, "line %u invalid HCD_PORT_EVENT%d", __LINE__, actual_evt);
-            break;
+    default:
+        ESP_LOGE(TAG, "line %u invalid HCD_PORT_EVENT%d", __LINE__, actual_evt);
+        break;
     }
 
     return actual_evt;
@@ -636,33 +636,33 @@ static void _default_pipe_event_dflt_process(hcd_pipe_handle_t pipe_handle, hcd_
     assert(pipe_handle != NULL);
 
     switch (pipe_event) {
-        case HCD_PIPE_EVENT_URB_DONE:
-            ESP_LOGD(TAG, "line %u Pipe: default HCD_PIPE_EVENT_URB_DONE", __LINE__);
-            break;
+    case HCD_PIPE_EVENT_URB_DONE:
+        ESP_LOGD(TAG, "line %u Pipe: default HCD_PIPE_EVENT_URB_DONE", __LINE__);
+        break;
 
-        case HCD_PIPE_EVENT_ERROR_XFER:
-            ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_XFER", __LINE__);
-            break;
+    case HCD_PIPE_EVENT_ERROR_XFER:
+        ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_XFER", __LINE__);
+        break;
 
-        case HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL:
-            ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL", __LINE__);
-            break;
+    case HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL:
+        ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL", __LINE__);
+        break;
 
-        case HCD_PIPE_EVENT_ERROR_OVERFLOW:
-            ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_OVERFLOW", __LINE__);
-            break;
+    case HCD_PIPE_EVENT_ERROR_OVERFLOW:
+        ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_OVERFLOW", __LINE__);
+        break;
 
-        case HCD_PIPE_EVENT_ERROR_STALL:
-            ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_STALL", __LINE__);
-            break;
+    case HCD_PIPE_EVENT_ERROR_STALL:
+        ESP_LOGW(TAG, "line %u Pipe: default HCD_PIPE_EVENT_ERROR_STALL", __LINE__);
+        break;
 
-        case HCD_PIPE_EVENT_NONE:
-            ESP_LOGD(TAG, "line %u Pipe: default HCD_PIPE_EVENT_NONE", __LINE__);
-            break;
+    case HCD_PIPE_EVENT_NONE:
+        ESP_LOGD(TAG, "line %u Pipe: default HCD_PIPE_EVENT_NONE", __LINE__);
+        break;
 
-        default:
-            ESP_LOGE(TAG, "line %u invalid HCD_PORT_EVENT%d", __LINE__, pipe_event);
-            break;
+    default:
+        ESP_LOGE(TAG, "line %u invalid HCD_PORT_EVENT%d", __LINE__, pipe_event);
+        break;
     }
 }
 
@@ -1053,40 +1053,40 @@ static void _cdc_data_task(void *arg)
         }
 
         switch (evt_msg._event.pipe_event) {
-            case HCD_PIPE_EVENT_URB_DONE:
-                if (evt_msg._handle.pipe_handle == pipe_hdl_out) {
-                    _processing_out_pipe(pipe_hdl_out, true);
-                } else if (evt_msg._handle.pipe_handle == pipe_hdl_in) {
-                    _processing_in_pipe(pipe_hdl_in, event_group_hdl, rx_cb, rx_cb_arg);
-                } else {
-                    ESP_LOGE(TAG, "invalid pipe handle");
-                    assert(0);
-                }
+        case HCD_PIPE_EVENT_URB_DONE:
+            if (evt_msg._handle.pipe_handle == pipe_hdl_out) {
+                _processing_out_pipe(pipe_hdl_out, true);
+            } else if (evt_msg._handle.pipe_handle == pipe_hdl_in) {
+                _processing_in_pipe(pipe_hdl_in, event_group_hdl, rx_cb, rx_cb_arg);
+            } else {
+                ESP_LOGE(TAG, "invalid pipe handle");
+                assert(0);
+            }
 
-                break;
+            break;
 
-            case HCD_PIPE_EVENT_ERROR_XFER:
-                ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_XFER", __LINE__);
-                break;
+        case HCD_PIPE_EVENT_ERROR_XFER:
+            ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_XFER", __LINE__);
+            break;
 
-            case HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL:
-                ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL", __LINE__);
-                break;
+        case HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL:
+            ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_URB_NOT_AVAIL", __LINE__);
+            break;
 
-            case HCD_PIPE_EVENT_ERROR_OVERFLOW:
-                ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_OVERFLOW", __LINE__);
-                break;
+        case HCD_PIPE_EVENT_ERROR_OVERFLOW:
+            ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_OVERFLOW", __LINE__);
+            break;
 
-            case HCD_PIPE_EVENT_ERROR_STALL:
-                ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_STALL", __LINE__);
-                break;
+        case HCD_PIPE_EVENT_ERROR_STALL:
+            ESP_LOGW(TAG, "line %u Pipe: bulk_out HCD_PIPE_EVENT_ERROR_STALL", __LINE__);
+            break;
 
-            case HCD_PIPE_EVENT_NONE:
-                break;
+        case HCD_PIPE_EVENT_NONE:
+            break;
 
-            default:
-                ESP_LOGE(TAG, "line %u invalid HCD_PORT_EVENT%d", __LINE__, evt_msg._event.pipe_event);
-                break;
+        default:
+            ESP_LOGE(TAG, "line %u invalid HCD_PORT_EVENT%d", __LINE__, evt_msg._event.pipe_event);
+            break;
         }
     }
 
@@ -1182,90 +1182,90 @@ static void _usb_processing_task(void *arg)
             }
 
             switch (evt_msg._type) {
-                case PORT_EVENT:
-                    port_actual_evt = _usb_port_event_dflt_process(port_hdl, evt_msg._event.port_event);
+            case PORT_EVENT:
+                port_actual_evt = _usb_port_event_dflt_process(port_hdl, evt_msg._event.port_event);
 
-                    switch (port_actual_evt) {
-                        case HCD_PORT_EVENT_CONNECTION:
-                            // Reset port and get speed
-                            ESP_LOGI(TAG, "Resetting Port");
-                            ret = _usb_port_reset(port_hdl);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "Port Reset failed", usb_driver_reset_);
-                            _update_device_state(CDC_DEVICE_STATE_DEFAULT);
-                            ESP_LOGI(TAG, "Getting Port Speed");
-                            ret = _usb_port_get_speed(port_hdl, &port_speed);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "USB Port get speed failed", usb_driver_reset_);
-                            ESP_LOGI(TAG, "USB Speed: %s-speed", port_speed ? "full" : "low");
-                            cdc_task_args.dev_speed = port_speed;
+                switch (port_actual_evt) {
+                case HCD_PORT_EVENT_CONNECTION:
+                    // Reset port and get speed
+                    ESP_LOGI(TAG, "Resetting Port");
+                    ret = _usb_port_reset(port_hdl);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "Port Reset failed", usb_driver_reset_);
+                    _update_device_state(CDC_DEVICE_STATE_DEFAULT);
+                    ESP_LOGI(TAG, "Getting Port Speed");
+                    ret = _usb_port_get_speed(port_hdl, &port_speed);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "USB Port get speed failed", usb_driver_reset_);
+                    ESP_LOGI(TAG, "USB Speed: %s-speed", port_speed ? "full" : "low");
+                    cdc_task_args.dev_speed = port_speed;
 
-                            if (!pipe_hdl_dflt) pipe_hdl_dflt = _usb_pipe_init(port_hdl, NULL, 0, port_speed,
-                                                                    (void *)cdc_queue_hdl, (void *)cdc_queue_hdl);
+                    if (!pipe_hdl_dflt) pipe_hdl_dflt = _usb_pipe_init(port_hdl, NULL, 0, port_speed,
+                                                            (void *)cdc_queue_hdl, (void *)cdc_queue_hdl);
 
-                            CDC_CHECK_GOTO(pipe_hdl_dflt != NULL, "default pipe create failed", usb_driver_reset_);
+                    CDC_CHECK_GOTO(pipe_hdl_dflt != NULL, "default pipe create failed", usb_driver_reset_);
 
-                            ret = _usb_set_device_addr(pipe_hdl_dflt, USB_DEVICE_ADDR);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "Set device address failed", usb_driver_reset_);
+                    ret = _usb_set_device_addr(pipe_hdl_dflt, USB_DEVICE_ADDR);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "Set device address failed", usb_driver_reset_);
 #ifdef CONFIG_CDC_GET_DEVICE_DESC
-                            ret = _usb_get_dev_desc(pipe_hdl_dflt, NULL);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "Get device descriptor failed", usb_driver_reset_);
+                    ret = _usb_get_dev_desc(pipe_hdl_dflt, NULL);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "Get device descriptor failed", usb_driver_reset_);
 #endif
 #ifdef CONFIG_CDC_GET_CONFIG_DESC
-                            ret = _usb_get_config_desc(pipe_hdl_dflt, NULL);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "Get config descriptor failed", usb_driver_reset_);
+                    ret = _usb_get_config_desc(pipe_hdl_dflt, NULL);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "Get config descriptor failed", usb_driver_reset_);
 #endif
-                            _update_device_state(CDC_DEVICE_STATE_ADDRESS);
-                            ret = _usb_set_device_config(pipe_hdl_dflt, USB_DEVICE_CONFIG);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "Set device configuration failed", usb_driver_reset_);
-                            _update_device_state(CDC_DEVICE_STATE_CONFIGURED);
+                    _update_device_state(CDC_DEVICE_STATE_ADDRESS);
+                    ret = _usb_set_device_config(pipe_hdl_dflt, USB_DEVICE_CONFIG);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "Set device configuration failed", usb_driver_reset_);
+                    _update_device_state(CDC_DEVICE_STATE_CONFIGURED);
 #ifdef CONFIG_CDC_SEND_DTE_ACTIVE
-                            ret = _usb_set_device_line_state(pipe_hdl_dflt, true, false);
-                            CDC_CHECK_GOTO(ESP_OK == ret, "Set device line state failed", usb_driver_reset_);
+                    ret = _usb_set_device_line_state(pipe_hdl_dflt, true, false);
+                    CDC_CHECK_GOTO(ESP_OK == ret, "Set device line state failed", usb_driver_reset_);
 #endif
-                            xTaskCreatePinnedToCore(_cdc_data_task, CDC_DATA_TASK_NAME, CDC_DATA_TASK_STACK_SIZE, (void *)(&cdc_task_args),
-                                                    CDC_DATA_TASK_PRIORITY, &cdc_data_task_hdl, CDC_DATA_TASK_CORE);
-                            CDC_CHECK_GOTO(cdc_data_task_hdl != NULL, "cdc task create failed", usb_driver_reset_);
-                            xTaskNotifyGive(cdc_data_task_hdl);
+                    xTaskCreatePinnedToCore(_cdc_data_task, CDC_DATA_TASK_NAME, CDC_DATA_TASK_STACK_SIZE, (void *)(&cdc_task_args),
+                                            CDC_DATA_TASK_PRIORITY, &cdc_data_task_hdl, CDC_DATA_TASK_CORE);
+                    CDC_CHECK_GOTO(cdc_data_task_hdl != NULL, "cdc task create failed", usb_driver_reset_);
+                    xTaskNotifyGive(cdc_data_task_hdl);
 
-                            if (conn_callback) {
-                                conn_callback(conn_callback_arg);
-                            }
-
-                            break;
-
-                        case HCD_PORT_EVENT_DISCONNECTION:
-                            _update_device_state(CDC_DEVICE_STATE_NOT_ATTACHED);
-                            ESP_LOGI(TAG, "hcd port state = %d", hcd_port_get_state(port_hdl));
-
-                            if (disconn_callback) {
-                                disconn_callback(disconn_callback_arg);
-                            }
-
-                            goto usb_driver_reset_;
-                            break;
-
-                        case HCD_PORT_EVENT_ERROR:
-                            _update_device_state(CDC_DEVICE_STATE_NOT_ATTACHED);
-                            ESP_LOGI(TAG, "hcd port state = %d", hcd_port_get_state(port_hdl));
-
-                            if (disconn_callback) {
-                                disconn_callback(disconn_callback_arg);
-                            }
-
-                            goto usb_driver_reset_;
-                            break;
-
-                        default:
-                            break;
+                    if (conn_callback) {
+                        conn_callback(conn_callback_arg);
                     }
 
                     break;
 
-                case PIPE_EVENT:
-                    _default_pipe_event_dflt_process(pipe_hdl_dflt, evt_msg._event.pipe_event);
+                case HCD_PORT_EVENT_DISCONNECTION:
+                    _update_device_state(CDC_DEVICE_STATE_NOT_ATTACHED);
+                    ESP_LOGI(TAG, "hcd port state = %d", hcd_port_get_state(port_hdl));
+
+                    if (disconn_callback) {
+                        disconn_callback(disconn_callback_arg);
+                    }
+
+                    goto usb_driver_reset_;
+                    break;
+
+                case HCD_PORT_EVENT_ERROR:
+                    _update_device_state(CDC_DEVICE_STATE_NOT_ATTACHED);
+                    ESP_LOGI(TAG, "hcd port state = %d", hcd_port_get_state(port_hdl));
+
+                    if (disconn_callback) {
+                        disconn_callback(disconn_callback_arg);
+                    }
+
+                    goto usb_driver_reset_;
                     break;
 
                 default:
                     break;
+                }
+
+                break;
+
+            case PIPE_EVENT:
+                _default_pipe_event_dflt_process(pipe_hdl_dflt, evt_msg._event.pipe_event);
+                break;
+
+            default:
+                break;
             }
         }
 

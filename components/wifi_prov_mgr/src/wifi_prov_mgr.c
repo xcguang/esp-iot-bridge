@@ -158,56 +158,56 @@ static void event_handler(void *arg, esp_event_base_t event_base,
 
     if (event_base == WIFI_PROV_EVENT) {
         switch (event_id) {
-            case WIFI_PROV_START:
-                ESP_LOGI(TAG, "Provisioning started");
-                break;
+        case WIFI_PROV_START:
+            ESP_LOGI(TAG, "Provisioning started");
+            break;
 
-            case WIFI_PROV_CRED_RECV: {
-                wifi_sta_config_t *wifi_sta_cfg = (wifi_sta_config_t *)event_data;
-                ESP_LOGI(TAG, "Received Wi-Fi credentials"
-                         "\n\tSSID     : %s\n\tPassword : %s",
-                         (const char *) wifi_sta_cfg->ssid,
-                         (const char *) wifi_sta_cfg->password);
-                wifi_prov_wifi_connect(wifi_sta_cfg);
-                break;
-            }
+        case WIFI_PROV_CRED_RECV: {
+            wifi_sta_config_t *wifi_sta_cfg = (wifi_sta_config_t *)event_data;
+            ESP_LOGI(TAG, "Received Wi-Fi credentials"
+                     "\n\tSSID     : %s\n\tPassword : %s",
+                     (const char *) wifi_sta_cfg->ssid,
+                     (const char *) wifi_sta_cfg->password);
+            wifi_prov_wifi_connect(wifi_sta_cfg);
+            break;
+        }
 
-            case WIFI_PROV_CRED_FAIL: {
-                wifi_prov_sta_fail_reason_t *reason = (wifi_prov_sta_fail_reason_t *)event_data;
-                ESP_LOGE(TAG, "Provisioning failed!\n\tReason : %s"
-                         "\n\tPlease reset to factory and retry provisioning",
-                         (*reason == WIFI_PROV_STA_AUTH_ERROR) ?
-                         "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
+        case WIFI_PROV_CRED_FAIL: {
+            wifi_prov_sta_fail_reason_t *reason = (wifi_prov_sta_fail_reason_t *)event_data;
+            ESP_LOGE(TAG, "Provisioning failed!\n\tReason : %s"
+                     "\n\tPlease reset to factory and retry provisioning",
+                     (*reason == WIFI_PROV_STA_AUTH_ERROR) ?
+                     "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
 #ifdef CONFIG_ESP_BRIDGE_RESET_PROV_MGR_ON_FAILURE
-                retries++;
+            retries++;
 
-                if (retries >= CONFIG_ESP_BRIDGE_PROV_MGR_MAX_RETRY_CNT) {
-                    ESP_LOGI(TAG, "Failed to connect with provisioned AP, reseting provisioned credentials");
-                    wifi_prov_mgr_reset_sm_state_on_failure();
-                    retries = 0;
-                }
-
-#endif
-                break;
-            }
-
-            case WIFI_PROV_CRED_SUCCESS:
-                ESP_LOGI(TAG, "Provisioning successful");
-#ifdef CONFIG_ESP_BRIDGE_RESET_PROV_MGR_ON_FAILURE
+            if (retries >= CONFIG_ESP_BRIDGE_PROV_MGR_MAX_RETRY_CNT) {
+                ESP_LOGI(TAG, "Failed to connect with provisioned AP, reseting provisioned credentials");
+                wifi_prov_mgr_reset_sm_state_on_failure();
                 retries = 0;
+            }
+
 #endif
-                break;
+            break;
+        }
 
-            case WIFI_PROV_END:
-                esp_timer_stop(deinit_wifi_prov_mgr_timer);
-                esp_timer_delete(deinit_wifi_prov_mgr_timer);
-                /* De-initialize manager once provisioning is finished */
-                wifi_prov_mgr_deinit();
-                wifi_prov_status = false;
-                break;
+        case WIFI_PROV_CRED_SUCCESS:
+            ESP_LOGI(TAG, "Provisioning successful");
+#ifdef CONFIG_ESP_BRIDGE_RESET_PROV_MGR_ON_FAILURE
+            retries = 0;
+#endif
+            break;
 
-            default:
-                break;
+        case WIFI_PROV_END:
+            esp_timer_stop(deinit_wifi_prov_mgr_timer);
+            esp_timer_delete(deinit_wifi_prov_mgr_timer);
+            /* De-initialize manager once provisioning is finished */
+            wifi_prov_mgr_deinit();
+            wifi_prov_status = false;
+            break;
+
+        default:
+            break;
         }
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();

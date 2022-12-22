@@ -290,57 +290,57 @@ bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_requ
     }
 
     switch (request->bmRequestType_bit.type) {
-            ESP_LOGI(TAG, "bmRequestType_bit:%d\n", request->bmRequestType_bit.type);
+        ESP_LOGI(TAG, "bmRequestType_bit:%d\n", request->bmRequestType_bit.type);
 
-        case TUSB_REQ_TYPE_VENDOR:
-            switch (request->bRequest) {
-                case VENDOR_REQUEST_WEBUSB:
-                    // match vendor request in BOS descriptor
-                    // Get landing page url
-                    return tud_control_xfer(rhport, request, (void *)(uintptr_t) &desc_url, desc_url.bLength);
+    case TUSB_REQ_TYPE_VENDOR:
+        switch (request->bRequest) {
+        case VENDOR_REQUEST_WEBUSB:
+            // match vendor request in BOS descriptor
+            // Get landing page url
+            return tud_control_xfer(rhport, request, (void *)(uintptr_t) &desc_url, desc_url.bLength);
 
-                case VENDOR_REQUEST_MICROSOFT:
-                    if (request->wIndex == 7) {
-                        // Get Microsoft OS 2.0 compatible descriptor
-                        uint16_t total_len;
-                        memcpy(&total_len, desc_ms_os_20 + 8, 2);
+        case VENDOR_REQUEST_MICROSOFT:
+            if (request->wIndex == 7) {
+                // Get Microsoft OS 2.0 compatible descriptor
+                uint16_t total_len;
+                memcpy(&total_len, desc_ms_os_20 + 8, 2);
 
-                        return tud_control_xfer(rhport, request, (void *)(uintptr_t) desc_ms_os_20, total_len);
-                    } else {
-                        return false;
-                    }
-
-                default:
-                    break;
+                return tud_control_xfer(rhport, request, (void *)(uintptr_t) desc_ms_os_20, total_len);
+            } else {
+                return false;
             }
-
-            break;
-
-        case TUSB_REQ_TYPE_CLASS:
-            if (request->bRequest == 0x22) {
-                ESP_LOGI(TAG, "wValue:%d\n", request->wValue);
-                // Webserial simulate the CDC_REQUEST_SET_CONTROL_LINE_STATE (0x22) to connect and disconnect.
-                web_serial_connected = (request->wValue != 0);
-
-                // Always lit LED if connected
-                if (web_serial_connected) {
-                    if (!webusb_connected_flag) {
-                        xTaskCreate(webusb_task, "webusb", 4096, NULL, 5, NULL);
-                        webusb_connected_flag = 1;
-                    }
-
-                    //tud_vendor_write_str("\r\nTinyUSB WebUSB device example\r\n");
-
-                }
-
-                // response with status OK
-                return tud_control_status(rhport, request);
-            }
-
-            break;
 
         default:
             break;
+        }
+
+        break;
+
+    case TUSB_REQ_TYPE_CLASS:
+        if (request->bRequest == 0x22) {
+            ESP_LOGI(TAG, "wValue:%d\n", request->wValue);
+            // Webserial simulate the CDC_REQUEST_SET_CONTROL_LINE_STATE (0x22) to connect and disconnect.
+            web_serial_connected = (request->wValue != 0);
+
+            // Always lit LED if connected
+            if (web_serial_connected) {
+                if (!webusb_connected_flag) {
+                    xTaskCreate(webusb_task, "webusb", 4096, NULL, 5, NULL);
+                    webusb_connected_flag = 1;
+                }
+
+                //tud_vendor_write_str("\r\nTinyUSB WebUSB device example\r\n");
+
+            }
+
+            // response with status OK
+            return tud_control_status(rhport, request);
+        }
+
+        break;
+
+    default:
+        break;
     }
 
     // stall unknown request
