@@ -451,7 +451,7 @@ static esp_err_t esp_web_start_scan_filter(uint8_t *phone_mac, uint8_t *password
         return ESP_ERR_NO_MEM;
     }
 
-    ESP_LOGD(TAG, "max connect time is %d", max_connect_time);
+    ESP_LOGD(TAG, "max connect time is %d", (int)max_connect_time);
 
     while (max_try_connect_num > 0) {
         start = clock();
@@ -601,10 +601,10 @@ static esp_err_t esp_web_start_scan_filter(uint8_t *phone_mac, uint8_t *password
         last = NULL;
         end = clock();
         if (end > start) {
-            ESP_LOGI(TAG, "scan and try connect use time is %d", (int32_t)((end - start) / 1000));
+            ESP_LOGI(TAG, "scan and try connect use time is %d", (int)((end - start) / 1000));
             current_available_time -= ((end - start) / 1000);
         } else if (end < start) {
-            ESP_LOGI(TAG, "scan and try connect use time is %d", (int32_t)((end + 0xFFFFFFFFUL - start)/ 1000));
+            ESP_LOGI(TAG, "scan and try connect use time is %d", (int)((end + 0xFFFFFFFFUL - start)/ 1000));
             current_available_time -= ((end + 0xFFFFFFFFUL - start)/ 1000);
         } else {
             ESP_LOGE(TAG, "time interval fatal error");
@@ -615,7 +615,7 @@ static esp_err_t esp_web_start_scan_filter(uint8_t *phone_mac, uint8_t *password
             break;
         } else {
             max_try_connect_num = (current_available_time * 1000) / ESP_BRIDGE_WEB_WIFI_TRY_CONNECT_TIMEOUT;
-            ESP_LOGI(TAG, "current avail time is %d, max_try_connect_num is %d", current_available_time, max_try_connect_num);
+            ESP_LOGI(TAG, "current avail time is %d, max_try_connect_num is %d", (int)current_available_time, max_try_connect_num);
         }
     }
     if (ap_info != NULL) {
@@ -1317,7 +1317,7 @@ static esp_err_t config_wifi_get_handler(httpd_req_t *req)
 static esp_err_t accept_wifi_result_post_handler(httpd_req_t *req)
 {
     char *buf = ((web_server_context_t*) (req->user_ctx))->scratch;
-    int32_t received_flag;
+    int received_flag = 0;
     char temp[4] = {0};
     int str_len = 0;
 
@@ -1450,15 +1450,15 @@ const esp_partition_t *esp_web_get_ota_update_partition(void)
 
     if (configured != running) {
         ESP_LOGW(TAG, "Configured OTA boot partition at offset 0x%08x, but running from offset 0x%08x",
-                 configured->address, running->address);
+                 (unsigned int)configured->address, (unsigned int)running->address);
         ESP_LOGW(TAG, "(This can happen if either the OTA boot data or preferred boot image become corrupted somehow.)");
     }
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-             running->type, running->subtype, running->address);
+             running->type, running->subtype, (unsigned int)running->address);
     
     update_partition = esp_ota_get_next_update_partition(NULL);
     ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
-             update_partition->subtype, update_partition->address);
+             update_partition->subtype, (unsigned int)update_partition->address);
     return update_partition;
 }
 
@@ -1492,7 +1492,7 @@ static esp_err_t ota_data_post_handler(httpd_req_t *req)
     const esp_partition_t *update_partition = esp_web_get_ota_update_partition();
     // check post data size
     if (update_partition->size < total_len) {
-        ESP_LOGE(TAG, "ota data too long, partition size is %u, bin size is %d", update_partition->size, total_len);
+        ESP_LOGE(TAG, "ota data too long, partition size is %u, bin size is %d", (unsigned int)update_partition->size, total_len);
         goto err_handler;
     }
     ESP_LOGI(TAG, "bin size is %d", total_len);

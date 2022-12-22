@@ -127,7 +127,9 @@ static void wifi_event_ap_start_handler(void *arg, esp_event_base_t event_base,
 
         esp_netif_ip_info_t netif_ip;
         esp_netif_get_ip_info(netif, &netif_ip);
+#if CONFIG_LWIP_IPV4_NAPT
         ip_napt_enable(netif_ip.ip.addr, 1);
+#endif
     }
 }
 
