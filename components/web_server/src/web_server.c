@@ -1738,7 +1738,7 @@ err:
     return ESP_FAIL;
 }
 
-#ifdef CONFIG_WEB_USE_FATFS 
+#ifdef CONFIG_WEB_USE_FATFS
 static esp_err_t esp_web_fatfs_spiflash_mount(const char* base_path,
     const char* partition_label,
     const esp_vfs_fat_mount_config_t* mount_config,

@@ -165,4 +165,3 @@ int esp_write_block(struct esp_sdio_context *context, u32 reg, u8 *data, u16 siz
         return esp_write_multi_byte(context, reg, data, size, is_lock_needed);
     }
 }
-
