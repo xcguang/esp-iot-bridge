@@ -26,7 +26,7 @@
 extern bool s_wifi_is_connected;
 static SemaphoreHandle_t Net_Semphore;
 
-extern esp_netif_t *usb_netif;
+extern esp_netif_t* usb_netif;
 
 bool tud_network_wait_xmit(uint32_t ms)
 {
@@ -38,7 +38,7 @@ bool tud_network_wait_xmit(uint32_t ms)
     return false;
 }
 
-esp_err_t pkt_netif2usb(void *buffer, uint16_t len)
+esp_err_t pkt_netif2usb(void* buffer, uint16_t len)
 {
     if (!tud_ready()) {
         return ERR_USE;
@@ -55,10 +55,10 @@ esp_err_t pkt_netif2usb(void *buffer, uint16_t len)
             // ESP_LOG_BUFFER_HEXDUMP(" netif ==> usb", buffer, len, ESP_LOG_INFO);
             tud_network_xmit(buffer, len);
         }
-    }
+        }
 
     return ESP_OK;
-}
+    }
 
 void tusb_net_init(void)
 {
@@ -69,7 +69,7 @@ void tusb_net_init(void)
 // tinyusb callbacks
 //--------------------------------------------------------------------+
 
-bool tud_network_recv_cb(const uint8_t *src, uint16_t size)
+bool tud_network_recv_cb(const uint8_t * src, uint16_t size)
 {
     // ESP_LOG_BUFFER_HEXDUMP(" usb ==> netif", src, size, ESP_LOG_INFO);
     esp_netif_receive(usb_netif, src, size, NULL);
@@ -77,7 +77,7 @@ bool tud_network_recv_cb(const uint8_t *src, uint16_t size)
     return true;
 }
 
-uint16_t tud_network_xmit_cb(uint8_t *dst, void *ref, uint16_t arg)
+uint16_t tud_network_xmit_cb(uint8_t * dst, void* ref, uint16_t arg)
 {
     uint16_t len = arg;
 

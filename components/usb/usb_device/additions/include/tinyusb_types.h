@@ -21,11 +21,11 @@ extern "C" {
 #define USB_ESPRESSIF_VID 0x303A
 #define USB_STRING_DESCRIPTOR_ARRAY_SIZE 8
 
-typedef enum {
-    TINYUSB_USBDEV_0,
-} tinyusb_usbdev_t;
+    typedef enum {
+        TINYUSB_USBDEV_0,
+    } tinyusb_usbdev_t;
 
-typedef const char *tusb_desc_strarray_device_t[USB_STRING_DESCRIPTOR_ARRAY_SIZE];
+    typedef const char* tusb_desc_strarray_device_t[USB_STRING_DESCRIPTOR_ARRAY_SIZE];
 
 #ifdef __cplusplus
 }

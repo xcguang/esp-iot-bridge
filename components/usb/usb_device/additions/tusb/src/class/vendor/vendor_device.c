@@ -33,9 +33,9 @@
 
 #include "vendor_device.h"
 
-//--------------------------------------------------------------------+
-// MACRO CONSTANT TYPEDEF
-//--------------------------------------------------------------------+
+ //--------------------------------------------------------------------+
+ // MACRO CONSTANT TYPEDEF
+ //--------------------------------------------------------------------+
 typedef struct {
     uint8_t itf_num;
     uint8_t ep_in;
@@ -73,7 +73,7 @@ uint32_t tud_vendor_n_available(uint8_t itf)
     return tu_fifo_count(&_vendord_itf[itf].rx_ff);
 }
 
-bool tud_vendor_n_peek(uint8_t itf, uint8_t *u8)
+bool tud_vendor_n_peek(uint8_t itf, uint8_t* u8)
 {
     return tu_fifo_peek(&_vendord_itf[itf].rx_ff, u8);
 }
@@ -81,7 +81,7 @@ bool tud_vendor_n_peek(uint8_t itf, uint8_t *u8)
 //--------------------------------------------------------------------+
 // Read API
 //--------------------------------------------------------------------+
-static void _prep_out_transaction(vendord_interface_t *p_itf)
+static void _prep_out_transaction(vendord_interface_t* p_itf)
 {
     // skip if previous transfer not complete
     if (usbd_edpt_busy(TUD_OPT_RHPORT, p_itf->ep_out)) {
@@ -96,9 +96,9 @@ static void _prep_out_transaction(vendord_interface_t *p_itf)
     }
 }
 
-uint32_t tud_vendor_n_read(uint8_t itf, void *buffer, uint32_t bufsize)
+uint32_t tud_vendor_n_read(uint8_t itf, void* buffer, uint32_t bufsize)
 {
-    vendord_interface_t *p_itf = &_vendord_itf[itf];
+    vendord_interface_t* p_itf = &_vendord_itf[itf];
     uint32_t num_read = tu_fifo_read_n(&p_itf->rx_ff, buffer, bufsize);
     _prep_out_transaction(p_itf);
     return num_read;
@@ -106,7 +106,7 @@ uint32_t tud_vendor_n_read(uint8_t itf, void *buffer, uint32_t bufsize)
 
 void tud_vendor_n_read_flush(uint8_t itf)
 {
-    vendord_interface_t *p_itf = &_vendord_itf[itf];
+    vendord_interface_t* p_itf = &_vendord_itf[itf];
     tu_fifo_clear(&p_itf->rx_ff);
     _prep_out_transaction(p_itf);
 }
@@ -114,7 +114,7 @@ void tud_vendor_n_read_flush(uint8_t itf)
 //--------------------------------------------------------------------+
 // Write API
 //--------------------------------------------------------------------+
-static bool maybe_transmit(vendord_interface_t *p_itf)
+static bool maybe_transmit(vendord_interface_t* p_itf)
 {
     // skip if previous transfer not complete
     TU_VERIFY(!usbd_edpt_busy(TUD_OPT_RHPORT, p_itf->ep_in));
@@ -128,9 +128,9 @@ static bool maybe_transmit(vendord_interface_t *p_itf)
     return true;
 }
 
-uint32_t tud_vendor_n_write(uint8_t itf, void const *buffer, uint32_t bufsize)
+uint32_t tud_vendor_n_write(uint8_t itf, void const* buffer, uint32_t bufsize)
 {
-    vendord_interface_t *p_itf = &_vendord_itf[itf];
+    vendord_interface_t* p_itf = &_vendord_itf[itf];
     uint16_t ret = tu_fifo_write_n(&p_itf->tx_ff, buffer, bufsize);
     maybe_transmit(p_itf);
     return ret;
@@ -149,7 +149,7 @@ void vendord_init(void)
     tu_memclr(_vendord_itf, sizeof(_vendord_itf));
 
     for (uint8_t i = 0; i < CFG_TUD_VENDOR; i++) {
-        vendord_interface_t *p_itf = &_vendord_itf[i];
+        vendord_interface_t* p_itf = &_vendord_itf[i];
 
         // config fifo
         tu_fifo_config(&p_itf->rx_ff, p_itf->rx_ff_buf, CFG_TUD_VENDOR_RX_BUFSIZE, 1, false);
@@ -164,10 +164,10 @@ void vendord_init(void)
 
 void vendord_reset(uint8_t rhport)
 {
-    (void) rhport;
+    (void)rhport;
 
     for (uint8_t i = 0; i < CFG_TUD_VENDOR; i++) {
-        vendord_interface_t *p_itf = &_vendord_itf[i];
+        vendord_interface_t* p_itf = &_vendord_itf[i];
 
         tu_memclr(p_itf, ITF_MEM_RESET_SIZE);
         tu_fifo_clear(&p_itf->rx_ff);
@@ -175,15 +175,15 @@ void vendord_reset(uint8_t rhport)
     }
 }
 
-uint16_t vendord_open(uint8_t rhport, tusb_desc_interface_t const *desc_itf, uint16_t max_len)
+uint16_t vendord_open(uint8_t rhport, tusb_desc_interface_t const* desc_itf, uint16_t max_len)
 {
     TU_VERIFY(TUSB_CLASS_VENDOR_SPECIFIC == desc_itf->bInterfaceClass, 0);
 
-    uint8_t const *p_desc = tu_desc_next(desc_itf);
-    uint8_t const *desc_end = p_desc + max_len;
+    uint8_t const* p_desc = tu_desc_next(desc_itf);
+    uint8_t const* desc_end = p_desc + max_len;
 
     // Find available interface
-    vendord_interface_t *p_vendor = NULL;
+    vendord_interface_t* p_vendor = NULL;
 
     for (uint8_t i = 0; i < CFG_TUD_VENDOR; i++) {
         if (_vendord_itf[i].ep_in == 0 && _vendord_itf[i].ep_out == 0) {
@@ -217,16 +217,16 @@ uint16_t vendord_open(uint8_t rhport, tusb_desc_interface_t const *desc_itf, uin
         }
     }
 
-    return (uintptr_t) p_desc - (uintptr_t) desc_itf;
+    return (uintptr_t)p_desc - (uintptr_t)desc_itf;
 }
 
 bool vendord_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t result, uint32_t xferred_bytes)
 {
-    (void) rhport;
-    (void) result;
+    (void)rhport;
+    (void)result;
 
     uint8_t itf = 0;
-    vendord_interface_t *p_itf = _vendord_itf;
+    vendord_interface_t* p_itf = _vendord_itf;
 
     for (; ; itf++, p_itf++) {
         if (itf >= TU_ARRAY_SIZE(_vendord_itf)) {

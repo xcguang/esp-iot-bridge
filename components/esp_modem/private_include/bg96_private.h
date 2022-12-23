@@ -27,11 +27,11 @@
         }                                                                             \
     } while (0)
 
-/**
- * @brief BG96 Modem
- *
- */
+ /**
+  * @brief BG96 Modem
+  *
+  */
 typedef struct {
-    void *priv_resource; /*!< Private resource */
+    void* priv_resource; /*!< Private resource */
     modem_dce_t parent;  /*!< DCE parent class */
 } bg96_modem_dce_t;

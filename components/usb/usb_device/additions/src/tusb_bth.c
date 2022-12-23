@@ -28,9 +28,9 @@
 #define UINT16_TO_STREAM(p, u16) {*(p)++ = (uint8_t)(u16); *(p)++ = (uint8_t)((u16) >> 8);}
 #define UINT8_TO_STREAM(p, u8)   {*(p)++ = (uint8_t)(u8);}
 
-static const char *TAG = "tusb_bth";
+static const char* TAG = "tusb_bth";
 static uint16_t acl_buf_size_max = 0;
-uint8_t *p_acl_buf = NULL;
+uint8_t* p_acl_buf = NULL;
 
 void ble_controller_init(void)
 {
@@ -66,18 +66,18 @@ static void controller_rcv_pkt_ready(void)
  * @brief: BT controller callback function, to transfer data packet to upper
  *         controller is ready to receive command
  */
-static int host_rcv_pkt(uint8_t *data, uint16_t len)
+static int host_rcv_pkt(uint8_t* data, uint16_t len)
 {
     uint16_t act_len = len - 1;
 
     if (data[0] == HCIT_TYPE_EVENT) { // event data from controller
-        uint8_t *hci_buf = (uint8_t *)malloc(len);
+        uint8_t* hci_buf = (uint8_t*)malloc(len);
         memcpy(hci_buf, data + 1, act_len);
         ESP_LOGI(TAG, "evt_data from controller, evt_data_length: %d :", act_len);
         tud_bt_event_send(hci_buf, act_len);
         free(hci_buf);
     } else if (data[0] == HCIT_TYPE_ACL_DATA) { // acl data from controller
-        uint8_t *hci_acl_buf_contr = (uint8_t *)malloc(len);
+        uint8_t* hci_acl_buf_contr = (uint8_t*)malloc(len);
         memcpy(hci_acl_buf_contr, data + 1, act_len);
         ESP_LOGI(TAG, "acl_data from controller, acl_data_length: %d :", act_len);
         tud_bt_acl_data_send(hci_acl_buf_contr, act_len);
@@ -92,17 +92,17 @@ static esp_vhci_host_callback_t vhci_host_cb = {
     host_rcv_pkt
 };
 
-static int host_rcv_pkt_test(uint8_t *data, uint16_t len)
+static int host_rcv_pkt_test(uint8_t* data, uint16_t len)
 {
 
     ESP_LOGI(TAG, "host_rcv_pkt_test evt_data_length: %d :", len);
 
     if (data[1] == 0x0e && data[2] == 0x07
-            && data[4] == 0x02 && data[5] == 0x20) {
+        && data[4] == 0x02 && data[5] == 0x20) {
         // LE Read Buffer size command complete event
-        uint16_t *size_p = NULL;
+        uint16_t* size_p = NULL;
         uint16_t cmd_value;
-        size_p = (uint8_t *)(&cmd_value);
+        size_p = (uint8_t*)(&cmd_value);
         *size_p = data[7];
         *(size_p + 1) = data[8];
         acl_buf_size_max = *size_p;
@@ -113,12 +113,12 @@ static int host_rcv_pkt_test(uint8_t *data, uint16_t len)
         acl_buf_size_max = BUFFER_SIZE_MAX;
     }
 
-    p_acl_buf = (uint8_t *)malloc(acl_buf_size_max + 1);
+    p_acl_buf = (uint8_t*)malloc(acl_buf_size_max + 1);
     esp_vhci_host_register_callback(&vhci_host_cb);
     return 0;
 }
 
-uint16_t make_cmd_le_read_buff_size(uint8_t *buf)
+uint16_t make_cmd_le_read_buff_size(uint8_t* buf)
 {
     UINT8_TO_STREAM(buf, HCIT_TYPE_COMMAND);
     UINT16_TO_STREAM(buf, LE_READ_BUFF_SIZE);
@@ -150,9 +150,9 @@ void tusb_bth_init(void)
 // Part E, 5.4.1.
 // Length of the command is from 3 bytes (2 bytes for OpCode,
 // 1 byte for parameter total length) to 258.
-void tud_bt_hci_cmd_cb(void *hci_cmd, size_t cmd_len)
+void tud_bt_hci_cmd_cb(void* hci_cmd, size_t cmd_len)
 {
-    uint8_t *hci_cmd_buf = (uint8_t *)malloc(cmd_len + 1);
+    uint8_t* hci_cmd_buf = (uint8_t*)malloc(cmd_len + 1);
 
     hci_cmd_buf[0] = HCIT_TYPE_COMMAND;
     memcpy(hci_cmd_buf + 1, hci_cmd, cmd_len);
@@ -169,13 +169,13 @@ void tud_bt_hci_cmd_cb(void *hci_cmd, size_t cmd_len)
 static bool prepare_write = false;
 static uint16_t write_offset = 0;
 static uint16_t acl_data_length = 0;
-void tud_bt_acl_data_received_cb(void *acl_data, uint16_t data_len)
+void tud_bt_acl_data_received_cb(void* acl_data, uint16_t data_len)
 {
 
     // if acl_data is long data
     if (!prepare_write) {
         // first get acl_data_length
-        acl_data_length = *(((uint16_t *)acl_data) + 1);
+        acl_data_length = *(((uint16_t*)acl_data) + 1);
 
         if (acl_data_length > data_len) {
             prepare_write = true;

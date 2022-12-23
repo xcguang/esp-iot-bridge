@@ -30,7 +30,7 @@
 
 #define BROKER_URL "mqtt://mqtt.eclipse.org"
 
-static const char *TAG = "pppos_example";
+static const char* TAG = "pppos_example";
 static EventGroupHandle_t event_group = NULL;
 static const int CONNECT_BIT = BIT0;
 static const int STOP_BIT = BIT1;
@@ -42,7 +42,7 @@ static const int GOT_DATA_BIT = BIT2;
  * @note Not all modem support SMG.
  *
  */
-static esp_err_t example_default_handle(esp_modem_dce_t *dce, const char *line)
+static esp_err_t example_default_handle(esp_modem_dce_t* dce, const char* line)
 {
     esp_err_t err = ESP_FAIL;
 
@@ -55,7 +55,7 @@ static esp_err_t example_default_handle(esp_modem_dce_t *dce, const char *line)
     return err;
 }
 
-static esp_err_t example_handle_cmgs(esp_modem_dce_t *dce, const char *line)
+static esp_err_t example_handle_cmgs(esp_modem_dce_t* dce, const char* line)
 {
     esp_err_t err = ESP_FAIL;
 
@@ -74,10 +74,10 @@ static esp_err_t example_handle_cmgs(esp_modem_dce_t *dce, const char *line)
 #define MODEM_COMMAND_TIMEOUT_SMS_MS (120000)
 #define MODEM_PROMPT_TIMEOUT_MS (10)
 
-static esp_err_t example_send_message_text(modem_dce_t *user_dce, const char *phone_num, const char *text)
+static esp_err_t example_send_message_text(modem_dce_t* user_dce, const char* phone_num, const char* text)
 {
-    esp_modem_dce_t *dce = &user_dce->parent;
-    modem_dte_t *dte = dce->dte;
+    esp_modem_dce_t* dce = &user_dce->parent;
+    modem_dte_t* dte = dce->dte;
     dce->handle_line = example_default_handle;
 
     /* Set text mode */
@@ -107,7 +107,7 @@ static esp_err_t example_send_message_text(modem_dce_t *user_dce, const char *ph
 
     ESP_LOGD(TAG, "set character set ok");
     /* send message */
-    char command[MODEM_SMS_MAX_LENGTH] = {0};
+    char command[MODEM_SMS_MAX_LENGTH] = { 0 };
     int length = snprintf(command, MODEM_SMS_MAX_LENGTH, "AT+CMGS=\"%s\"\r", phone_num);
     /* set phone number and wait for "> " */
     dte->send_wait(dte, command, length, "\r\n> ", MODEM_PROMPT_TIMEOUT_MS);
@@ -132,7 +132,7 @@ err:
 }
 #endif
 
-static void modem_event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+static void modem_event_handler(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
     switch (event_id) {
     case ESP_MODEM_EVENT_PPP_START:
@@ -145,7 +145,7 @@ static void modem_event_handler(void *event_handler_arg, esp_event_base_t event_
         break;
 
     case ESP_MODEM_EVENT_UNKNOWN:
-        ESP_LOGW(TAG, "Unknow line received: %s", (char *)event_data);
+        ESP_LOGW(TAG, "Unknow line received: %s", (char*)event_data);
         break;
 
     default:
@@ -202,29 +202,29 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
     return ESP_OK;
 }
 
-static void on_ppp_changed(void *arg, esp_event_base_t event_base,
-                           int32_t event_id, void *event_data)
+static void on_ppp_changed(void* arg, esp_event_base_t event_base,
+    int32_t event_id, void* event_data)
 {
     ESP_LOGI(TAG, "PPP state changed event %d", event_id);
 
     if (event_id == NETIF_PPP_ERRORUSER) {
         /* User interrupted event from esp-netif */
-        esp_netif_t *netif = event_data;
+        esp_netif_t* netif = event_data;
         ESP_LOGI(TAG, "User interrupted event from netif:%p", netif);
     }
 }
 
 
-static void on_ip_event(void *arg, esp_event_base_t event_base,
-                        int32_t event_id, void *event_data)
+static void on_ip_event(void* arg, esp_event_base_t event_base,
+    int32_t event_id, void* event_data)
 {
     ESP_LOGD(TAG, "IP event! %d", event_id);
 
     if (event_id == IP_EVENT_PPP_GOT_IP) {
         esp_netif_dns_info_t dns_info;
 
-        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-        esp_netif_t *netif = event->esp_netif;
+        ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
+        esp_netif_t* netif = event->esp_netif;
 
         ESP_LOGI(TAG, "Modem Connect to PPP Server");
         ESP_LOGI(TAG, "~~~~~~~~~~~~~~");
@@ -244,13 +244,13 @@ static void on_ip_event(void *arg, esp_event_base_t event_base,
     } else if (event_id == IP_EVENT_GOT_IP6) {
         ESP_LOGI(TAG, "GOT IPv6 event!");
 
-        ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
+        ip_event_got_ip6_t* event = (ip_event_got_ip6_t*)event_data;
         ESP_LOGI(TAG, "Got IPv6 address " IPV6STR, IPV62STR(event->ip6_info.ip));
     }
 }
 
 
-static void modem_test_app(esp_modem_dte_config_t *dte_config, esp_modem_dce_config_t *dce_config, esp_netif_config_t *ppp_config);
+static void modem_test_app(esp_modem_dte_config_t* dte_config, esp_modem_dce_config_t* dce_config, esp_netif_config_t* ppp_config);
 
 void app_main(void)
 {
@@ -289,10 +289,10 @@ void app_main(void)
 }
 
 #if !defined(CONFIG_EXAMPLE_MODEM_LEGACY_API)
-static void modem_test_app(esp_modem_dte_config_t *dte_config, esp_modem_dce_config_t *dce_config, esp_netif_config_t *ppp_config)
+static void modem_test_app(esp_modem_dte_config_t* dte_config, esp_modem_dce_config_t* dce_config, esp_netif_config_t* ppp_config)
 {
     /* create dte object */
-    esp_modem_dte_t *dte = esp_modem_dte_new(dte_config);
+    esp_modem_dte_t* dte = esp_modem_dte_new(dte_config);
     assert(dte != NULL);
 
     /* create dce object */
@@ -305,11 +305,11 @@ static void modem_test_app(esp_modem_dte_config_t *dte_config, esp_modem_dce_con
 #else
 #error "Unsupported DCE"
 #endif
-    esp_modem_dce_t *dce = esp_modem_dce_new(dce_config);
+    esp_modem_dce_t* dce = esp_modem_dce_new(dce_config);
     assert(dce != NULL);
 
     /* create netif object */
-    esp_netif_t *esp_netif = esp_netif_new(ppp_config);
+    esp_netif_t* esp_netif = esp_netif_new(ppp_config);
     assert(esp_netif);
 #if !defined(CONFIG_EXAMPLE_MODEM_PPP_AUTH_NONE) && (defined(CONFIG_LWIP_PPP_PAP_SUPPORT) || defined(CONFIG_LWIP_PPP_CHAP_SUPPORT))
 #if CONFIG_LWIP_PPP_PAP_SUPPORT
@@ -357,22 +357,22 @@ static void modem_test_app(esp_modem_dte_config_t *dte_config, esp_modem_dce_con
 }
 #else // defined(CONFIG_EXAMPLE_MODEM_LEGACY_API)
 
-static void modem_test_app(esp_modem_dte_config_t *dte_config, esp_modem_dce_config_t *dce_config, esp_netif_config_t *ppp_config)
+static void modem_test_app(esp_modem_dte_config_t* dte_config, esp_modem_dce_config_t* dce_config, esp_netif_config_t* ppp_config)
 {
     /* create dte object */
-    modem_dte_t *dte = esp_modem_dte_init(dte_config);
+    modem_dte_t* dte = esp_modem_dte_init(dte_config);
     /* Register event handler */
     ESP_ERROR_CHECK(esp_modem_set_event_handler(dte, modem_event_handler, ESP_EVENT_ANY_ID, NULL));
 
     // Init netif object
-    esp_netif_t *esp_netif = esp_netif_new(ppp_config);
+    esp_netif_t* esp_netif = esp_netif_new(ppp_config);
     assert(esp_netif);
 
-    void *modem_netif_adapter = esp_modem_netif_setup(dte);
+    void* modem_netif_adapter = esp_modem_netif_setup(dte);
     esp_modem_netif_set_default_handlers(modem_netif_adapter, esp_netif);
 
     while (1) {
-        modem_dce_t *dce = NULL;
+        modem_dce_t* dce = NULL;
         /* create dce object */
 #if CONFIG_EXAMPLE_MODEM_DEVICE_SIM800
         dce = sim800_init(dte);
@@ -431,7 +431,7 @@ static void modem_test_app(esp_modem_dte_config_t *dte_config, esp_modem_dce_con
 
         xEventGroupWaitBits(event_group, STOP_BIT, pdTRUE, pdTRUE, portMAX_DELAY);
 #if CONFIG_EXAMPLE_SEND_MSG
-        const char *message = "Welcome to ESP32!";
+        const char* message = "Welcome to ESP32!";
         ESP_ERROR_CHECK(example_send_message_text(dce, CONFIG_EXAMPLE_SEND_MSG_PEER_PHONE_NUMBER, message));
         ESP_LOGI(TAG, "Send send message [%s] ok", message);
 #endif

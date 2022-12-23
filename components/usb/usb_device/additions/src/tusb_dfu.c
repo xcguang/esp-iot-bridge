@@ -23,20 +23,20 @@
  *
  */
 
-/*
- * After device is enumerated in dfu mode run the following commands
- *
- * To transfer firmware from host to device (best to test with text file)
- *
- * $ dfu-util -d cafe -a 0 -D [filename]
- * $ dfu-util -d cafe -a 1 -D [filename]
- *
- * To transfer firmware from device to host:
- *
- * $ dfu-util -d cafe -a 0 -U [filename]
- * $ dfu-util -d cafe -a 1 -U [filename]
- *
- */
+ /*
+  * After device is enumerated in dfu mode run the following commands
+  *
+  * To transfer firmware from host to device (best to test with text file)
+  *
+  * $ dfu-util -d cafe -a 0 -D [filename]
+  * $ dfu-util -d cafe -a 1 -D [filename]
+  *
+  * To transfer firmware from device to host:
+  *
+  * $ dfu-util -d cafe -a 0 -U [filename]
+  * $ dfu-util -d cafe -a 1 -U [filename]
+  *
+  */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -58,22 +58,22 @@
 #include "esp_flash_partitions.h"
 #include "esp_partition.h"
 
-static char *TAG = "esp_dfu";
+static char* TAG = "esp_dfu";
 
 #define BUFFSIZE CONFIG_TINYUSB_DFU_BUFSIZE
 /*an ota data write buffer ready to write to the flash*/
 static char ota_write_data[BUFFSIZE + 1] = { 0 };
 
 static esp_ota_handle_t update_handle = 0;
-static const esp_partition_t *update_partition = NULL;
+static const esp_partition_t* update_partition = NULL;
 static int binary_file_length = 0;
 /*deal with all receive packet*/
 static bool image_header_was_checked = false;
 
-static esp_partition_t *ota_partition;
+static esp_partition_t* ota_partition;
 static uint32_t current_index = 0;
 
-static esp_err_t ota_start(uint8_t *ota_write_data, uint32_t data_read)
+static esp_err_t ota_start(uint8_t* ota_write_data, uint32_t data_read)
 {
     esp_err_t err;
     /* update handle : set by esp_ota_begin(), must be freed via esp_ota_end() */
@@ -83,15 +83,15 @@ static esp_err_t ota_start(uint8_t *ota_write_data, uint32_t data_read)
 
         ESP_LOGI(TAG, "Starting OTA example");
 
-        const esp_partition_t *running = esp_ota_get_running_partition();
+        const esp_partition_t* running = esp_ota_get_running_partition();
 
         ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-                 running->type, running->subtype, running->address);
+            running->type, running->subtype, running->address);
 
         update_partition = esp_ota_get_next_update_partition(NULL);
         assert(update_partition != NULL);
         ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
-                 update_partition->subtype, update_partition->address);
+            update_partition->subtype, update_partition->address);
 
         if (data_read > sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t) + sizeof(esp_app_desc_t)) {
             // check current version with downloading
@@ -104,7 +104,7 @@ static esp_err_t ota_start(uint8_t *ota_write_data, uint32_t data_read)
                 ESP_LOGI(TAG, "Running firmware version: %s", running_app_info.version);
             }
 
-            const esp_partition_t *last_invalid_app = esp_ota_get_last_invalid_partition();
+            const esp_partition_t* last_invalid_app = esp_ota_get_last_invalid_partition();
             esp_app_desc_t invalid_app_info;
 
             if (esp_ota_get_partition_description(last_invalid_app, &invalid_app_info) == ESP_OK) {
@@ -138,7 +138,7 @@ static esp_err_t ota_start(uint8_t *ota_write_data, uint32_t data_read)
         }
     }
 
-    err = esp_ota_write(update_handle, (const void *)ota_write_data, data_read);
+    err = esp_ota_write(update_handle, (const void*)ota_write_data, data_read);
 
     if (err != ESP_OK) {
         esp_ota_abort(update_handle);
@@ -178,7 +178,7 @@ static esp_err_t ota_complete(void)
     return ESP_OK;
 }
 
-static uint16_t upload_bin(uint8_t *data, uint16_t length)
+static uint16_t upload_bin(uint8_t* data, uint16_t length)
 {
     uint16_t read_size = length;
 
@@ -236,7 +236,7 @@ void tud_umount_cb(void)
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en)
 {
-    (void) remote_wakeup_en;
+    (void)remote_wakeup_en;
 }
 
 // Invoked when usb bus is resumed
@@ -271,10 +271,10 @@ uint32_t tud_dfu_get_timeout_cb(uint8_t alt, uint8_t state)
 // Invoked when received DFU_DNLOAD (wLength>0) following by DFU_GETSTATUS (state=DFU_DNBUSY) requests
 // This callback could be returned before flashing op is complete (async).
 // Once finished flashing, application must call tud_dfu_finish_flashing()
-void tud_dfu_download_cb(uint8_t alt, uint16_t block_num, uint8_t const *data, uint16_t length)
+void tud_dfu_download_cb(uint8_t alt, uint16_t block_num, uint8_t const* data, uint16_t length)
 {
-    (void) alt;
-    (void) block_num;
+    (void)alt;
+    (void)block_num;
 
     ESP_LOGI(TAG, "Received Alt %u BlockNum %u of length %u", alt, block_num, length);
 
@@ -292,7 +292,7 @@ void tud_dfu_download_cb(uint8_t alt, uint16_t block_num, uint8_t const *data, u
 // Once finished flashing, application must call tud_dfu_finish_flashing()
 void tud_dfu_manifest_cb(uint8_t alt)
 {
-    (void) alt;
+    (void)alt;
     ESP_LOGI(TAG, "Download completed, enter manifestation\r\n");
 
     esp_err_t ret = ota_complete();
@@ -310,10 +310,10 @@ void tud_dfu_manifest_cb(uint8_t alt)
 // Invoked when received DFU_UPLOAD request
 // Application must populate data with up to length bytes and
 // Return the number of written bytes
-uint16_t tud_dfu_upload_cb(uint8_t alt, uint16_t block_num, uint8_t *data, uint16_t length)
+uint16_t tud_dfu_upload_cb(uint8_t alt, uint16_t block_num, uint8_t* data, uint16_t length)
 {
-    (void) block_num;
-    (void) length;
+    (void)block_num;
+    (void)length;
     ESP_LOGI(TAG, "upload data,block_num: %d,length: %d\n", block_num, length);
 
     uint16_t xfer_len = upload_bin(data, length);
@@ -324,7 +324,7 @@ uint16_t tud_dfu_upload_cb(uint8_t alt, uint16_t block_num, uint8_t *data, uint1
 // Invoked when the Host has terminated a download or upload transfer
 void tud_dfu_abort_cb(uint8_t alt)
 {
-    (void) alt;
+    (void)alt;
     ESP_LOGI(TAG, "Host aborted transfer\r\n");
 }
 

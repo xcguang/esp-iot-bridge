@@ -27,39 +27,39 @@
 void modem_console_register_http(void);
 void modem_console_register_ping(void);
 
-static esp_modem_dce_t *s_dce = NULL;
-static const char *TAG = "modem_console";
+static esp_modem_dce_t* s_dce = NULL;
+static const char* TAG = "modem_console";
 
 static struct {
-    struct arg_str *command;
-    struct arg_int *param_int;
-    struct arg_str *param_str;
-    struct arg_str *param_pdp;
-    struct arg_str *param_bool;
-    struct arg_str *param;
-    struct arg_str *result;
-    struct arg_end *end;
+    struct arg_str* command;
+    struct arg_int* param_int;
+    struct arg_str* param_str;
+    struct arg_str* param_pdp;
+    struct arg_str* param_bool;
+    struct arg_str* param;
+    struct arg_str* result;
+    struct arg_end* end;
 } at_args;
 
 static struct {
-    struct arg_str *param;
-    struct arg_end *end;
+    struct arg_str* param;
+    struct arg_end* end;
 } modem_args;
 
 
 
 static struct {
-    struct arg_str *command;
-    struct arg_int *timeout;
-    struct arg_str *pattern;
-    struct arg_lit *no_cr;
-    struct arg_end *end;
+    struct arg_str* command;
+    struct arg_int* timeout;
+    struct arg_str* pattern;
+    struct arg_lit* no_cr;
+    struct arg_end* end;
 } generic_at_args;
 
 static char s_common_in_str[100];       // used as common string input param holder
 static char s_common_out_str[100];      // used as output string/command result holder
 
-static esp_err_t handle_line_pattern(esp_modem_dce_t *dce, const char *line)
+static esp_err_t handle_line_pattern(esp_modem_dce_t* dce, const char* line)
 {
     esp_err_t err = ESP_OK;
     ESP_LOGI(TAG, "handle_line_pattern: DCE response: %s\n", line);
@@ -71,7 +71,7 @@ static esp_err_t handle_line_pattern(esp_modem_dce_t *dce, const char *line)
     return err;
 }
 
-static int do_dce(int argc, char **argv)
+static int do_dce(int argc, char** argv)
 {
     // specific DCE generic command params
     static bool bool_result;
@@ -81,33 +81,33 @@ static int do_dce(int argc, char **argv)
     static esp_modem_dce_csq_ctx_t csq;
     static esp_modem_dce_cbc_ctx_t cbc;
 
-    int nerrors = arg_parse(argc, argv, (void **) &at_args);
+    int nerrors = arg_parse(argc, argv, (void**)&at_args);
 
     if (nerrors != 0) {
         arg_print_errors(stderr, at_args.end, argv[0]);
         return 1;
     }
 
-    void *command_param = NULL;
-    void *command_result = NULL;
+    void* command_param = NULL;
+    void* command_result = NULL;
 
     // parse input params
     if (at_args.param_int->count > 0) {
-        command_param = (void *)(at_args.param_int->ival[0]);
+        command_param = (void*)(at_args.param_int->ival[0]);
     } else if (at_args.param_bool->count > 0) {
-        const char *bool_in_str = at_args.param_bool->sval[0];
+        const char* bool_in_str = at_args.param_bool->sval[0];
         s_common_out_str[0] = '\0';
         command_result = s_common_out_str;
 
         if (strstr(bool_in_str, "true") || strstr(bool_in_str, "1")) {
-            command_param = (void *)true;
+            command_param = (void*)true;
         } else {
-            command_param = (void *)false;
+            command_param = (void*)false;
         }
     } else if (at_args.param_pdp->count > 0) {
         // parse out three comma separated sub-arguments
         sscanf(at_args.param_pdp->sval[0], "%d,%s", &pdp.cid, pdp_type);
-        char *str_apn = strchr(pdp_type, ',');
+        char* str_apn = strchr(pdp_type, ',');
 
         if (str_apn) {
             strncpy(pdp_apn, str_apn + 1, sizeof(pdp_apn));
@@ -125,19 +125,19 @@ static int do_dce(int argc, char **argv)
 
     // parse output params
     if (at_args.result->count > 0) {
-        const char *res = at_args.result->sval[0];
+        const char* res = at_args.result->sval[0];
 
         if (strstr(res, "csq")) {
             command_result = &csq;
         } else if (strstr(res, "cbc")) {
             command_result = &cbc;
         } else if (strstr(res, "str")) {
-            command_param = (void *)sizeof(s_common_out_str);
+            command_param = (void*)sizeof(s_common_out_str);
             command_result = s_common_out_str;
         } else if (strstr(res, "bool")) {
             command_result = &bool_result;
         } else {
-            command_param = (void *)sizeof(s_common_out_str);
+            command_param = (void*)sizeof(s_common_out_str);
             command_result = s_common_out_str;
         }
     }
@@ -145,7 +145,7 @@ static int do_dce(int argc, char **argv)
     // by default (if no param/result provided) expect string output
     if (command_param == NULL && command_result == NULL) {
         s_common_out_str[0] = '\0';
-        command_param = (void *)sizeof(s_common_out_str);
+        command_param = (void*)sizeof(s_common_out_str);
         command_result = s_common_out_str;
     }
 
@@ -173,10 +173,10 @@ static int do_dce(int argc, char **argv)
 
 
 
-static int do_at_command(int argc, char **argv)
+static int do_at_command(int argc, char** argv)
 {
     int timeout = 1000;
-    int nerrors = arg_parse(argc, argv, (void **)&generic_at_args);
+    int nerrors = arg_parse(argc, argv, (void**)&generic_at_args);
 
     if (nerrors != 0) {
         arg_print_errors(stderr, generic_at_args.end, argv[0]);
@@ -209,9 +209,9 @@ static int do_at_command(int argc, char **argv)
     return 1;
 }
 
-static int do_modem_lifecycle(int argc, char **argv)
+static int do_modem_lifecycle(int argc, char** argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **)&modem_args);
+    int nerrors = arg_parse(argc, argv, (void**)&modem_args);
 
     if (nerrors != 0) {
         arg_print_errors(stderr, modem_args.end, argv[0]);
@@ -292,7 +292,7 @@ static void register_modem_lifecycle(void)
     ESP_ERROR_CHECK(esp_console_cmd_register(&modem_cmd));
 }
 
-static esp_console_repl_t *s_repl = NULL;
+static esp_console_repl_t* s_repl = NULL;
 
 
 void app_main(void)
@@ -308,11 +308,11 @@ void app_main(void)
     dce_config.populate_command_list = true;
     esp_netif_config_t ppp_netif_config = ESP_NETIF_DEFAULT_PPP();
 
-    esp_modem_dte_t *dte = esp_modem_dte_new(&dte_config);
+    esp_modem_dte_t* dte = esp_modem_dte_new(&dte_config);
     s_dce = esp_modem_dce_new(&dce_config);
     assert(s_dce != NULL);
 
-    esp_netif_t *esp_netif = esp_netif_new(&ppp_netif_config);
+    esp_netif_t* esp_netif = esp_netif_new(&ppp_netif_config);
     assert(esp_netif);
 
     ESP_ERROR_CHECK(esp_modem_default_attach(dte, s_dce, esp_netif));

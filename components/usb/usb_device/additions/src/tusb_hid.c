@@ -20,7 +20,7 @@
 #include "tusb_hid.h"
 #include "descriptors_control.h"
 
-static const char *TAG = "tusb_hid";
+static const char* TAG = "tusb_hid";
 static bool s_keyboard_pressed = false;
 
 void tinyusb_hid_mouse_move_report(int8_t x, int8_t y, int8_t vertical, int8_t horizontal)
@@ -101,10 +101,10 @@ void tinyusb_hid_keyboard_report(uint8_t keycode[])
 // Invoked when sent REPORT successfully to host
 // Application can use this to send the next report
 // Note: For composite reports, report[0] is report ID
-void tud_hid_report_complete_cb(uint8_t itf, uint8_t const *report, uint8_t len)
+void tud_hid_report_complete_cb(uint8_t itf, uint8_t const* report, uint8_t len)
 {
-    (void) itf;
-    (void) len;
+    (void)itf;
+    (void)len;
     uint8_t report_id = report[0];
 
     if (report_id == REPORT_ID_KEYBOARD && s_keyboard_pressed) {
@@ -116,26 +116,26 @@ void tud_hid_report_complete_cb(uint8_t itf, uint8_t const *report, uint8_t len)
 // Invoked when received GET_REPORT control request
 // Application must fill buffer report's content and return its length.
 // Return zero will cause the stack to STALL request
-uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer, uint16_t reqlen)
+uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen)
 {
     // TODO not Implemented
-    (void) itf;
-    (void) report_id;
-    (void) report_type;
-    (void) buffer;
-    (void) reqlen;
+    (void)itf;
+    (void)report_id;
+    (void)report_type;
+    (void)buffer;
+    (void)reqlen;
 
     return 0;
 }
 
 // Invoked when received SET_REPORT control request or
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
-void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer, uint16_t bufsize)
+void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
     // TODO set LED based on CAPLOCK, NUMLOCK etc...
-    (void) itf;
-    (void) report_id;
-    (void) report_type;
-    (void) buffer;
-    (void) bufsize;
+    (void)itf;
+    (void)report_id;
+    (void)report_type;
+    (void)buffer;
+    (void)bufsize;
 }

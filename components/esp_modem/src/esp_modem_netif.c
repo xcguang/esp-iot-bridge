@@ -19,20 +19,20 @@
 #include "esp_netif_ppp.h"
 
 
-static const char *TAG = "esp-modem-netif";
+static const char* TAG = "esp-modem-netif";
 
 /**
  * @brief ESP32 Modem handle to be used as netif IO object
  */
 struct esp_modem_netif_driver_s {
     esp_netif_driver_base_t base;           /*!< base structure reserved as esp-netif driver */
-    esp_modem_dte_t        *dte;            /*!< ptr to the esp_modem objects (DTE) */
+    esp_modem_dte_t* dte;            /*!< ptr to the esp_modem objects (DTE) */
 };
 
-static void on_ppp_changed(void *arg, esp_event_base_t event_base,
-                           int32_t event_id, void *event_data)
+static void on_ppp_changed(void* arg, esp_event_base_t event_base,
+    int32_t event_id, void* event_data)
 {
-    esp_modem_dte_t *dte = arg;
+    esp_modem_dte_t* dte = arg;
 
     if (event_id < NETIF_PP_PHASE_OFFSET) {
         ESP_LOGI(TAG, "PPP state changed event %d", (int)event_id);
@@ -52,11 +52,11 @@ static void on_ppp_changed(void *arg, esp_event_base_t event_base,
  *
  * @return ESP_OK on success
  */
-static esp_err_t esp_modem_dte_transmit(void *h, void *buffer, size_t len)
+static esp_err_t esp_modem_dte_transmit(void* h, void* buffer, size_t len)
 {
-    esp_modem_dte_t *dte = h;
+    esp_modem_dte_t* dte = h;
 
-    if (dte->send_data(dte, (const char *)buffer, len) > 0) {
+    if (dte->send_data(dte, (const char*)buffer, len) > 0) {
         return ESP_OK;
     }
 
@@ -73,10 +73,10 @@ static esp_err_t esp_modem_dte_transmit(void *h, void *buffer, size_t len)
  *
  * @return ESP_OK on success, modem-start error code if starting failed
  */
-static esp_err_t esp_modem_post_attach_init(esp_netif_t *esp_netif, void *args)
+static esp_err_t esp_modem_post_attach_init(esp_netif_t* esp_netif, void* args)
 {
-    esp_modem_netif_driver_t *driver = args;
-    esp_modem_dte_t *dte = driver->dte;
+    esp_modem_netif_driver_t* driver = args;
+    esp_modem_dte_t* dte = driver->dte;
     const esp_netif_driver_ifconfig_t driver_ifconfig = {
         .driver_free_rx_buffer = NULL,
         .transmit = esp_modem_dte_transmit,
@@ -99,9 +99,9 @@ static esp_err_t esp_modem_post_attach_init(esp_netif_t *esp_netif, void *args)
  * @brief Post attach adapter for esp-modem with autostart functionality
  *
  */
-static esp_err_t esp_modem_post_attach_start(esp_netif_t *esp_netif, void *args)
+static esp_err_t esp_modem_post_attach_start(esp_netif_t* esp_netif, void* args)
 {
-    esp_modem_netif_driver_t *driver = args;
+    esp_modem_netif_driver_t* driver = args;
     ESP_ERROR_CHECK(esp_modem_post_attach_init(esp_netif, args));
     return esp_modem_start_ppp(driver->dte);
 }
@@ -115,16 +115,16 @@ static esp_err_t esp_modem_post_attach_start(esp_netif_t *esp_netif, void *args)
  *
  * @return ESP_OK on success
  */
-static esp_err_t modem_netif_receive_cb(void *buffer, size_t len, void *context)
+static esp_err_t modem_netif_receive_cb(void* buffer, size_t len, void* context)
 {
-    esp_modem_netif_driver_t *driver = context;
+    esp_modem_netif_driver_t* driver = context;
     esp_netif_receive(driver->base.netif, buffer, len, NULL);
     return ESP_OK;
 }
 
-esp_modem_netif_driver_t *esp_modem_netif_new(esp_modem_dte_t *dte)
+esp_modem_netif_driver_t* esp_modem_netif_new(esp_modem_dte_t* dte)
 {
-    esp_modem_netif_driver_t *driver = esp_modem_netif_setup(dte);
+    esp_modem_netif_driver_t* driver = esp_modem_netif_setup(dte);
 
     if (driver) {
         driver->base.post_attach = esp_modem_post_attach_init;
@@ -134,9 +134,9 @@ esp_modem_netif_driver_t *esp_modem_netif_new(esp_modem_dte_t *dte)
     return NULL;
 }
 
-esp_modem_netif_driver_t *esp_modem_netif_setup(esp_modem_dte_t *dte)
+esp_modem_netif_driver_t* esp_modem_netif_setup(esp_modem_dte_t* dte)
 {
-    esp_modem_netif_driver_t *driver =  calloc(1, sizeof(esp_modem_netif_driver_t));
+    esp_modem_netif_driver_t* driver = calloc(1, sizeof(esp_modem_netif_driver_t));
 
     if (driver == NULL) {
         ESP_LOGE(TAG, "Cannot allocate esp_modem_netif_driver_t");
@@ -158,20 +158,20 @@ drv_create_failed:
     return NULL;
 }
 
-void esp_modem_netif_destroy(esp_modem_netif_driver_t *driver)
+void esp_modem_netif_destroy(esp_modem_netif_driver_t* driver)
 {
     esp_netif_destroy(driver->base.netif);
     return esp_modem_netif_teardown(driver);
 }
 
-void esp_modem_netif_teardown(esp_modem_netif_driver_t *driver)
+void esp_modem_netif_teardown(esp_modem_netif_driver_t* driver)
 {
     free(driver);
 }
 
-esp_err_t esp_modem_netif_clear_default_handlers(esp_modem_netif_driver_t *h)
+esp_err_t esp_modem_netif_clear_default_handlers(esp_modem_netif_driver_t* h)
 {
-    esp_modem_netif_driver_t *driver = h;
+    esp_modem_netif_driver_t* driver = h;
     esp_err_t ret;
     ret = esp_modem_remove_event_handler(driver->dte, esp_netif_action_start);
 
@@ -193,9 +193,9 @@ clear_event_failed:
 
 }
 
-esp_err_t esp_modem_netif_set_default_handlers(esp_modem_netif_driver_t *h, esp_netif_t *esp_netif)
+esp_err_t esp_modem_netif_set_default_handlers(esp_modem_netif_driver_t* h, esp_netif_t* esp_netif)
 {
-    esp_modem_netif_driver_t *driver = h;
+    esp_modem_netif_driver_t* driver = h;
     esp_err_t ret;
     ret = esp_modem_set_event_handler(driver->dte, esp_netif_action_start, ESP_MODEM_EVENT_PPP_START, esp_netif);
 

@@ -31,34 +31,34 @@ typedef struct {
     size_t rx_unread_buf_sz;
     RingbufHandle_t rx_unread_buf;
     xSemaphoreHandle ringbuf_read_mux;
-    uint8_t *rx_tfbuf;
+    uint8_t* rx_tfbuf;
     tusb_cdcacm_callback_t callback_rx;
     tusb_cdcacm_callback_t callback_rx_wanted_char;
     tusb_cdcacm_callback_t callback_line_state_changed;
     tusb_cdcacm_callback_t callback_line_coding_changed;
 } esp_tusb_cdcacm_t; /*!< CDC_AMC object */
 
-static const char *TAG = "tusb_cdc_acm";
+static const char* TAG = "tusb_cdc_acm";
 
-static inline esp_tusb_cdcacm_t *get_acm(tinyusb_cdcacm_itf_t itf)
+static inline esp_tusb_cdcacm_t* get_acm(tinyusb_cdcacm_itf_t itf)
 {
-    esp_tusb_cdc_t *cdc_inst = tinyusb_cdc_get_intf(itf);
+    esp_tusb_cdc_t* cdc_inst = tinyusb_cdc_get_intf(itf);
 
     if (cdc_inst == NULL) {
-        return (esp_tusb_cdcacm_t *)NULL;
+        return (esp_tusb_cdcacm_t*)NULL;
     }
 
-    return (esp_tusb_cdcacm_t *)(cdc_inst->subclass_obj);
+    return (esp_tusb_cdcacm_t*)(cdc_inst->subclass_obj);
 }
 
 
 /* TinyUSB callbacks
    ********************************************************************* */
 
-/* Invoked by cdc interface when line state changed e.g connected/disconnected */
+   /* Invoked by cdc interface when line state changed e.g connected/disconnected */
 void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (dtr && rts) { // connected
         if (acm != NULL) {
@@ -95,7 +95,7 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
 /* Invoked when CDC interface received data from host */
 void tud_cdc_rx_cb(uint8_t itf)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (acm) {
         if (!acm->rx_unread_buf) {
@@ -109,11 +109,11 @@ void tud_cdc_rx_cb(uint8_t itf)
 
     while (tud_cdc_n_available(itf)) {
         int read_res = tud_cdc_n_read(itf,
-                                      acm->rx_tfbuf,
-                                      CONFIG_TINYUSB_CDC_RX_BUFSIZE);
+            acm->rx_tfbuf,
+            CONFIG_TINYUSB_CDC_RX_BUFSIZE);
         int res = xRingbufferSend(acm->rx_unread_buf,
-                                  acm->rx_tfbuf,
-                                  read_res, 0);
+            acm->rx_tfbuf,
+            read_res, 0);
 
         if (res != pdTRUE) {
             ESP_LOGW(TAG, "The unread buffer is too small, the data has been lost");
@@ -135,9 +135,9 @@ void tud_cdc_rx_cb(uint8_t itf)
 }
 
 // Invoked when line coding is change via SET_LINE_CODING
-void tud_cdc_line_coding_cb(uint8_t itf, cdc_line_coding_t const *p_line_coding)
+void tud_cdc_line_coding_cb(uint8_t itf, cdc_line_coding_t const* p_line_coding)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (acm) {
         tusb_cdcacm_callback_t cb = acm->callback_line_coding_changed;
@@ -159,7 +159,7 @@ void tud_cdc_line_coding_cb(uint8_t itf, cdc_line_coding_t const *p_line_coding)
 // Invoked when received `wanted_char`
 void tud_cdc_rx_wanted_cb(uint8_t itf, char wanted_char)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (acm) {
         tusb_cdcacm_callback_t cb = acm->callback_rx_wanted_char;
@@ -181,10 +181,10 @@ void tud_cdc_rx_wanted_cb(uint8_t itf, char wanted_char)
 
 
 esp_err_t tinyusb_cdcacm_register_callback(tinyusb_cdcacm_itf_t itf,
-        cdcacm_event_type_t event_type,
-        tusb_cdcacm_callback_t callback)
+    cdcacm_event_type_t event_type,
+    tusb_cdcacm_callback_t callback)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (acm) {
         switch (event_type) {
@@ -216,9 +216,9 @@ esp_err_t tinyusb_cdcacm_register_callback(tinyusb_cdcacm_itf_t itf,
 
 
 esp_err_t tinyusb_cdcacm_unregister_callback(tinyusb_cdcacm_itf_t itf,
-        cdcacm_event_type_t event_type)
+    cdcacm_event_type_t event_type)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (!acm) {
         ESP_LOGE(TAG, "Interface is not initialized. Use `tinyusb_cdc_init` for initialization");
@@ -252,20 +252,20 @@ esp_err_t tinyusb_cdcacm_unregister_callback(tinyusb_cdcacm_itf_t itf,
 /* CDC-ACM
    ********************************************************************* */
 
-static esp_err_t read_from_rx_unread_to_buffer(esp_tusb_cdcacm_t *acm, uint8_t *out_buf, size_t req_bytes, size_t *read_bytes)
+static esp_err_t read_from_rx_unread_to_buffer(esp_tusb_cdcacm_t* acm, uint8_t* out_buf, size_t req_bytes, size_t* read_bytes)
 {
-    uint8_t *buf = xRingbufferReceiveUpTo(acm->rx_unread_buf, read_bytes, 0, req_bytes);
+    uint8_t* buf = xRingbufferReceiveUpTo(acm->rx_unread_buf, read_bytes, 0, req_bytes);
 
     if (buf) {
         memcpy(out_buf, buf, *read_bytes);
-        vRingbufferReturnItem(acm->rx_unread_buf, (void *)(buf));
+        vRingbufferReturnItem(acm->rx_unread_buf, (void*)(buf));
         return ESP_OK;
     } else {
         return ESP_ERR_NO_MEM;
     }
 }
 
-static esp_err_t ringbuf_mux_take(esp_tusb_cdcacm_t *acm)
+static esp_err_t ringbuf_mux_take(esp_tusb_cdcacm_t* acm)
 {
     if (xSemaphoreTake(acm->ringbuf_read_mux, 0) != pdTRUE) {
         ESP_LOGW(TAG, "Read error: ACM is busy");
@@ -275,16 +275,16 @@ static esp_err_t ringbuf_mux_take(esp_tusb_cdcacm_t *acm)
     return ESP_OK;
 }
 
-static esp_err_t ringbuf_mux_give(esp_tusb_cdcacm_t *acm)
+static esp_err_t ringbuf_mux_give(esp_tusb_cdcacm_t* acm)
 {
     BaseType_t ret = xSemaphoreGive(acm->ringbuf_read_mux);
     assert(ret == pdTRUE);
     return ESP_OK;
 }
 
-esp_err_t tinyusb_cdcacm_read(tinyusb_cdcacm_itf_t itf, uint8_t *out_buf, size_t out_buf_sz, size_t *rx_data_size)
+esp_err_t tinyusb_cdcacm_read(tinyusb_cdcacm_itf_t itf, uint8_t* out_buf, size_t out_buf_sz, size_t* rx_data_size)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
     ESP_RETURN_ON_FALSE(acm, ESP_ERR_INVALID_STATE, TAG, "Interface is not initialized. Use `tinyusb_cdc_init` for initialization");
     size_t read_sz;
 
@@ -320,7 +320,7 @@ size_t tinyusb_cdcacm_write_queue_char(tinyusb_cdcacm_itf_t itf, char ch)
 }
 
 
-size_t tinyusb_cdcacm_write_queue(tinyusb_cdcacm_itf_t itf, uint8_t *in_buf, size_t in_size)
+size_t tinyusb_cdcacm_write_queue(tinyusb_cdcacm_itf_t itf, uint8_t* in_buf, size_t in_size)
 {
     if (!get_acm(itf)) { // non-initialized
         return 0;
@@ -383,7 +383,7 @@ esp_err_t tinyusb_cdcacm_write_flush(tinyusb_cdcacm_itf_t itf, uint32_t timeout_
 
 static esp_err_t alloc_obj(tinyusb_cdcacm_itf_t itf)
 {
-    esp_tusb_cdc_t *cdc_inst = tinyusb_cdc_get_intf(itf);
+    esp_tusb_cdc_t* cdc_inst = tinyusb_cdc_get_intf(itf);
     cdc_inst->subclass_obj = calloc(1, sizeof(esp_tusb_cdcacm_t));
 
     if (!cdc_inst->subclass_obj) {
@@ -395,12 +395,12 @@ static esp_err_t alloc_obj(tinyusb_cdcacm_itf_t itf)
 
 static void free_obj(tinyusb_cdcacm_itf_t itf)
 {
-    esp_tusb_cdc_t *cdc_inst = tinyusb_cdc_get_intf(itf);
+    esp_tusb_cdc_t* cdc_inst = tinyusb_cdc_get_intf(itf);
     free(cdc_inst->subclass_obj);
     cdc_inst->subclass_obj = NULL;
 }
 
-esp_err_t tusb_cdc_acm_init(const tinyusb_config_cdcacm_t *cfg)
+esp_err_t tusb_cdc_acm_init(const tinyusb_config_cdcacm_t* cfg)
 {
     int itf = (int)cfg->cdc_port;
     /* Creating a CDC object */
@@ -412,7 +412,7 @@ esp_err_t tusb_cdc_acm_init(const tinyusb_config_cdcacm_t *cfg)
     ESP_RETURN_ON_ERROR(tinyusb_cdc_init(itf, &cdc_cfg), TAG, "tinyusb_cdc_init failed");
     ESP_RETURN_ON_ERROR(alloc_obj(itf), TAG, "alloc_obj failed");
 
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     /* Callbacks setting up*/
     if (cfg->callback_rx) {
@@ -464,7 +464,7 @@ esp_err_t tusb_cdc_acm_init(const tinyusb_config_cdcacm_t *cfg)
 
 bool tusb_cdc_acm_initialized(tinyusb_cdcacm_itf_t itf)
 {
-    esp_tusb_cdcacm_t *acm = get_acm(itf);
+    esp_tusb_cdcacm_t* acm = get_acm(itf);
 
     if (acm) {
         return true;

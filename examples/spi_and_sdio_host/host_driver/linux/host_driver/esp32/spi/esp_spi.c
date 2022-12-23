@@ -32,15 +32,15 @@
 #define TX_MAX_PENDING_COUNT    100
 #define TX_RESUME_THRESHOLD     (TX_MAX_PENDING_COUNT/5)
 
-/* ESP in sdkconfig has CONFIG_IDF_FIRMWARE_CHIP_ID entry.
- * supported values of CONFIG_IDF_FIRMWARE_CHIP_ID are - */
+ /* ESP in sdkconfig has CONFIG_IDF_FIRMWARE_CHIP_ID entry.
+  * supported values of CONFIG_IDF_FIRMWARE_CHIP_ID are - */
 #define ESP_PRIV_FIRMWARE_CHIP_UNRECOGNIZED (0xff)
 #define ESP_PRIV_FIRMWARE_CHIP_ESP32        (0x0)
 #define ESP_PRIV_FIRMWARE_CHIP_ESP32S2      (0x2)
 #define ESP_PRIV_FIRMWARE_CHIP_ESP32C3      (0x5)
 
-static struct sk_buff *read_packet(struct esp_adapter *adapter);
-static int write_packet(struct esp_adapter *adapter, struct sk_buff *skb);
+static struct sk_buff* read_packet(struct esp_adapter* adapter);
+static int write_packet(struct esp_adapter* adapter, struct sk_buff* skb);
 static void spi_exit(void);
 static void adjust_spi_clock(u8 spi_clk_mhz);
 
@@ -50,8 +50,8 @@ static char hardware_type = 0;
 static atomic_t tx_pending;
 
 static struct esp_if_ops if_ops = {
-    .read        = read_packet,
-    .write        = write_packet,
+    .read = read_packet,
+    .write = write_packet,
 };
 
 static DEFINE_MUTEX(spi_lock);
@@ -69,7 +69,7 @@ static void close_data_path(void)
     msleep(200);
 }
 
-static irqreturn_t spi_data_ready_interrupt_handler(int irq, void *dev)
+static irqreturn_t spi_data_ready_interrupt_handler(int irq, void* dev)
 {
     /* ESP peripheral has queued buffer for transmission */
     if (spi_context.spi_workqueue) {
@@ -79,7 +79,7 @@ static irqreturn_t spi_data_ready_interrupt_handler(int irq, void *dev)
     return IRQ_HANDLED;
 }
 
-static irqreturn_t spi_interrupt_handler(int irq, void *dev)
+static irqreturn_t spi_interrupt_handler(int irq, void* dev)
 {
     /* ESP peripheral is ready for next SPI transaction */
     if (spi_context.spi_workqueue) {
@@ -89,10 +89,10 @@ static irqreturn_t spi_interrupt_handler(int irq, void *dev)
     return IRQ_HANDLED;
 }
 
-static struct sk_buff *read_packet(struct esp_adapter *adapter)
+static struct sk_buff* read_packet(struct esp_adapter* adapter)
 {
-    struct esp_spi_context *context;
-    struct sk_buff *skb = NULL;
+    struct esp_spi_context* context;
+    struct sk_buff* skb = NULL;
 
     if (!data_path) {
         return NULL;
@@ -115,10 +115,10 @@ static struct sk_buff *read_packet(struct esp_adapter *adapter)
     return skb;
 }
 
-static int write_packet(struct esp_adapter *adapter, struct sk_buff *skb)
+static int write_packet(struct esp_adapter* adapter, struct sk_buff* skb)
 {
     u32 max_pkt_size = SPI_BUF_SIZE - sizeof(struct esp_payload_header);
-    struct esp_payload_header *payload_header = (struct esp_payload_header *) skb->data;
+    struct esp_payload_header* payload_header = (struct esp_payload_header*)skb->data;
 
     if (!adapter || !adapter->if_context || !skb || !skb->data || !skb->len) {
         printk(KERN_ERR "%s: Invalid args\n", __func__);
@@ -128,7 +128,7 @@ static int write_packet(struct esp_adapter *adapter, struct sk_buff *skb)
 
     if (skb->len > max_pkt_size) {
         printk(KERN_ERR "%s: Drop pkt of len[%u] > max spi transport len[%u]\n",
-               __func__, skb->len, max_pkt_size);
+            __func__, skb->len, max_pkt_size);
         dev_kfree_skb(skb);
         return -EPERM;
     }
@@ -165,10 +165,10 @@ static int write_packet(struct esp_adapter *adapter, struct sk_buff *skb)
 }
 
 
-void process_init_event(u8 *evt_buf, u8 len)
+void process_init_event(u8* evt_buf, u8 len)
 {
     u8 len_left = len, tag_len;
-    u8 *pos;
+    u8* pos;
 
     if (!evt_buf) {
         return;
@@ -195,17 +195,17 @@ void process_init_event(u8 *evt_buf, u8 len)
     }
 
     if ((hardware_type != ESP_PRIV_FIRMWARE_CHIP_ESP32) &&
-            (hardware_type != ESP_PRIV_FIRMWARE_CHIP_ESP32S2) &&
-            (hardware_type != ESP_PRIV_FIRMWARE_CHIP_ESP32C3)) {
+        (hardware_type != ESP_PRIV_FIRMWARE_CHIP_ESP32S2) &&
+        (hardware_type != ESP_PRIV_FIRMWARE_CHIP_ESP32C3)) {
         printk(KERN_INFO "ESP board type is not mentioned, ignoring [%d]\n", hardware_type);
         hardware_type = ESP_PRIV_FIRMWARE_CHIP_UNRECOGNIZED;
     }
 }
 
 
-static int process_rx_buf(struct sk_buff *skb)
+static int process_rx_buf(struct sk_buff* skb)
 {
-    struct esp_payload_header *header;
+    struct esp_payload_header* header;
     u16 len = 0;
     u16 offset = 0;
 
@@ -213,7 +213,7 @@ static int process_rx_buf(struct sk_buff *skb)
         return -EINVAL;
     }
 
-    header = (struct esp_payload_header *) skb->data;
+    header = (struct esp_payload_header*)skb->data;
 
     if (header->if_type >= ESP_MAX_IF) {
         return -EINVAL;
@@ -259,11 +259,11 @@ static int process_rx_buf(struct sk_buff *skb)
     return 0;
 }
 
-static void esp_spi_work(struct work_struct *work)
+static void esp_spi_work(struct work_struct* work)
 {
     struct spi_transfer trans;
-    struct sk_buff *tx_skb = NULL, *rx_skb = NULL;
-    u8 *rx_buf;
+    struct sk_buff* tx_skb = NULL, * rx_skb = NULL;
+    u8* rx_buf;
     int ret = 0;
     volatile int trans_ready, rx_pending;
 
@@ -299,14 +299,14 @@ static void esp_spi_work(struct work_struct *work)
              *        If it is a valid buffer, upper layer will free it.
              * */
 
-            /* Configure TX buffer if available */
+             /* Configure TX buffer if available */
 
             if (tx_skb) {
                 trans.tx_buf = tx_skb->data;
             } else {
                 tx_skb = esp_alloc_skb(SPI_BUF_SIZE);
                 trans.tx_buf = skb_put(tx_skb, SPI_BUF_SIZE);
-                memset((void *)trans.tx_buf, 0, SPI_BUF_SIZE);
+                memset((void*)trans.tx_buf, 0, SPI_BUF_SIZE);
             }
 
             /* Configure RX buffer */
@@ -352,8 +352,8 @@ static void esp_spi_work(struct work_struct *work)
 static int spi_dev_init(int spi_clk_mhz)
 {
     int status = 0;
-    struct spi_board_info esp_board = {{0}};
-    struct spi_master *master = NULL;
+    struct spi_board_info esp_board = { {0} };
+    struct spi_master* master = NULL;
 
     strlcpy(esp_board.modalias, "esp_spi", sizeof(esp_board.modalias));
     esp_board.mode = SPI_MODE_2;
@@ -383,8 +383,8 @@ static int spi_dev_init(int spi_clk_mhz)
     }
 
     printk(KERN_INFO "ESP32 peripheral is registered to SPI bus [%d]"
-           ",chip select [%d], SPI Clock [%d]\n", esp_board.bus_num,
-           esp_board.chip_select, spi_clk_mhz);
+        ",chip select [%d], SPI Clock [%d]\n", esp_board.bus_num,
+        esp_board.chip_select, spi_clk_mhz);
 
     status = gpio_request(HANDSHAKE_PIN, "SPI_HANDSHAKE_PIN");
 
@@ -401,8 +401,8 @@ static int spi_dev_init(int spi_clk_mhz)
     }
 
     status = request_irq(SPI_IRQ, spi_interrupt_handler,
-                         IRQF_SHARED | IRQF_TRIGGER_RISING,
-                         "ESP_SPI", spi_context.esp_spi_dev);
+        IRQF_SHARED | IRQF_TRIGGER_RISING,
+        "ESP_SPI", spi_context.esp_spi_dev);
 
     if (status) {
         printk(KERN_ERR "Failed to request IRQ for Handshake pin, err:%d\n", status);
@@ -424,8 +424,8 @@ static int spi_dev_init(int spi_clk_mhz)
     }
 
     status = request_irq(SPI_DATA_READY_IRQ, spi_data_ready_interrupt_handler,
-                         IRQF_SHARED | IRQF_TRIGGER_RISING,
-                         "ESP_SPI_DATA_READY", spi_context.esp_spi_dev);
+        IRQF_SHARED | IRQF_TRIGGER_RISING,
+        "ESP_SPI_DATA_READY", spi_context.esp_spi_dev);
 
     if (status) {
         printk(KERN_ERR "Failed to request IRQ for Data ready pin, err:%d\n", status);
@@ -484,7 +484,7 @@ static int spi_init(void)
     }
 
 #ifdef CONFIG_SUPPORT_ESP_SERIAL
-    status = esp_serial_init((void *) spi_context.adapter);
+    status = esp_serial_init((void*)spi_context.adapter);
 
     if (status != 0) {
         spi_exit();
@@ -560,7 +560,7 @@ static void adjust_spi_clock(u8 spi_clk_mhz)
     }
 }
 
-int esp_init_interface_layer(struct esp_adapter *adapter)
+int esp_init_interface_layer(struct esp_adapter* adapter)
 {
     if (!adapter) {
         return -EINVAL;

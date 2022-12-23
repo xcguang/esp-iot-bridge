@@ -30,7 +30,7 @@
 #include "vfs_tinyusb.h"
 #include "sdkconfig.h"
 
-const static char *TAG = "tusb_vfs";
+const static char* TAG = "tusb_vfs";
 #define VFS_TUSB_MAX_PATH 16
 #define VFS_TUSB_PATH_DEFAULT "/dev/tusb_cdc"
 
@@ -75,7 +75,7 @@ typedef struct {
 static vfs_tinyusb_t s_vfstusb;
 
 
-static esp_err_t apply_path(char const *path)
+static esp_err_t apply_path(char const* path)
 {
     if (path != NULL) {
         size_t path_len = strlen(path) + 1;
@@ -88,8 +88,8 @@ static esp_err_t apply_path(char const *path)
         strncpy(s_vfstusb.vfs_path, path, (VFS_TUSB_MAX_PATH - 1));
     } else {
         strncpy(s_vfstusb.vfs_path,
-                VFS_TUSB_PATH_DEFAULT,
-                (VFS_TUSB_MAX_PATH - 1));
+            VFS_TUSB_PATH_DEFAULT,
+            (VFS_TUSB_MAX_PATH - 1));
     }
 
     ESP_LOGV(TAG, "Path is set to `%s`", s_vfstusb.vfs_path);
@@ -103,7 +103,7 @@ static esp_err_t apply_path(char const *path)
  * @param path - a path where the CDC will be registered
  * @return esp_err_t ESP_OK or ESP_ERR_INVALID_ARG
  */
-static esp_err_t vfstusb_init(int cdc_intf, char const *path)
+static esp_err_t vfstusb_init(int cdc_intf, char const* path)
 {
     s_vfstusb.cdc_intf = cdc_intf;
     s_vfstusb.tx_mode = DEFAULT_TX_MODE;
@@ -121,19 +121,19 @@ static void vfstusb_deinit(void)
 }
 
 
-static int tusb_open(const char *path, int flags, int mode)
+static int tusb_open(const char* path, int flags, int mode)
 {
-    (void) mode;
-    (void) path;
+    (void)mode;
+    (void)path;
     s_vfstusb.flags = flags | O_NONBLOCK; // for now only non-blocking mode is implemented
     return 0;
 }
 
-static ssize_t tusb_write(int fd, const void *data, size_t size)
+static ssize_t tusb_write(int fd, const void* data, size_t size)
 {
     FD_CHECK(fd, -1);
     size_t written_sz = 0;
-    const char *data_c = (const char *)data;
+    const char* data_c = (const char*)data;
     _lock_acquire(&(s_vfstusb.write_lock));
 
     for (size_t i = 0; i < size; i++) {
@@ -172,10 +172,10 @@ static int tusb_close(int fd)
     return 0;
 }
 
-static ssize_t tusb_read(int fd, void *data, size_t size)
+static ssize_t tusb_read(int fd, void* data, size_t size)
 {
     FD_CHECK(fd, -1);
-    char *data_c = (char *) data;
+    char* data_c = (char*)data;
     size_t received = 0;
     _lock_acquire(&(s_vfstusb.read_lock));
     int cm1 = NONE;
@@ -200,7 +200,7 @@ static ssize_t tusb_read(int fd, void *data, size_t size)
             break;
         }
 
-        data_c[received] = (char) c;
+        data_c[received] = (char)c;
         ++received;
 
         if (c == '\n') {
@@ -219,7 +219,7 @@ static ssize_t tusb_read(int fd, void *data, size_t size)
 }
 
 
-static int tusb_fstat(int fd, struct stat *st)
+static int tusb_fstat(int fd, struct stat* st)
 {
     FD_CHECK(fd, -1);
     memset(st, 0, sizeof(*st));
@@ -250,7 +250,7 @@ static int tusb_fcntl(int fd, int cmd, int arg)
     return result;
 }
 
-esp_err_t esp_vfs_tusb_cdc_unregister(char const *path)
+esp_err_t esp_vfs_tusb_cdc_unregister(char const* path)
 {
     ESP_LOGD(TAG, "Unregistering TinyUSB driver");
     int res;
@@ -284,7 +284,7 @@ esp_err_t esp_vfs_tusb_cdc_unregister(char const *path)
 
 
 
-esp_err_t esp_vfs_tusb_cdc_register(int cdc_intf, char const *path)
+esp_err_t esp_vfs_tusb_cdc_register(int cdc_intf, char const* path)
 {
     ESP_LOGD(TAG, "Registering TinyUSB CDC driver");
     int res;

@@ -21,11 +21,11 @@
 #include "tusb_cdc_acm.h"
 #include "sdkconfig.h"
 
-static const char *TAG = "tusb_cdc";
+static const char* TAG = "tusb_cdc";
 
 #define CDC_INTF_NUM            CFG_TUD_CDCACM // number of cdc blocks
 
-static esp_tusb_cdc_t *cdc_obj[CFG_TUD_CDCACM] = {};
+static esp_tusb_cdc_t* cdc_obj[CFG_TUD_CDCACM] = {};
 
 /* Common CDC functions
    ********************************************************************* */
@@ -58,7 +58,7 @@ static esp_err_t cdc_obj_check(int itf, bool expected_inited, tusb_class_code_t 
 
     if (expected_inited != inited) {
         ESP_LOGE(TAG, "Wrong state of the interface. Expected state: %s",
-                 expected_inited ? "initialized" : "not initialized");
+            expected_inited ? "initialized" : "not initialized");
         return ESP_ERR_INVALID_STATE;
     }
 
@@ -70,7 +70,7 @@ static esp_err_t cdc_obj_check(int itf, bool expected_inited, tusb_class_code_t 
     return ESP_OK;
 }
 
-esp_tusb_cdc_t *tinyusb_cdc_get_intf(int itf_num)
+esp_tusb_cdc_t* tinyusb_cdc_get_intf(int itf_num)
 {
     if (cdc_interface_check(itf_num) != ESP_OK) {
         return NULL;
@@ -130,7 +130,7 @@ static esp_err_t tusb_cdc_deinit_data(int itf)
 /*********************************************************************** CDC class funcs*/
 /* CDC initialization
    ********************************************************************* */
-esp_err_t tinyusb_cdc_init(int itf, const tinyusb_config_cdc_t *cfg)
+esp_err_t tinyusb_cdc_init(int itf, const tinyusb_config_cdc_t* cfg)
 {
     ESP_LOGD(TAG, "CDC initialization...");
 

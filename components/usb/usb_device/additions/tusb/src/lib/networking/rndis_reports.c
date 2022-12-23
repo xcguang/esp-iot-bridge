@@ -71,7 +71,7 @@ static const uint32_t OIDSupportedList[] = {
 #define OID_LIST_LENGTH TU_ARRAY_SIZE(OIDSupportedList)
 #define ENC_BUF_SIZE    (OID_LIST_LENGTH * 4 + 32)
 
-static void *encapsulated_buffer;
+static void* encapsulated_buffer;
 
 static void rndis_report(void)
 {
@@ -80,8 +80,8 @@ static void rndis_report(void)
 
 static void rndis_query_cmplt32(int status, uint32_t data)
 {
-    rndis_query_cmplt_t *c;
-    c = (rndis_query_cmplt_t *)encapsulated_buffer;
+    rndis_query_cmplt_t* c;
+    c = (rndis_query_cmplt_t*)encapsulated_buffer;
     c->MessageType = REMOTE_NDIS_QUERY_CMPLT;
     c->MessageLength = sizeof(rndis_query_cmplt_t) + 4;
     c->InformationBufferLength = 4;
@@ -91,10 +91,10 @@ static void rndis_query_cmplt32(int status, uint32_t data)
     rndis_report();
 }
 
-static void rndis_query_cmplt(int status, const void *data, int size)
+static void rndis_query_cmplt(int status, const void* data, int size)
 {
-    rndis_query_cmplt_t *c;
-    c = (rndis_query_cmplt_t *)encapsulated_buffer;
+    rndis_query_cmplt_t* c;
+    c = (rndis_query_cmplt_t*)encapsulated_buffer;
     c->MessageType = REMOTE_NDIS_QUERY_CMPLT;
     c->MessageLength = sizeof(rndis_query_cmplt_t) + size;
     c->InformationBufferLength = size;
@@ -109,7 +109,7 @@ static void rndis_query_cmplt(int status, const void *data, int size)
     NDIS_MAC_OPTION_TRANSFERS_NOT_PEND  | \
     NDIS_MAC_OPTION_NO_LOOPBACK
 
-static const char *rndis_vendor = RNDIS_VENDOR;
+static const char* rndis_vendor = RNDIS_VENDOR;
 
 static void rndis_query(void)
 {
@@ -119,7 +119,7 @@ static void rndis_query(void)
     /* USB Netif Mac */
     usb_net_mac[5] = usb_net_mac[5] + 8;
 
-    switch (((rndis_query_msg_t *)encapsulated_buffer)->Oid) {
+    switch (((rndis_query_msg_t*)encapsulated_buffer)->Oid) {
     case OID_GEN_SUPPORTED_LIST:
         rndis_query_cmplt(RNDIS_STATUS_SUCCESS, OIDSupportedList, 4 * OID_LIST_LENGTH);
         return;
@@ -248,7 +248,7 @@ static void rndis_query(void)
 
 #define INFBUF  ((uint8_t *)&(m->RequestId) + m->InformationBufferOffset)
 
-static void rndis_handle_config_parm(const char *data, int keyoffset, int valoffset, int keylen, int vallen)
+static void rndis_handle_config_parm(const char* data, int keyoffset, int valoffset, int keylen, int vallen)
 {
     (void)data;
     (void)keyoffset;
@@ -264,12 +264,12 @@ static void rndis_packetFilter(uint32_t newfilter)
 
 static void rndis_handle_set_msg(void)
 {
-    rndis_set_cmplt_t *c;
-    rndis_set_msg_t *m;
+    rndis_set_cmplt_t* c;
+    rndis_set_msg_t* m;
     rndis_Oid_t oid;
 
-    c = (rndis_set_cmplt_t *)encapsulated_buffer;
-    m = (rndis_set_msg_t *)encapsulated_buffer;
+    c = (rndis_set_cmplt_t*)encapsulated_buffer;
+    m = (rndis_set_msg_t*)encapsulated_buffer;
 
     oid = m->Oid;
     c->MessageType = REMOTE_NDIS_SET_CMPLT;
@@ -277,18 +277,18 @@ static void rndis_handle_set_msg(void)
     c->Status = RNDIS_STATUS_SUCCESS;
 
     switch (oid) {
-    /* Parameters set up in 'Advanced' tab */
+        /* Parameters set up in 'Advanced' tab */
     case OID_GEN_RNDIS_CONFIG_PARAMETER: {
-        rndis_config_parameter_t *p;
-        char *ptr = (char *)m;
+        rndis_config_parameter_t* p;
+        char* ptr = (char*)m;
         ptr += sizeof(rndis_generic_msg_t);
         ptr += m->InformationBufferOffset;
-        p = (rndis_config_parameter_t *)((void *) ptr);
+        p = (rndis_config_parameter_t*)((void*)ptr);
         rndis_handle_config_parm(ptr, p->ParameterNameOffset, p->ParameterValueOffset, p->ParameterNameLength, p->ParameterValueLength);
     }
-    break;
+                                       break;
 
-    /* Mandatory general OIDs */
+                                       /* Mandatory general OIDs */
     case OID_GEN_CURRENT_PACKET_FILTER:
         memcpy(&oid_packet_filter, INFBUF, 4);
 
@@ -307,11 +307,11 @@ static void rndis_handle_set_msg(void)
     case OID_GEN_PROTOCOL_OPTIONS:
         break;
 
-    /* Mandatory 802_3 OIDs */
+        /* Mandatory 802_3 OIDs */
     case OID_802_3_MULTICAST_LIST:
         break;
 
-    /* Power Managment: fails for now */
+        /* Power Managment: fails for now */
     case OID_PNP_ADD_WAKE_UP_PATTERN:
     case OID_PNP_REMOVE_WAKE_UP_PATTERN:
     case OID_PNP_ENABLE_WAKE_UP:
@@ -327,8 +327,8 @@ static void rndis_handle_set_msg(void)
 
 void rndis_indicate_status(int status)
 {
-    rndis_indicate_status_t *c;
-    c = (rndis_indicate_status_t *)encapsulated_buffer;
+    rndis_indicate_status_t* c;
+    c = (rndis_indicate_status_t*)encapsulated_buffer;
     c->MessageType = REMOTE_NDIS_INDICATE_STATUS_MSG;
     c->MessageLength = sizeof(rndis_indicate_status_t);
     c->Status = status;
@@ -351,15 +351,15 @@ void rndis_connect(void)
     rndis_indicate_status(status);
 }
 
-void rndis_class_set_handler(uint8_t *data, int size)
+void rndis_class_set_handler(uint8_t* data, int size)
 {
     encapsulated_buffer = data;
     (void)size;
 
-    switch (((rndis_generic_msg_t *)encapsulated_buffer)->MessageType) {
+    switch (((rndis_generic_msg_t*)encapsulated_buffer)->MessageType) {
     case REMOTE_NDIS_INITIALIZE_MSG: {
-        rndis_initialize_cmplt_t *m;
-        m = ((rndis_initialize_cmplt_t *)encapsulated_buffer);
+        rndis_initialize_cmplt_t* m;
+        m = ((rndis_initialize_cmplt_t*)encapsulated_buffer);
         /* m->MessageID is same as before */
         m->MessageType = REMOTE_NDIS_INITIALIZE_CMPLT;
         m->MessageLength = sizeof(rndis_initialize_cmplt_t);
@@ -376,7 +376,7 @@ void rndis_class_set_handler(uint8_t *data, int size)
         rndis_state = rndis_initialized;
         rndis_report();
     }
-    break;
+                                   break;
 
     case REMOTE_NDIS_QUERY_MSG:
         rndis_query();
@@ -387,8 +387,8 @@ void rndis_class_set_handler(uint8_t *data, int size)
         break;
 
     case REMOTE_NDIS_RESET_MSG: {
-        rndis_reset_cmplt_t *m;
-        m = ((rndis_reset_cmplt_t *)encapsulated_buffer);
+        rndis_reset_cmplt_t* m;
+        m = ((rndis_reset_cmplt_t*)encapsulated_buffer);
         rndis_state = rndis_uninitialized;
         m->MessageType = REMOTE_NDIS_RESET_CMPLT;
         m->MessageLength = sizeof(rndis_reset_cmplt_t);
@@ -397,19 +397,19 @@ void rndis_class_set_handler(uint8_t *data, int size)
         /* m->AddressingReset = 0; - Windows halts if set to 1 for some reason */
         rndis_report();
     }
-    break;
+                              break;
 
     case REMOTE_NDIS_KEEPALIVE_MSG: {
-        rndis_keepalive_cmplt_t *m;
-        m = (rndis_keepalive_cmplt_t *)encapsulated_buffer;
+        rndis_keepalive_cmplt_t* m;
+        m = (rndis_keepalive_cmplt_t*)encapsulated_buffer;
         m->MessageType = REMOTE_NDIS_KEEPALIVE_CMPLT;
         m->MessageLength = sizeof(rndis_keepalive_cmplt_t);
         m->Status = RNDIS_STATUS_SUCCESS;
     }
 
-        /* We have data to send back */
-    rndis_report();
-    break;
+                                  /* We have data to send back */
+                                  rndis_report();
+                                  break;
 
     default:
         break;

@@ -37,15 +37,15 @@
 #include "esp32c3/rom/gpio.h"
 #endif
 
-const static char *TAG = "TinyUSB";
+const static char* TAG = "TinyUSB";
 
-static void configure_pins(usb_hal_context_t *usb)
+static void configure_pins(usb_hal_context_t* usb)
 {
     /* usb_periph_iopins currently configures USB_OTG as USB Device.
      * Introduce additional parameters in usb_hal_context_t when adding support
      * for USB Host.
      */
-    for (const usb_iopin_dsc_t *iopin = usb_periph_iopins; iopin->pin != -1; ++iopin) {
+    for (const usb_iopin_dsc_t* iopin = usb_periph_iopins; iopin->pin != -1; ++iopin) {
         if ((usb->use_external_phy) || (iopin->ext_phy_only == 0)) {
             esp_rom_gpio_pad_select_gpio(iopin->pin);
 
@@ -69,10 +69,10 @@ static void configure_pins(usb_hal_context_t *usb)
     }
 }
 
-esp_err_t tinyusb_driver_install(const tinyusb_config_t *config)
+esp_err_t tinyusb_driver_install(const tinyusb_config_t* config)
 {
-    tusb_desc_device_t *dev_descriptor;
-    const char **string_descriptor;
+    tusb_desc_device_t* dev_descriptor;
+    const char** string_descriptor;
     ESP_RETURN_ON_FALSE(config, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     // Enable APB CLK to USB peripheral
     periph_module_enable(PERIPH_USB_MODULE);

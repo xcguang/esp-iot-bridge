@@ -20,9 +20,9 @@
 #include "esp_log.h"
 #include "esp_http_client.h"
 
-static const char *TAG = "modem_console_httpget";
+static const char* TAG = "modem_console_httpget";
 
-static esp_err_t http_event_handler(esp_http_client_event_t *evt)
+static esp_err_t http_event_handler(esp_http_client_event_t* evt)
 {
     switch (evt->event_id) {
     case HTTP_EVENT_ERROR:
@@ -45,7 +45,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
         ESP_LOGD(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
 
         if ((bool)evt->user_data &&
-                !esp_http_client_is_chunked_response(evt->client)) {
+            !esp_http_client_is_chunked_response(evt->client)) {
             ESP_LOG_BUFFER_HEXDUMP(TAG, evt->data, evt->data_len, ESP_LOG_INFO);
         }
 
@@ -67,14 +67,14 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
 }
 
 static struct {
-    struct arg_str *host;
-    struct arg_lit *hex;
-    struct arg_end *end;
+    struct arg_str* host;
+    struct arg_lit* hex;
+    struct arg_end* end;
 } http_args;
 
-static int do_http_client(int argc, char **argv)
+static int do_http_client(int argc, char** argv)
 {
-    int nerrors = arg_parse(argc, argv, (void **)&http_args);
+    int nerrors = arg_parse(argc, argv, (void**)&http_args);
 
     if (nerrors != 0) {
         arg_print_errors(stderr, http_args.end, argv[0]);
@@ -93,7 +93,7 @@ static int do_http_client(int argc, char **argv)
 
     if (http_args.hex->count > 0) {
         // show hex data from http-get
-        config.user_data = (void *)true;
+        config.user_data = (void*)true;
     }
 
 
@@ -103,8 +103,8 @@ static int do_http_client(int argc, char **argv)
 
     if (err == ESP_OK) {
         ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
-                 esp_http_client_get_status_code(client),
-                 esp_http_client_get_content_length(client));
+            esp_http_client_get_status_code(client),
+            esp_http_client_get_content_length(client));
         return 0;
     }
 
@@ -116,7 +116,7 @@ void modem_console_register_http(void)
 {
     http_args.host = arg_str0(NULL, NULL, "<host>", "address or host-name to send GET request (defaults to http://httpbin.org/get)");
     http_args.hex = arg_litn("p", "print-hex", 0, 1, "print hex output"),
-    http_args.end = arg_end(1);
+        http_args.end = arg_end(1);
     const esp_console_cmd_t http_cmd = {
         .command = "httpget",
         .help = "http get command to test data mode",

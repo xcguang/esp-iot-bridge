@@ -17,12 +17,12 @@
 #include "esp_modem_dce_common_commands.h"
 #include "esp_modem_internal.h"
 
-static const char *TAG = "esp_sim800";
+static const char* TAG = "esp_sim800";
 
 /**
  * @brief @brief Response to the SIM800 specific power-down command
  */
-static esp_err_t sim800_handle_power_down(esp_modem_dce_t *dce, const char *line)
+static esp_err_t sim800_handle_power_down(esp_modem_dce_t* dce, const char* line)
 {
     esp_err_t err = ESP_FAIL;
 
@@ -37,7 +37,7 @@ static esp_err_t sim800_handle_power_down(esp_modem_dce_t *dce, const char *line
  * @brief Response to the SIM800 specific data mode command
  *
  */
-static esp_err_t sim800_handle_atd_ppp(esp_modem_dce_t *dce, const char *line)
+static esp_err_t sim800_handle_atd_ppp(esp_modem_dce_t* dce, const char* line)
 {
     esp_err_t err = ESP_FAIL;
 
@@ -54,10 +54,10 @@ static esp_err_t sim800_handle_atd_ppp(esp_modem_dce_t *dce, const char *line)
  * @brief Set data mode specific to SIM800
  *
  */
-static esp_err_t sim800_set_data_mode(esp_modem_dce_t *dce, void *param, void *result)
+static esp_err_t sim800_set_data_mode(esp_modem_dce_t* dce, void* param, void* result)
 {
     return esp_modem_dce_generic_command(dce, "ATD*99##\r", MODEM_COMMAND_TIMEOUT_MODE_CHANGE,
-                                         sim800_handle_atd_ppp, NULL);
+        sim800_handle_atd_ppp, NULL);
 
 }
 
@@ -65,14 +65,14 @@ static esp_err_t sim800_set_data_mode(esp_modem_dce_t *dce, void *param, void *r
  * @brief Specific power down command to SMI800
  *
  */
-static esp_err_t sim800_power_down(esp_modem_dce_t *dce, void *param, void *result)
+static esp_err_t sim800_power_down(esp_modem_dce_t* dce, void* param, void* result)
 {
     return esp_modem_dce_generic_command(dce, "AT+CPOWD=1\r", MODEM_COMMAND_TIMEOUT_POWEROFF,
-                                         sim800_handle_power_down, NULL);
+        sim800_handle_power_down, NULL);
 }
 
 
-static esp_err_t sim800_start_up(esp_modem_dce_t *dce)
+static esp_err_t sim800_start_up(esp_modem_dce_t* dce)
 {
     if (esp_modem_dce_default_start_up(dce) != ESP_OK) {
         esp_modem_wait_ms(30000); // SIM800 wakes-up 30s after sending a command
@@ -82,7 +82,7 @@ static esp_err_t sim800_start_up(esp_modem_dce_t *dce)
 }
 
 
-esp_err_t esp_modem_sim800_specific_init(esp_modem_dce_t *dce)
+esp_err_t esp_modem_sim800_specific_init(esp_modem_dce_t* dce)
 {
     ESP_MODEM_ERR_CHECK(dce, "failed to specific init with zero dce", err_params);
 

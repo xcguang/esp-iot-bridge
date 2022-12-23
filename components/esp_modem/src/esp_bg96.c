@@ -13,9 +13,9 @@
 // limitations under the License.
 #include "esp_modem_internal.h"
 
-static const char *TAG = "bg96";
+static const char* TAG = "bg96";
 
-esp_err_t esp_modem_bg96_specific_init(esp_modem_dce_t *dce)
+esp_err_t esp_modem_bg96_specific_init(esp_modem_dce_t* dce)
 {
     ESP_MODEM_ERR_CHECK(dce, "failed to specific init with zero dce", err_params);
     // BG96 specifics is the same as the default DCE, as of now

@@ -23,7 +23,7 @@ extern "C" {
 #include "esp_err.h"
 #include "tinyusb.h"
 
-/* HCI message type definitions (for H4 messages) */
+    /* HCI message type definitions (for H4 messages) */
 #define HCIT_TYPE_COMMAND   1
 #define HCIT_TYPE_ACL_DATA  2
 #define HCIT_TYPE_SCO_DATA  3
@@ -32,7 +32,7 @@ extern "C" {
 /**
  * @brief Initialize BTH Device.
  */
-void tusb_bth_init(void);
+    void tusb_bth_init(void);
 
 #ifdef __cplusplus
 }

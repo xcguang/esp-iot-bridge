@@ -24,27 +24,27 @@
 #include "esp_modem_device_specific_dce.h"
 #include "esp_modem_netif.h"
 
-static const char *TAG = "esp-modem";
+static const char* TAG = "esp-modem";
 
 ESP_EVENT_DEFINE_BASE(ESP_MODEM_EVENT);
 
-esp_err_t esp_modem_set_event_handler(esp_modem_dte_t *dte, esp_event_handler_t handler, int32_t event_id, void *handler_args)
+esp_err_t esp_modem_set_event_handler(esp_modem_dte_t* dte, esp_event_handler_t handler, int32_t event_id, void* handler_args)
 {
-    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     return esp_event_handler_register_with(esp_dte->event_loop_hdl, ESP_MODEM_EVENT, event_id, handler, handler_args);
 }
 
-esp_err_t esp_modem_remove_event_handler(esp_modem_dte_t *dte, esp_event_handler_t handler)
+esp_err_t esp_modem_remove_event_handler(esp_modem_dte_t* dte, esp_event_handler_t handler)
 {
-    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     return esp_event_handler_unregister_with(esp_dte->event_loop_hdl, ESP_MODEM_EVENT, ESP_EVENT_ANY_ID, handler);
 }
 
-esp_err_t esp_modem_start_ppp(esp_modem_dte_t *dte)
+esp_err_t esp_modem_start_ppp(esp_modem_dte_t* dte)
 {
-    esp_modem_dce_t *dce = dte->dce;
+    esp_modem_dce_t* dce = dte->dce;
     ESP_MODEM_ERR_CHECK(dce, "DTE has not yet bind with DCE", err);
-    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
 
     /* Enter PPP mode */
     ESP_MODEM_ERR_CHECK(dte->change_mode(dte, ESP_MODEM_PPP_MODE) == ESP_OK, "enter ppp mode failed", err);
@@ -56,11 +56,11 @@ err:
     return ESP_FAIL;
 }
 
-esp_err_t esp_modem_stop_ppp(esp_modem_dte_t *dte)
+esp_err_t esp_modem_stop_ppp(esp_modem_dte_t* dte)
 {
-    esp_modem_dce_t *dce = dte->dce;
+    esp_modem_dce_t* dce = dte->dce;
     ESP_MODEM_ERR_CHECK(dce, "DTE has not yet bind with DCE", err);
-    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
 
     /* Enter command mode */
     ESP_MODEM_ERR_CHECK(dte->change_mode(dte, ESP_MODEM_COMMAND_MODE) == ESP_OK, "enter command mode failed", err);
@@ -80,29 +80,29 @@ err:
     return ESP_FAIL;
 }
 
-esp_err_t esp_modem_notify_ppp_netif_closed(esp_modem_dte_t *dte)
+esp_err_t esp_modem_notify_ppp_netif_closed(esp_modem_dte_t* dte)
 {
-    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     EventBits_t bits = xEventGroupSetBits(esp_dte->process_group, ESP_MODEM_STOP_PPP_BIT);
     return bits & ESP_MODEM_STOP_BIT ? ESP_FAIL : ESP_OK; // set error if the group indicated MODEM_STOP condition
 }
 
-esp_err_t esp_modem_notify_initialized(esp_modem_dte_t *dte)
+esp_err_t esp_modem_notify_initialized(esp_modem_dte_t* dte)
 {
-    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     EventBits_t bits = xEventGroupSetBits(esp_dte->process_group, ESP_MODEM_START_BIT);
     return bits & ESP_MODEM_START_BIT ? ESP_OK : ESP_FAIL;  // START bit should be set (since it's not auto-cleared)
     // report error otherwise
 }
 
-esp_err_t esp_modem_default_destroy(esp_modem_dte_t *dte)
+esp_err_t esp_modem_default_destroy(esp_modem_dte_t* dte)
 {
     ESP_MODEM_ERR_CHECK(dte, "Cannot destroy NULL dte", err_params);
-    esp_modem_netif_driver_t *netif_adapter = dte->netif_adapter;
-    esp_modem_dce_t *dce = dte->dce;
+    esp_modem_netif_driver_t* netif_adapter = dte->netif_adapter;
+    esp_modem_dce_t* dce = dte->dce;
     ESP_MODEM_ERR_CHECK(dce && netif_adapter, "Cannot destroy dce or netif_adapter", err_params);
     ESP_MODEM_ERR_CHECK(esp_modem_netif_clear_default_handlers(netif_adapter) == ESP_OK,
-                        "modem_netif failed to clread handlers", err);
+        "modem_netif failed to clread handlers", err);
     esp_modem_netif_destroy(netif_adapter);
     dte->netif_adapter = NULL;
     ESP_MODEM_ERR_CHECK(dce->deinit(dce) == ESP_OK, "failed to deinit dce", err);
@@ -115,10 +115,10 @@ err_params:
     return ESP_ERR_INVALID_ARG;
 }
 
-esp_err_t esp_modem_default_start(esp_modem_dte_t *dte)
+esp_err_t esp_modem_default_start(esp_modem_dte_t* dte)
 {
     ESP_MODEM_ERR_CHECK(dte, "failed to start zero DTE", err_params);
-    esp_modem_dce_t *dce = dte->dce;
+    esp_modem_dce_t* dce = dte->dce;
     ESP_MODEM_ERR_CHECK(dce, "failed to start zero DCE", err_params);
 
     return dce->start_up(dce);
@@ -127,28 +127,28 @@ err_params:
     return ESP_ERR_INVALID_ARG;
 }
 
-esp_err_t esp_modem_default_attach(esp_modem_dte_t *dte, esp_modem_dce_t *dce, esp_netif_t *ppp_netif)
+esp_err_t esp_modem_default_attach(esp_modem_dte_t* dte, esp_modem_dce_t* dce, esp_netif_t* ppp_netif)
 {
     /* Bind DTE with DCE */
     dce->dte = dte;
     dte->dce = dce;
 
     /* Init and bind DTE with the PPP netif adapter */
-    esp_modem_netif_driver_t *modem_netif_adapter = esp_modem_netif_new(dte);
+    esp_modem_netif_driver_t* modem_netif_adapter = esp_modem_netif_new(dte);
     ESP_MODEM_ERR_CHECK(esp_modem_netif_set_default_handlers(modem_netif_adapter, ppp_netif) == ESP_OK,
-                        "modem_netif failed to set handlers", err);
+        "modem_netif failed to set handlers", err);
     ESP_MODEM_ERR_CHECK(esp_netif_attach(ppp_netif, modem_netif_adapter) == ESP_OK,
-                        "attach netif to modem adapter failed", err);
+        "attach netif to modem adapter failed", err);
     ESP_MODEM_ERR_CHECK(esp_modem_notify_initialized(dte) == ESP_OK, "DTE init notification failed", err);
     return ESP_OK;
 err:
     return ESP_FAIL;
 }
 
-esp_modem_dce_t *esp_modem_dce_new(esp_modem_dce_config_t *config)
+esp_modem_dce_t* esp_modem_dce_new(esp_modem_dce_config_t* config)
 {
     ESP_MODEM_ERR_CHECK(config, "failed to init with zero configuration", err);
-    esp_modem_dce_t *dce = calloc(1, sizeof(esp_modem_dce_t));
+    esp_modem_dce_t* dce = calloc(1, sizeof(esp_modem_dce_t));
     ESP_MODEM_ERR_CHECK(dce, "calloc of esp_modem_dce_t failed", err);
     ESP_MODEM_ERR_CHECK(esp_modem_dce_init(dce, config) == ESP_OK, "esp_modem_dce_init has failed", err);
     return dce;
@@ -156,7 +156,7 @@ err:
     return NULL;
 }
 
-esp_err_t esp_modem_dce_init(esp_modem_dce_t *dce, esp_modem_dce_config_t *config)
+esp_err_t esp_modem_dce_init(esp_modem_dce_t* dce, esp_modem_dce_config_t* config)
 {
     esp_err_t err = ESP_OK;
     /* init the default DCE first */

@@ -79,13 +79,13 @@ extern "C" {
 #define CFG_TUSB_RHPORT0_MODE       OPT_MODE_DEVICE | OPT_MODE_FULL_SPEED
 #define CFG_TUSB_OS                 OPT_OS_FREERTOS
 
-/* USB DMA on some MCUs can only access a specific SRAM region with restriction on alignment.
- * Tinyusb use follows macros to declare transferring memory so that they can be put
- * into those specific section.
- * e.g
- * - CFG_TUSB_MEM SECTION : __attribute__ (( section(".usb_ram") ))
- * - CFG_TUSB_MEM_ALIGN   : __attribute__ ((aligned(4)))
- */
+    /* USB DMA on some MCUs can only access a specific SRAM region with restriction on alignment.
+     * Tinyusb use follows macros to declare transferring memory so that they can be put
+     * into those specific section.
+     * e.g
+     * - CFG_TUSB_MEM SECTION : __attribute__ (( section(".usb_ram") ))
+     * - CFG_TUSB_MEM_ALIGN   : __attribute__ ((aligned(4)))
+     */
 #ifndef CFG_TUSB_MEM_SECTION
 #   define CFG_TUSB_MEM_SECTION
 #endif
@@ -98,7 +98,7 @@ extern "C" {
 #define CFG_TUD_ENDPOINT0_SIZE      64
 #endif
 
-// CDC FIFO size of TX and RX
+     // CDC FIFO size of TX and RX
 #define CFG_TUD_CDC_RX_BUFSIZE      CONFIG_TINYUSB_CDC_RX_BUFSIZE
 #define CFG_TUD_CDC_TX_BUFSIZE      CONFIG_TINYUSB_CDC_TX_BUFSIZE
 
@@ -131,7 +131,7 @@ extern "C" {
 #define CFG_TUD_VENDOR              CONFIG_TINYUSB_WEBUSB_ENABLED
 
 /* TODO: will be removed if upstream feat: Add net xmit status cb for application can block to get it #1001*/
-__attribute__((weak)) void tud_network_idle_status_change_cb(bool idle);
+    __attribute__((weak)) void tud_network_idle_status_change_cb(bool idle);
 
 #ifdef __cplusplus
 }

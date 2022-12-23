@@ -72,14 +72,14 @@ MODULE_PARM_DESC(resetpin, "Host's GPIO pin number which is connected to ESP32's
  *
  * Please note: dst & src must both be aligned to u16.
  */
-static inline void ether_addr_copy(u8 *dst, const u8 *src)
+static inline void ether_addr_copy(u8* dst, const u8* src)
 {
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
-    *(u32 *)dst = *(const u32 *)src;
-    *(u16 *)(dst + 4) = *(const u16 *)(src + 4);
+    * (u32*)dst = *(const u32*)src;
+    *(u16*)(dst + 4) = *(const u16*)(src + 4);
 #else
-    u16 *a = (u16 *)dst;
-    const u16 *b = (const u16 *)src;
+    u16* a = (u16*)dst;
+    const u16* b = (const u16*)src;
 
     a[0] = b[0];
     a[1] = b[1];
@@ -88,16 +88,16 @@ static inline void ether_addr_copy(u8 *dst, const u8 *src)
 }
 #endif
 
-static int esp_open(struct net_device *ndev);
-static int esp_stop(struct net_device *ndev);
-static int esp_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev);
-static int esp_set_mac_address(struct net_device *ndev, void *addr);
+static int esp_open(struct net_device* ndev);
+static int esp_stop(struct net_device* ndev);
+static int esp_hard_start_xmit(struct sk_buff* skb, struct net_device* ndev);
+static int esp_set_mac_address(struct net_device* ndev, void* addr);
 NDO_TX_TIMEOUT_PROTOTYPE();
-static struct net_device_stats *esp_get_stats(struct net_device *ndev);
-static void esp_set_rx_mode(struct net_device *ndev);
-static int process_tx_packet(struct sk_buff *skb);
-int esp_send_packet(struct esp_adapter *adapter, struct sk_buff *skb);
-struct sk_buff *esp_alloc_skb(u32 len);
+static struct net_device_stats* esp_get_stats(struct net_device* ndev);
+static void esp_set_rx_mode(struct net_device* ndev);
+static int process_tx_packet(struct sk_buff* skb);
+int esp_send_packet(struct esp_adapter* adapter, struct sk_buff* skb);
+struct sk_buff* esp_alloc_skb(u32 len);
 
 static const struct net_device_ops esp_netdev_ops = {
     .ndo_open = esp_open,
@@ -114,33 +114,33 @@ static const struct net_device_ops esp_netdev_ops = {
 u64 start_time, end_time;
 #endif
 
-struct esp_adapter *esp_get_adapter(void)
+struct esp_adapter* esp_get_adapter(void)
 {
     return &adapter;
 }
 
-static int esp_open(struct net_device *ndev)
+static int esp_open(struct net_device* ndev)
 {
     netif_start_queue(ndev);
     return 0;
 }
 
-static int esp_stop(struct net_device *ndev)
+static int esp_stop(struct net_device* ndev)
 {
     netif_stop_queue(ndev);
     return 0;
 }
 
-static struct net_device_stats *esp_get_stats(struct net_device *ndev)
+static struct net_device_stats* esp_get_stats(struct net_device* ndev)
 {
-    struct esp_private *priv = netdev_priv(ndev);
+    struct esp_private* priv = netdev_priv(ndev);
     return &priv->stats;
 }
 
-static int esp_set_mac_address(struct net_device *ndev, void *data)
+static int esp_set_mac_address(struct net_device* ndev, void* data)
 {
-    struct esp_private *priv = netdev_priv(ndev);
-    struct sockaddr *mac_addr = data;
+    struct esp_private* priv = netdev_priv(ndev);
+    struct sockaddr* mac_addr = data;
 
     if (!priv) {
         return -EINVAL;
@@ -155,14 +155,14 @@ NDO_TX_TIMEOUT_PROTOTYPE()
 {
 }
 
-static void esp_set_rx_mode(struct net_device *ndev)
+static void esp_set_rx_mode(struct net_device* ndev)
 {
 }
 
-static int esp_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+static int esp_hard_start_xmit(struct sk_buff* skb, struct net_device* ndev)
 {
-    struct esp_private *priv = netdev_priv(ndev);
-    struct esp_skb_cb *cb = NULL;
+    struct esp_private* priv = netdev_priv(ndev);
+    struct esp_skb_cb* cb = NULL;
 
     if (!priv) {
         dev_kfree_skb(skb);
@@ -176,7 +176,7 @@ static int esp_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
         return NETDEV_TX_OK;
     }
 
-    cb = (struct esp_skb_cb *) skb->cb;
+    cb = (struct esp_skb_cb*)skb->cb;
     cb->priv = priv;
 
     return process_tx_packet(skb);
@@ -187,9 +187,9 @@ u8 esp_is_bt_supported_over_sdio(u32 cap)
     return (cap & ESP_BT_SDIO_SUPPORT);
 }
 
-static struct esp_private *get_priv_from_payload_header(struct esp_payload_header *header)
+static struct esp_private* get_priv_from_payload_header(struct esp_payload_header* header)
 {
-    struct esp_private *priv = NULL;
+    struct esp_private* priv = NULL;
     u8 i = 0;
 
     if (!header) {
@@ -204,7 +204,7 @@ static struct esp_private *get_priv_from_payload_header(struct esp_payload_heade
         }
 
         if (priv->if_type == header->if_type &&
-                priv->if_num == header->if_num) {
+            priv->if_num == header->if_num) {
             return priv;
         }
     }
@@ -212,29 +212,29 @@ static struct esp_private *get_priv_from_payload_header(struct esp_payload_heade
     return NULL;
 }
 
-void esp_process_new_packet_intr(struct esp_adapter *adapter)
+void esp_process_new_packet_intr(struct esp_adapter* adapter)
 {
     if (adapter) {
         queue_work(adapter->if_rx_workqueue, &adapter->if_rx_work);
     }
 }
 
-static int process_tx_packet(struct sk_buff *skb)
+static int process_tx_packet(struct sk_buff* skb)
 {
-    struct esp_private *priv = NULL;
-    struct esp_skb_cb *cb = NULL;
-    struct esp_payload_header *payload_header = NULL;
-    struct sk_buff *new_skb = NULL;
+    struct esp_private* priv = NULL;
+    struct esp_skb_cb* cb = NULL;
+    struct esp_payload_header* payload_header = NULL;
+    struct sk_buff* new_skb = NULL;
     int ret = 0;
     u8 pad_len = 0, realloc_skb = 0;
     u16 len = 0;
     u16 total_len = 0;
     static u8 c = 0;
-    u8 *pos = NULL;
+    u8* pos = NULL;
 
     c++;
     /* Get the priv */
-    cb = (struct esp_skb_cb *) skb->cb;
+    cb = (struct esp_skb_cb*)skb->cb;
     priv = cb->priv;
 
     if (!priv) {
@@ -242,8 +242,8 @@ static int process_tx_packet(struct sk_buff *skb)
         return NETDEV_TX_OK;
     }
 
-    if (netif_queue_stopped((const struct net_device *) adapter.priv[0]->ndev) ||
-            netif_queue_stopped((const struct net_device *) adapter.priv[1]->ndev)) {
+    if (netif_queue_stopped((const struct net_device*)adapter.priv[0]->ndev) ||
+        netif_queue_stopped((const struct net_device*)adapter.priv[1]->ndev)) {
         return NETDEV_TX_BUSY;
     }
 
@@ -262,7 +262,7 @@ static int process_tx_packet(struct sk_buff *skb)
         realloc_skb = 1;
     }
 
-    if (realloc_skb || !IS_ALIGNED((unsigned long) skb->data, SKB_DATA_ADDR_ALIGNMENT)) {
+    if (realloc_skb || !IS_ALIGNED((unsigned long)skb->data, SKB_DATA_ADDR_ALIGNMENT)) {
         /* Realloc SKB */
         if (skb_linearize(skb)) {
             priv->stats.tx_errors++;
@@ -295,7 +295,7 @@ static int process_tx_packet(struct sk_buff *skb)
     }
 
     /* Set payload header */
-    payload_header = (struct esp_payload_header *) skb->data;
+    payload_header = (struct esp_payload_header*)skb->data;
     memset(payload_header, 0, pad_len);
 
     payload_header->if_type = priv->if_type;
@@ -324,7 +324,7 @@ static int process_tx_packet(struct sk_buff *skb)
 
 void process_capabilities(u8 cap)
 {
-    struct esp_adapter *adapter = esp_get_adapter();
+    struct esp_adapter* adapter = esp_get_adapter();
     printk(KERN_INFO "ESP peripheral capabilities: 0x%x\n", cap);
     adapter->capabilities = cap;
 
@@ -338,15 +338,15 @@ void process_capabilities(u8 cap)
 }
 
 
-static void process_event(u8 *evt_buf, u16 len)
+static void process_event(u8* evt_buf, u16 len)
 {
-    struct esp_priv_event *event;
+    struct esp_priv_event* event;
 
     if (!evt_buf || !len) {
         return;
     }
 
-    event = (struct esp_priv_event *) evt_buf;
+    event = (struct esp_priv_event*)evt_buf;
 
     if (event->event_type == ESP_PRIV_EVENT_INIT) {
         printk(KERN_INFO "\nReceived INIT event from ESP32 peripheral");
@@ -356,17 +356,17 @@ static void process_event(u8 *evt_buf, u16 len)
     }
 }
 
-static void process_priv_communication(struct sk_buff *skb)
+static void process_priv_communication(struct sk_buff* skb)
 {
-    struct esp_payload_header *header;
-    u8 *payload;
+    struct esp_payload_header* header;
+    u8* payload;
     u16 len;
 
     if (!skb || !skb->data) {
         return;
     }
 
-    header = (struct esp_payload_header *) skb->data;
+    header = (struct esp_payload_header*)skb->data;
 
     payload = skb->data + le16_to_cpu(header->offset);
     len = le16_to_cpu(header->len);
@@ -378,15 +378,15 @@ static void process_priv_communication(struct sk_buff *skb)
     dev_kfree_skb(skb);
 }
 
-static void process_rx_packet(struct sk_buff *skb)
+static void process_rx_packet(struct sk_buff* skb)
 {
-    struct esp_private *priv = NULL;
-    struct esp_dhcps *dhcps = NULL;
-    struct esp_payload_header *payload_header = NULL;
+    struct esp_private* priv = NULL;
+    struct esp_dhcps* dhcps = NULL;
+    struct esp_payload_header* payload_header = NULL;
     u16 len = 0, offset = 0;
     u16 rx_checksum = 0, checksum = 0;
-    struct hci_dev *hdev = adapter.hcidev;
-    u8 *type = NULL;
+    struct hci_dev* hdev = adapter.hcidev;
+    u8* type = NULL;
     int ret = 0, ret_len = 0;
 
     if (!skb) {
@@ -394,7 +394,7 @@ static void process_rx_packet(struct sk_buff *skb)
     }
 
     /* get the paload header */
-    payload_header = (struct esp_payload_header *) skb->data;
+    payload_header = (struct esp_payload_header*)skb->data;
 
     len = le16_to_cpu(payload_header->len);
     offset = le16_to_cpu(payload_header->offset);
@@ -415,7 +415,7 @@ static void process_rx_packet(struct sk_buff *skb)
         /* print_hex_dump(KERN_INFO, "esp_serial_rx: ", DUMP_PREFIX_ADDRESS, 16, 1, skb->data + offset, len, 1  ); */
         do {
             ret = esp_serial_data_received(payload_header->if_num,
-                                           (skb->data + offset + ret_len), (len - ret_len));
+                (skb->data + offset + ret_len), (len - ret_len));
 
             if (ret < 0) {
                 printk(KERN_ERR "%s, Failed to process data for iface type %d\n", __func__, payload_header->if_num);
@@ -444,7 +444,7 @@ static void process_rx_packet(struct sk_buff *skb)
         }
 
         if (payload_header->flags == DHCPS_CHANGED) {
-            dhcps = (struct esp_dhcps *)skb->data;
+            dhcps = (struct esp_dhcps*)skb->data;
 
             if (dhcps->set_link == NIC_LINK_DOWN) {
                 printk(KERN_ERR "%s: Down ethsta0\n", __func__);
@@ -488,23 +488,23 @@ static void process_rx_packet(struct sk_buff *skb)
             } else {
                 esp_hci_update_rx_counter(hdev, *type, skb->len);
             }
+            }
+        } else if (payload_header->if_type == ESP_PRIV_IF) {
+            process_priv_communication(skb);
         }
-    } else if (payload_header->if_type == ESP_PRIV_IF) {
-        process_priv_communication(skb);
     }
-}
 
 void esp_tx_pause(void)
 {
     if (adapter.priv[0]->ndev &&
-            !netif_queue_stopped((const struct net_device *)
-                                 adapter.priv[0]->ndev)) {
+        !netif_queue_stopped((const struct net_device*)
+            adapter.priv[0]->ndev)) {
         netif_stop_queue(adapter.priv[0]->ndev);
     }
 
     if (adapter.priv[1]->ndev &&
-            !netif_queue_stopped((const struct net_device *)
-                                 adapter.priv[1]->ndev)) {
+        !netif_queue_stopped((const struct net_device*)
+            adapter.priv[1]->ndev)) {
         netif_stop_queue(adapter.priv[1]->ndev);
     }
 }
@@ -512,21 +512,21 @@ void esp_tx_pause(void)
 void esp_tx_resume(void)
 {
     if (adapter.priv[0]->ndev &&
-            netif_queue_stopped((const struct net_device *)
-                                adapter.priv[0]->ndev)) {
+        netif_queue_stopped((const struct net_device*)
+            adapter.priv[0]->ndev)) {
         netif_wake_queue(adapter.priv[0]->ndev);
     }
 
     if (adapter.priv[1]->ndev &&
-            netif_queue_stopped((const struct net_device *)
-                                adapter.priv[1]->ndev)) {
+        netif_queue_stopped((const struct net_device*)
+            adapter.priv[1]->ndev)) {
         netif_wake_queue(adapter.priv[1]->ndev);
     }
 }
 
-struct sk_buff *esp_alloc_skb(u32 len)
+struct sk_buff* esp_alloc_skb(u32 len)
 {
-    struct sk_buff *skb = NULL;
+    struct sk_buff* skb = NULL;
 
     u8 offset;
 
@@ -545,9 +545,9 @@ struct sk_buff *esp_alloc_skb(u32 len)
 }
 
 
-static int esp_get_packets(struct esp_adapter *adapter)
+static int esp_get_packets(struct esp_adapter* adapter)
 {
-    struct sk_buff *skb = NULL;
+    struct sk_buff* skb = NULL;
 
     if (!adapter || !adapter->if_ops || !adapter->if_ops->read) {
         return -EINVAL;
@@ -564,7 +564,7 @@ static int esp_get_packets(struct esp_adapter *adapter)
     return 0;
 }
 
-int esp_send_packet(struct esp_adapter *adapter, struct sk_buff *skb)
+int esp_send_packet(struct esp_adapter* adapter, struct sk_buff* skb)
 {
     if (!adapter || !adapter->if_ops || !adapter->if_ops->write) {
         return -EINVAL;
@@ -573,7 +573,7 @@ int esp_send_packet(struct esp_adapter *adapter, struct sk_buff *skb)
     return adapter->if_ops->write(adapter, skb);
 }
 
-static int insert_priv_to_adapter(struct esp_private *priv)
+static int insert_priv_to_adapter(struct esp_private* priv)
 {
     int i = 0;
 
@@ -588,8 +588,8 @@ static int insert_priv_to_adapter(struct esp_private *priv)
     return -1;
 }
 
-static int esp_init_priv(struct esp_private *priv, struct net_device *dev,
-                         u8 if_type, u8 if_num)
+static int esp_init_priv(struct esp_private* priv, struct net_device* dev,
+    u8 if_type, u8 if_num)
 {
     int ret = 0;
 
@@ -613,7 +613,7 @@ static int esp_init_priv(struct esp_private *priv, struct net_device *dev,
     return 0;
 }
 
-static int esp_init_net_dev(struct net_device *ndev, struct esp_private *priv)
+static int esp_init_net_dev(struct net_device* ndev, struct esp_private* priv)
 {
     int ret = 0;
     /* Set netdev */
@@ -640,18 +640,18 @@ static int esp_init_net_dev(struct net_device *ndev, struct esp_private *priv)
     return ret;
 }
 
-static int esp_add_interface(struct esp_adapter *adapter, u8 if_type, u8 if_num, char *name)
+static int esp_add_interface(struct esp_adapter* adapter, u8 if_type, u8 if_num, char* name)
 {
-    struct net_device *ndev = NULL;
-    struct esp_private *priv = NULL;
+    struct net_device* ndev = NULL;
+    struct esp_private* priv = NULL;
     int ret = 0;
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
     ndev = alloc_netdev_mqs(sizeof(struct esp_private), name,
-                            NET_NAME_ENUM, ether_setup, 1, 1);
+        NET_NAME_ENUM, ether_setup, 1, 1);
 #else
     ndev = alloc_netdev_mqs(sizeof(struct esp_private), name,
-                            ether_setup, 1, 1);
+        ether_setup, 1, 1);
 #endif
 
     if (!ndev) {
@@ -683,7 +683,7 @@ error_exit:
     return ret;
 }
 
-static void esp_remove_network_interfaces(struct esp_adapter *adapter)
+static void esp_remove_network_interfaces(struct esp_adapter* adapter)
 {
     if (adapter->priv[0]->ndev) {
         netif_stop_queue(adapter->priv[0]->ndev);
@@ -698,7 +698,7 @@ static void esp_remove_network_interfaces(struct esp_adapter *adapter)
     }
 }
 
-int esp_add_card(struct esp_adapter *adapter)
+int esp_add_card(struct esp_adapter* adapter)
 {
     int ret = 0;
 
@@ -727,7 +727,7 @@ int esp_add_card(struct esp_adapter *adapter)
     return ret;
 }
 
-int esp_remove_card(struct esp_adapter *adapter)
+int esp_remove_card(struct esp_adapter* adapter)
 {
     stop_data = 1;
 
@@ -752,7 +752,7 @@ int esp_remove_card(struct esp_adapter *adapter)
     return 0;
 }
 
-static void esp_if_rx_work(struct work_struct *work)
+static void esp_if_rx_work(struct work_struct* work)
 {
     /* read inbound packet and forward it to network/serial interface */
     esp_get_packets(&adapter);
@@ -795,7 +795,7 @@ static void esp_reset(void)
     }
 }
 
-static struct esp_adapter *init_adapter(void)
+static struct esp_adapter* init_adapter(void)
 {
     memset(&adapter, 0, sizeof(adapter));
 
@@ -824,7 +824,7 @@ static struct esp_adapter *init_adapter(void)
 static int __init esp_init(void)
 {
     int ret = 0;
-    struct esp_adapter  *adapter = NULL;
+    struct esp_adapter* adapter = NULL;
 
     /* Reset ESP, Clean start ESP */
     esp_reset();

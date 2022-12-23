@@ -33,13 +33,13 @@
 
 #include "dfu_device.h"
 
-//--------------------------------------------------------------------+
-// MACRO CONSTANT TYPEDEF
-//--------------------------------------------------------------------+
+ //--------------------------------------------------------------------+
+ // MACRO CONSTANT TYPEDEF
+ //--------------------------------------------------------------------+
 
-//--------------------------------------------------------------------+
-// INTERNAL OBJECT & FUNCTION DECLARATION
-//--------------------------------------------------------------------+
+ //--------------------------------------------------------------------+
+ // INTERNAL OBJECT & FUNCTION DECLARATION
+ //--------------------------------------------------------------------+
 typedef struct {
     uint8_t attrs;
     uint8_t alt;
@@ -60,11 +60,11 @@ typedef struct TU_ATTR_PACKED {
 
     union {
         struct TU_ATTR_PACKED {
-            uint8_t bitCanDnload             : 1;
-            uint8_t bitCanUpload             : 1;
+            uint8_t bitCanDnload : 1;
+            uint8_t bitCanUpload : 1;
             uint8_t bitManifestationTolerant : 1;
-            uint8_t bitWillDetach            : 1;
-            uint8_t reserved                 : 4;
+            uint8_t bitWillDetach : 1;
+            uint8_t reserved : 4;
         } bmAttributes;
 
         uint8_t bAttributes;
@@ -85,9 +85,9 @@ static void reset_state(void)
     _dfu_ctx.flashing_in_progress = false;
 }
 
-static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const *request, dfu_state_t state, dfu_status_t status, uint32_t timeout);
-static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
-static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
+static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const* request, dfu_state_t state, dfu_status_t status, uint32_t timeout);
+static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request);
+static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request);
 
 //--------------------------------------------------------------------+
 // Debug
@@ -95,13 +95,13 @@ static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_cont
 #if CFG_TUSB_DEBUG >= 2
 
 static tu_lookup_entry_t const _dfu_request_lookup[] = {
-    { .key = DFU_REQUEST_DETACH, .data = "DETACH"    },
-    { .key = DFU_REQUEST_DNLOAD, .data = "DNLOAD"    },
-    { .key = DFU_REQUEST_UPLOAD, .data = "UPLOAD"    },
-    { .key = DFU_REQUEST_GETSTATUS, .data = "GETSTATUS" },
-    { .key = DFU_REQUEST_CLRSTATUS, .data = "CLRSTATUS" },
-    { .key = DFU_REQUEST_GETSTATE, .data = "GETSTATE"  },
-    { .key = DFU_REQUEST_ABORT, .data = "ABORT"     },
+    {.key = DFU_REQUEST_DETACH, .data = "DETACH"    },
+    {.key = DFU_REQUEST_DNLOAD, .data = "DNLOAD"    },
+    {.key = DFU_REQUEST_UPLOAD, .data = "UPLOAD"    },
+    {.key = DFU_REQUEST_GETSTATUS, .data = "GETSTATUS" },
+    {.key = DFU_REQUEST_CLRSTATUS, .data = "CLRSTATUS" },
+    {.key = DFU_REQUEST_GETSTATE, .data = "GETSTATE"  },
+    {.key = DFU_REQUEST_ABORT, .data = "ABORT"     },
 };
 
 static tu_lookup_table_t const _dfu_request_table = {
@@ -110,17 +110,17 @@ static tu_lookup_table_t const _dfu_request_table = {
 };
 
 static tu_lookup_entry_t const _dfu_state_lookup[] = {
-    { .key = APP_IDLE, .data = "APP_IDLE"                },
-    { .key = APP_DETACH, .data = "APP_DETACH"              },
-    { .key = DFU_IDLE, .data = "IDLE"                },
-    { .key = DFU_DNLOAD_SYNC, .data = "DNLOAD_SYNC"         },
-    { .key = DFU_DNBUSY, .data = "DNBUSY"              },
-    { .key = DFU_DNLOAD_IDLE, .data = "DNLOAD_IDLE"         },
-    { .key = DFU_MANIFEST_SYNC, .data = "MANIFEST_SYNC"       },
-    { .key = DFU_MANIFEST, .data = "MANIFEST"            },
-    { .key = DFU_MANIFEST_WAIT_RESET, .data = "MANIFEST_WAIT_RESET" },
-    { .key = DFU_UPLOAD_IDLE, .data = "UPLOAD_IDLE"         },
-    { .key = DFU_ERROR, .data = "ERROR"               },
+    {.key = APP_IDLE, .data = "APP_IDLE"                },
+    {.key = APP_DETACH, .data = "APP_DETACH"              },
+    {.key = DFU_IDLE, .data = "IDLE"                },
+    {.key = DFU_DNLOAD_SYNC, .data = "DNLOAD_SYNC"         },
+    {.key = DFU_DNBUSY, .data = "DNBUSY"              },
+    {.key = DFU_DNLOAD_IDLE, .data = "DNLOAD_IDLE"         },
+    {.key = DFU_MANIFEST_SYNC, .data = "MANIFEST_SYNC"       },
+    {.key = DFU_MANIFEST, .data = "MANIFEST"            },
+    {.key = DFU_MANIFEST_WAIT_RESET, .data = "MANIFEST_WAIT_RESET" },
+    {.key = DFU_UPLOAD_IDLE, .data = "UPLOAD_IDLE"         },
+    {.key = DFU_ERROR, .data = "ERROR"               },
 };
 
 static tu_lookup_table_t const _dfu_state_table = {
@@ -129,22 +129,22 @@ static tu_lookup_table_t const _dfu_state_table = {
 };
 
 static tu_lookup_entry_t const _dfu_status_lookup[] = {
-    { .key = DFU_STATUS_OK, .data = "OK"              },
-    { .key = DFU_STATUS_ERR_TARGET, .data = "errTARGET"       },
-    { .key = DFU_STATUS_ERR_FILE, .data = "errFILE"         },
-    { .key = DFU_STATUS_ERR_WRITE, .data = "errWRITE"        },
-    { .key = DFU_STATUS_ERR_ERASE, .data = "errERASE"        },
-    { .key = DFU_STATUS_ERR_CHECK_ERASED, .data = "errCHECK_ERASED" },
-    { .key = DFU_STATUS_ERR_PROG, .data = "errPROG"         },
-    { .key = DFU_STATUS_ERR_VERIFY, .data = "errVERIFY"       },
-    { .key = DFU_STATUS_ERR_ADDRESS, .data = "errADDRESS"      },
-    { .key = DFU_STATUS_ERR_NOTDONE, .data = "errNOTDONE"      },
-    { .key = DFU_STATUS_ERR_FIRMWARE, .data = "errFIRMWARE"     },
-    { .key = DFU_STATUS_ERR_VENDOR, .data = "errVENDOR"       },
-    { .key = DFU_STATUS_ERR_USBR, .data = "errUSBR"         },
-    { .key = DFU_STATUS_ERR_POR, .data = "errPOR"          },
-    { .key = DFU_STATUS_ERR_UNKNOWN, .data = "errUNKNOWN"      },
-    { .key = DFU_STATUS_ERR_STALLEDPKT, .data = "errSTALLEDPKT"   },
+    {.key = DFU_STATUS_OK, .data = "OK"              },
+    {.key = DFU_STATUS_ERR_TARGET, .data = "errTARGET"       },
+    {.key = DFU_STATUS_ERR_FILE, .data = "errFILE"         },
+    {.key = DFU_STATUS_ERR_WRITE, .data = "errWRITE"        },
+    {.key = DFU_STATUS_ERR_ERASE, .data = "errERASE"        },
+    {.key = DFU_STATUS_ERR_CHECK_ERASED, .data = "errCHECK_ERASED" },
+    {.key = DFU_STATUS_ERR_PROG, .data = "errPROG"         },
+    {.key = DFU_STATUS_ERR_VERIFY, .data = "errVERIFY"       },
+    {.key = DFU_STATUS_ERR_ADDRESS, .data = "errADDRESS"      },
+    {.key = DFU_STATUS_ERR_NOTDONE, .data = "errNOTDONE"      },
+    {.key = DFU_STATUS_ERR_FIRMWARE, .data = "errFIRMWARE"     },
+    {.key = DFU_STATUS_ERR_VENDOR, .data = "errVENDOR"       },
+    {.key = DFU_STATUS_ERR_USBR, .data = "errUSBR"         },
+    {.key = DFU_STATUS_ERR_POR, .data = "errPOR"          },
+    {.key = DFU_STATUS_ERR_UNKNOWN, .data = "errUNKNOWN"      },
+    {.key = DFU_STATUS_ERR_STALLEDPKT, .data = "errSTALLEDPKT"   },
 };
 
 static tu_lookup_table_t const _dfu_status_table = {
@@ -159,7 +159,7 @@ static tu_lookup_table_t const _dfu_status_table = {
 //--------------------------------------------------------------------+
 void dfu_moded_reset(uint8_t rhport)
 {
-    (void) rhport;
+    (void)rhport;
 
     _dfu_ctx.attrs = 0;
     _dfu_ctx.alt = 0;
@@ -172,9 +172,9 @@ void dfu_moded_init(void)
     dfu_moded_reset(0);
 }
 
-uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, uint16_t max_len)
+uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16_t max_len)
 {
-    (void) rhport;
+    (void)rhport;
 
     //------------- Interface (with Alt) descriptor -------------//
     uint8_t const itf_num = itf_desc->bInterfaceNumber;
@@ -193,18 +193,18 @@ uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, u
         alt_count++;
 
         drv_len += tu_desc_len(itf_desc);
-        itf_desc = (tusb_desc_interface_t const *) tu_desc_next(itf_desc);
+        itf_desc = (tusb_desc_interface_t const*)tu_desc_next(itf_desc);
     }
 
     //------------- DFU Functional descriptor -------------//
-    tusb_desc_dfu_functional_t const *func_desc = (tusb_desc_dfu_functional_t const *) itf_desc;
+    tusb_desc_dfu_functional_t const* func_desc = (tusb_desc_dfu_functional_t const*)itf_desc;
     TU_ASSERT(tu_desc_type(func_desc) == TUSB_DESC_FUNCTIONAL, 0);
     drv_len += sizeof(tusb_desc_dfu_functional_t);
 
     _dfu_ctx.attrs = func_desc->bAttributes;
 
     // CFG_TUD_DFU_XFER_BUFSIZE has to be set to the buffer size used in TUD_DFU_DESCRIPTOR
-    uint16_t const transfer_size = tu_le16toh(tu_unaligned_read16((uint8_t const *) func_desc + offsetof(tusb_desc_dfu_functional_t, wTransferSize)));
+    uint16_t const transfer_size = tu_le16toh(tu_unaligned_read16((uint8_t const*)func_desc + offsetof(tusb_desc_dfu_functional_t, wTransferSize)));
     TU_ASSERT(transfer_size <= CFG_TUD_DFU_XFER_BUFSIZE, drv_len);
 
     return drv_len;
@@ -213,7 +213,7 @@ uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, u
 // Invoked when a control transfer occurred on an interface of this class
 // Driver response accordingly to the request and the transfer stage (setup/data/ack)
 // return false to stall control endpoint (e.g unsupported request)
-bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
+bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
 {
     TU_VERIFY(request->bmRequestType_bit.recipient == TUSB_REQ_RCPT_INTERFACE);
 
@@ -225,7 +225,7 @@ bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_reque
         case TUSB_REQ_SET_INTERFACE:
             if (stage == CONTROL_STAGE_SETUP) {
                 // Switch Alt interface and reset state machine
-                _dfu_ctx.alt = (uint8_t) request->wValue;
+                _dfu_ctx.alt = (uint8_t)request->wValue;
                 reset_state();
                 return tud_control_status(rhport, request);
             }
@@ -239,7 +239,7 @@ bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_reque
 
             break;
 
-        // unsupported request
+            // unsupported request
         default:
             return false;
         }
@@ -309,7 +309,7 @@ bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_reque
                 _dfu_ctx.flashing_in_progress = true;
 
                 // save block and length for flashing
-                _dfu_ctx.block  = request->wValue;
+                _dfu_ctx.block = request->wValue;
                 _dfu_ctx.length = request->wLength;
 
                 if (request->wLength) {
@@ -364,7 +364,7 @@ void tud_dfu_finish_flashing(uint8_t status)
             _dfu_ctx.state = DFU_DNLOAD_SYNC;
         } else if (_dfu_ctx.state == DFU_MANIFEST) {
             _dfu_ctx.state = (_dfu_ctx.attrs & DFU_ATTR_MANIFESTATION_TOLERANT)
-                             ? DFU_MANIFEST_SYNC : DFU_MANIFEST_WAIT_RESET;
+                ? DFU_MANIFEST_SYNC : DFU_MANIFEST_WAIT_RESET;
         }
     } else {
         // failed while flashing, move to dfuError
@@ -373,7 +373,7 @@ void tud_dfu_finish_flashing(uint8_t status)
     }
 }
 
-static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
+static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
 {
     if (stage == CONTROL_STAGE_SETUP) {
         // only transition to next state on CONTROL_STAGE_ACK
@@ -382,7 +382,7 @@ static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_cont
 
         if (_dfu_ctx.flashing_in_progress) {
             next_state = DFU_DNBUSY;
-            timeout = tud_dfu_get_timeout_cb(_dfu_ctx.alt, (uint8_t) next_state);
+            timeout = tud_dfu_get_timeout_cb(_dfu_ctx.alt, (uint8_t)next_state);
         } else {
             next_state = DFU_DNLOAD_IDLE;
             timeout = 0;
@@ -401,7 +401,7 @@ static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_cont
     return true;
 }
 
-static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
+static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
 {
     if (stage == CONTROL_STAGE_SETUP) {
         // only transition to next state on CONTROL_STAGE_ACK
@@ -429,15 +429,15 @@ static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_cont
     return true;
 }
 
-static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const *request, dfu_state_t state, dfu_status_t status, uint32_t timeout)
+static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const* request, dfu_state_t state, dfu_status_t status, uint32_t timeout)
 {
     dfu_status_response_t resp;
-    resp.bStatus          = (uint8_t) status;
+    resp.bStatus = (uint8_t)status;
     resp.bwPollTimeout[0] = TU_U32_BYTE0(timeout);
     resp.bwPollTimeout[1] = TU_U32_BYTE1(timeout);
     resp.bwPollTimeout[2] = TU_U32_BYTE2(timeout);
-    resp.bState           = (uint8_t) state;
-    resp.iString          = 0;
+    resp.bState = (uint8_t)state;
+    resp.iString = 0;
 
     return tud_control_xfer(rhport, request, &resp, sizeof(dfu_status_response_t));
 }

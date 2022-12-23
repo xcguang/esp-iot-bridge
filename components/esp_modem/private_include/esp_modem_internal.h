@@ -20,10 +20,10 @@ extern "C" {
 #include "esp_log.h"
 #include "esp_modem.h"
 
-/**
-* @brief Macro defined for error checking
-*
-*/
+    /**
+    * @brief Macro defined for error checking
+    *
+    */
 #define ESP_MODEM_ERR_CHECK(a, str, goto_tag, ...)                                    \
     do                                                                                \
     {                                                                                 \
@@ -34,14 +34,14 @@ extern "C" {
         }                                                                             \
     } while (0)
 
-/**
-* @brief common modem delay function
-*
-*/
-static inline void esp_modem_wait_ms(size_t time)
-{
-    vTaskDelay(pdMS_TO_TICKS(time));
-}
+    /**
+    * @brief common modem delay function
+    *
+    */
+    static inline void esp_modem_wait_ms(size_t time)
+    {
+        vTaskDelay(pdMS_TO_TICKS(time));
+    }
 
 #ifdef __cplusplus
 }

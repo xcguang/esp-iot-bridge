@@ -23,9 +23,9 @@ static uint8_t s_pdrv = 0;
 static int s_disk_block_size = 0;
 
 #define LOGICAL_DISK_NUM 1
-static bool ejected[LOGICAL_DISK_NUM] = {true};
+static bool ejected[LOGICAL_DISK_NUM] = { true };
 
-esp_err_t tusb_msc_init(const tinyusb_config_msc_t *cfg)
+esp_err_t tusb_msc_init(const tinyusb_config_msc_t* cfg)
 {
     if (cfg == NULL) {
         return ESP_ERR_INVALID_ARG;
@@ -141,7 +141,7 @@ bool tud_msc_test_unit_ready_cb(uint8_t lun)
 
 // Invoked when received SCSI_CMD_READ_CAPACITY_10 and SCSI_CMD_READ_FORMAT_CAPACITY to determine the disk size
 // Application update block count and block size
-void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_size)
+void tud_msc_capacity_cb(uint8_t lun, uint32_t* block_count, uint16_t* block_size)
 {
     ESP_LOGD(__func__, "");
 
@@ -174,7 +174,7 @@ bool tud_msc_is_writable_cb(uint8_t lun)
 bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, bool load_eject)
 {
     ESP_LOGI(__func__, "");
-    (void) power_condition;
+    (void)power_condition;
 
     if (lun >= LOGICAL_DISK_NUM) {
         ESP_LOGE(__func__, "invalid lun number %u", lun);
@@ -209,7 +209,7 @@ bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, boo
 
 // Callback invoked when received READ10 command.
 // Copy disk's data to buffer (up to bufsize) and return number of copied bytes.
-int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buffer, uint32_t bufsize)
+int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void* buffer, uint32_t bufsize)
 {
     ESP_LOGD(__func__, "");
 
@@ -225,10 +225,10 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buff
 
 // Callback invoked when received WRITE10 command.
 // Process data in buffer to disk's storage and return number of written bytes
-int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *buffer, uint32_t bufsize)
+int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize)
 {
     ESP_LOGD(__func__, "");
-    (void) offset;
+    (void)offset;
 
     if (lun >= LOGICAL_DISK_NUM) {
         ESP_LOGE(__func__, "invalid lun number %u", lun);
@@ -243,7 +243,7 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
 // Callback invoked when received an SCSI command not in built-in list below
 // - READ_CAPACITY10, READ_FORMAT_CAPACITY, INQUIRY, MODE_SENSE6, REQUEST_SENSE
 // - READ10 and WRITE10 has their own callbacks
-int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize)
+int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void* buffer, uint16_t bufsize)
 {
     // read10 & write10 has their own callback and MUST not be handled here
     ESP_LOGD(__func__, "");
@@ -253,7 +253,7 @@ int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, u
         return 0;
     }
 
-    void const *response = NULL;
+    void const* response = NULL;
     uint16_t resplen = 0;
 
     // most scsi handled is input

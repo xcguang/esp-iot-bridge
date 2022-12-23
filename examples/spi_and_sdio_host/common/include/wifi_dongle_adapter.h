@@ -20,9 +20,9 @@
  */
 enum ip_addr_type {
     /** IPv4 */
-    TYPE_V4 =   0U,
+    TYPE_V4 = 0U,
     /** IPv6 */
-    TYPE_V6 =   6U,
+    TYPE_V6 = 6U,
     /** IPv4+IPv6 ("dual-stack") */
     TYPE_ANY = 46U
 };
@@ -63,8 +63,8 @@ struct esp_dhcps {
 typedef struct esp_dhcps esp_dhcps_t;
 
 struct esp_payload_header {
-    uint8_t          if_type: 4;
-    uint8_t          if_num: 4;
+    uint8_t          if_type : 4;
+    uint8_t          if_num : 4;
     uint8_t          flags;
     uint16_t         len;
     uint16_t         offset;
@@ -128,7 +128,7 @@ struct esp_priv_event {
 } __attribute__((packed));
 
 
-static inline uint16_t compute_checksum(uint8_t *buf, uint16_t len)
+static inline uint16_t compute_checksum(uint8_t* buf, uint16_t len)
 {
     uint16_t checksum = 0;
     uint16_t i = 0;

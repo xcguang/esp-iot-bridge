@@ -24,14 +24,14 @@ extern "C" {
 #include "esp_err.h"
 #include "tinyusb.h"
 
-/**
- * @brief Initialize NET Device.
- */
-void tusb_net_init(void);
+    /**
+     * @brief Initialize NET Device.
+     */
+    void tusb_net_init(void);
 
-void ecm_close(void);
+    void ecm_close(void);
 
-void ecm_open(void);
+    void ecm_open(void);
 
 #ifdef __cplusplus
 }

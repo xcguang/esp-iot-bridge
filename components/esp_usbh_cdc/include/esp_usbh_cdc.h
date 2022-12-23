@@ -22,7 +22,7 @@
 /**
  * @brief USB receive callback type
  */
-typedef void(*usbh_cdc_cb_t)(void *arg);
+typedef void(*usbh_cdc_cb_t)(void* arg);
 
 /**
  * @brief USB host CDC configuration type, callbacks should not in block state
@@ -32,14 +32,14 @@ typedef struct usbh_cdc_config {
     uint8_t bulk_out_ep_addr;        /*!< USB CDC bulk out endpoint address, will be overwritten if bulk_out_ep is specified */
     int rx_buffer_size;              /*!< USB receive/in ringbuffer size */
     int tx_buffer_size;              /*!< USB transport/out ringbuffer size */
-    usb_ep_desc_t *bulk_in_ep;       /*!< USB CDC bulk in endpoint descriptor, set NULL if using default param */
-    usb_ep_desc_t *bulk_out_ep;      /*!< USB CDC bulk out endpoint descriptor, set NULL if using default param */
+    usb_ep_desc_t* bulk_in_ep;       /*!< USB CDC bulk in endpoint descriptor, set NULL if using default param */
+    usb_ep_desc_t* bulk_out_ep;      /*!< USB CDC bulk out endpoint descriptor, set NULL if using default param */
     usbh_cdc_cb_t conn_callback;     /*!< USB connect calllback, set NULL if not use */
     usbh_cdc_cb_t disconn_callback;  /*!< USB disconnect calllback, usb cdc driver reset to connect waitting after disconnect, set NULL if not use */
     usbh_cdc_cb_t rx_callback;       /*!< packet receive callback, set NULL if not use */
-    void *conn_callback_arg;         /*!< USB connect calllback args, set NULL if not use  */
-    void *disconn_callback_arg;      /*!< USB disconnect calllback args, set NULL if not use */
-    void *rx_callback_arg;           /*!< packet receive callback args, set NULL if not use */
+    void* conn_callback_arg;         /*!< USB connect calllback args, set NULL if not use  */
+    void* disconn_callback_arg;      /*!< USB disconnect calllback args, set NULL if not use */
+    void* rx_callback_arg;           /*!< packet receive callback args, set NULL if not use */
 } usbh_cdc_config_t;
 
 /**
@@ -52,7 +52,7 @@ typedef struct usbh_cdc_config {
  *         ESP_FAIL driver install failed
  *         ESP_OK driver install succeed
  */
-esp_err_t usbh_cdc_driver_install(const usbh_cdc_config_t *config);
+esp_err_t usbh_cdc_driver_install(const usbh_cdc_config_t* config);
 
 /**
  * @brief Uninstall USB driver.
@@ -82,7 +82,7 @@ esp_err_t usbh_cdc_wait_connect(TickType_t ticks_to_wait);
  * @param length data length to send
  * @return int The number of bytes pushed to the tx buffer
  */
-int usbh_cdc_write_bytes(const uint8_t *buf, size_t length);
+int usbh_cdc_write_bytes(const uint8_t* buf, size_t length);
 
 /**
  * @brief Get USB receive ring buffer cached data length.
@@ -94,7 +94,7 @@ int usbh_cdc_write_bytes(const uint8_t *buf, size_t length);
  *         ESP_FAIL start failed
  *         ESP_OK start succeed
  */
-esp_err_t usbh_cdc_get_buffered_data_len(size_t *size);
+esp_err_t usbh_cdc_get_buffered_data_len(size_t* size);
 
 /**
  * @brief Read data bytes from USB receive/in buffer.
@@ -104,7 +104,7 @@ esp_err_t usbh_cdc_get_buffered_data_len(size_t *size);
  * @param ticks_to_wait sTimeout, count in RTOS ticks
  * @return int The number of bytes read from USB FIFO
  */
-int usbh_cdc_read_bytes(uint8_t *buf, size_t length, TickType_t ticks_to_wait);
+int usbh_cdc_read_bytes(uint8_t* buf, size_t length, TickType_t ticks_to_wait);
 
 /**
  * @brief print internal memory usage for debug

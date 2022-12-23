@@ -33,41 +33,41 @@
 
 #include "dfu_rt_device.h"
 
-//--------------------------------------------------------------------+
-// MACRO CONSTANT TYPEDEF
-//--------------------------------------------------------------------+
+ //--------------------------------------------------------------------+
+ // MACRO CONSTANT TYPEDEF
+ //--------------------------------------------------------------------+
 
-//--------------------------------------------------------------------+
-// INTERNAL OBJECT & FUNCTION DECLARATION
-//--------------------------------------------------------------------+
+ //--------------------------------------------------------------------+
+ // INTERNAL OBJECT & FUNCTION DECLARATION
+ //--------------------------------------------------------------------+
 
-//--------------------------------------------------------------------+
-// USBD Driver API
-//--------------------------------------------------------------------+
+ //--------------------------------------------------------------------+
+ // USBD Driver API
+ //--------------------------------------------------------------------+
 void dfu_rtd_init(void)
 {
 }
 
 void dfu_rtd_reset(uint8_t rhport)
 {
-    (void) rhport;
+    (void)rhport;
 }
 
-uint16_t dfu_rtd_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, uint16_t max_len)
+uint16_t dfu_rtd_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16_t max_len)
 {
-    (void) rhport;
-    (void) max_len;
+    (void)rhport;
+    (void)max_len;
 
     // Ensure this is DFU Runtime
     TU_VERIFY((itf_desc->bInterfaceSubClass == TUD_DFU_APP_SUBCLASS) &&
-              (itf_desc->bInterfaceProtocol == DFU_PROTOCOL_RT), 0);
+        (itf_desc->bInterfaceProtocol == DFU_PROTOCOL_RT), 0);
 
-    uint8_t const *p_desc = tu_desc_next(itf_desc);
+    uint8_t const* p_desc = tu_desc_next(itf_desc);
     uint16_t drv_len = sizeof(tusb_desc_interface_t);
 
     if (TUSB_DESC_FUNCTIONAL == tu_desc_type(p_desc)) {
         drv_len += tu_desc_len(p_desc);
-        p_desc   = tu_desc_next(p_desc);
+        p_desc = tu_desc_next(p_desc);
     }
 
     return drv_len;
@@ -76,7 +76,7 @@ uint16_t dfu_rtd_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, uin
 // Invoked when a control transfer occurred on an interface of this class
 // Driver response accordingly to the request and the transfer stage (setup/data/ack)
 // return false to stall control endpoint (e.g unsupported request)
-bool dfu_rtd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
+bool dfu_rtd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
 {
     // nothing to do with DATA or ACK stage
     if (stage != CONTROL_STAGE_SETUP) {
@@ -87,7 +87,7 @@ bool dfu_rtd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request
 
     // dfu-util will try to claim the interface with SET_INTERFACE request before sending DFU request
     if (TUSB_REQ_TYPE_STANDARD == request->bmRequestType_bit.type &&
-            TUSB_REQ_SET_INTERFACE == request->bRequest) {
+        TUSB_REQ_SET_INTERFACE == request->bRequest) {
         tud_control_status(rhport, request);
         return true;
     }
@@ -101,7 +101,7 @@ bool dfu_rtd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request
         tud_control_status(rhport, request);
         tud_dfu_runtime_reboot_to_dfu_cb();
     }
-    break;
+                           break;
 
     case DFU_REQUEST_GETSTATUS: {
         TU_LOG2("  DFU RT Request: GETSTATUS\r\n");
@@ -110,7 +110,7 @@ bool dfu_rtd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request
         memset(&resp, 0x00, sizeof(dfu_status_response_t));
         tud_control_xfer(rhport, request, &resp, sizeof(dfu_status_response_t));
     }
-    break;
+                              break;
 
     default: {
         TU_LOG2("  DFU RT Unexpected Request: %d\r\n", request->bRequest);

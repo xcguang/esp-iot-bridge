@@ -30,7 +30,7 @@
 #define ESP_IF_TYPE_SDIO        1
 #define ESP_IF_TYPE_SPI         2
 
-/* Network link status */
+ /* Network link status */
 #define ESP_LINK_DOWN           0
 #define ESP_LINK_UP             1
 
@@ -52,26 +52,26 @@ struct esp_adapter {
 
     /* Possible types:
      * struct esp_sdio_context */
-    void                    *if_context;
+    void* if_context;
 
-    struct esp_if_ops       *if_ops;
+    struct esp_if_ops* if_ops;
 
     /* Private for each interface */
-    struct esp_private      *priv[ESP_MAX_INTERFACE];
-    struct hci_dev          *hcidev;
+    struct esp_private* priv[ESP_MAX_INTERFACE];
+    struct hci_dev* hcidev;
 
-    struct workqueue_struct *if_rx_workqueue;
+    struct workqueue_struct* if_rx_workqueue;
     struct work_struct       if_rx_work;
 
     /* Process TX work */
-    struct workqueue_struct *tx_workqueue;
+    struct workqueue_struct* tx_workqueue;
     struct work_struct      tx_work;
 };
 
 
 struct esp_private {
-    struct esp_adapter      *adapter;
-    struct net_device       *ndev;
+    struct esp_adapter* adapter;
+    struct net_device* ndev;
     struct net_device_stats stats;
     u8                      link_state;
     u8                      mac_address[6];
@@ -80,6 +80,6 @@ struct esp_private {
 };
 
 struct esp_skb_cb {
-    struct esp_private      *priv;
+    struct esp_private* priv;
 };
 #endif

@@ -21,7 +21,7 @@ extern "C"
 {
 #endif
 
-esp_err_t StartWebServer(void);
+    esp_err_t StartWebServer(void);
 
 #ifdef __cplusplus
 }

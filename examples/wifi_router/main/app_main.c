@@ -38,8 +38,8 @@
 #define BUTTON_PRESS_TIME     5000000
 #define BUTTON_REPEAT_TIME    5
 
-static const char *TAG = "main";
-static button_handle_t g_btns[BUTTON_NUM] = {0};
+static const char* TAG = "main";
+static button_handle_t g_btns[BUTTON_NUM] = { 0 };
 static bool button_long_press = false;
 static esp_timer_handle_t restart_timer;
 
@@ -57,7 +57,7 @@ static esp_err_t esp_storage_init(void)
     return ret;
 }
 
-static void button_press_up_cb(void *hardware_data, void *usr_data)
+static void button_press_up_cb(void* hardware_data, void* usr_data)
 {
     ESP_LOGI(TAG, "BTN: BUTTON_PRESS_UP");
 
@@ -67,20 +67,20 @@ static void button_press_up_cb(void *hardware_data, void *usr_data)
     }
 }
 
-static void button_press_repeat_cb(void *hardware_data, void *usr_data)
+static void button_press_repeat_cb(void* hardware_data, void* usr_data)
 {
     uint8_t press_repeat = iot_button_get_repeat((button_handle_t)hardware_data);
     ESP_LOGI(TAG, "BTN: BUTTON_PRESS_REPEAT[%d]", press_repeat);
 }
 
-static void button_long_press_start_cb(void *hardware_data, void *usr_data)
+static void button_long_press_start_cb(void* hardware_data, void* usr_data)
 {
     ESP_LOGI(TAG, "BTN: BUTTON_LONG_PRESS_START");
     button_long_press = true;
     ESP_ERROR_CHECK(esp_timer_start_once(restart_timer, BUTTON_PRESS_TIME));
 }
 
-static void restart_timer_callback(void *arg)
+static void restart_timer_callback(void* arg)
 {
     ESP_LOGI(TAG, "Restore factory settings");
     nvs_flash_erase();
