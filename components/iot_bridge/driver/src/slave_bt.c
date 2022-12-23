@@ -47,13 +47,13 @@ static void controller_rcv_pkt_ready(void)
     }
 }
 
-static int host_rcv_pkt(uint8_t* data, uint16_t len)
+static int host_rcv_pkt(uint8_t *data, uint16_t len)
 {
     esp_err_t ret = ESP_OK;
     interface_buffer_handle_t buf_handle;
-    uint8_t* buf = NULL;
+    uint8_t *buf = NULL;
 
-    buf = (uint8_t*)malloc(len);
+    buf = (uint8_t *)malloc(len);
 
     if (!buf) {
         ESP_LOGE(BT_TAG, "HCI Send packet: memory allocation failed");
@@ -90,7 +90,7 @@ static esp_vhci_host_callback_t vhci_host_cb = {
     host_rcv_pkt
 };
 
-void process_hci_rx_pkt(uint8_t* payload, uint16_t payload_len)
+void process_hci_rx_pkt(uint8_t *payload, uint16_t payload_len)
 {
     /* VHCI needs one extra byte at the start of payload */
     /* that is accomodated in esp_payload_header */
@@ -120,15 +120,15 @@ void process_hci_rx_pkt(uint8_t* payload, uint16_t payload_len)
 // Operation functions for HCI UART Transport Layer
 static bool hci_uart_tl_init(void);
 static void hci_uart_tl_deinit(void);
-static void hci_uart_tl_recv_async(uint8_t* buf, uint32_t size, esp_bt_hci_tl_callback_t callback, void* arg);
-static void hci_uart_tl_send_async(uint8_t* buf, uint32_t size, esp_bt_hci_tl_callback_t callback, void* arg);
+static void hci_uart_tl_recv_async(uint8_t *buf, uint32_t size, esp_bt_hci_tl_callback_t callback, void *arg);
+static void hci_uart_tl_send_async(uint8_t *buf, uint32_t size, esp_bt_hci_tl_callback_t callback, void *arg);
 static void hci_uart_tl_flow_on(void);
 static bool hci_uart_tl_flow_off(void);
 static void hci_uart_tl_finish_transfers(void);
 
 struct uart_txrxchannel {
     esp_bt_hci_tl_callback_t callback;
-    void* arg;
+    void *arg;
     lldesc_t link;
 };
 
@@ -139,7 +139,7 @@ struct uart_env_tag {
 
 struct uart_env_tag uart_env;
 
-static volatile uhci_dev_t* s_uhci_hw = &UHCI0;
+static volatile uhci_dev_t *s_uhci_hw = &UHCI0;
 static gdma_channel_handle_t s_rx_channel;
 static gdma_channel_handle_t s_tx_channel;
 
@@ -147,13 +147,13 @@ static esp_bt_hci_tl_t s_hci_uart_tl_funcs = {
     ._magic = ESP_BT_HCI_TL_MAGIC_VALUE,
     ._version = ESP_BT_HCI_TL_VERSION,
     ._reserved = 0,
-    ._open = (void*)hci_uart_tl_init,
-    ._close = (void*)hci_uart_tl_deinit,
-    ._finish_transfers = (void*)hci_uart_tl_finish_transfers,
-    ._recv = (void*)hci_uart_tl_recv_async,
-    ._send = (void*)hci_uart_tl_send_async,
-    ._flow_on = (void*)hci_uart_tl_flow_on,
-    ._flow_off = (void*)hci_uart_tl_flow_off,
+    ._open = (void *)hci_uart_tl_init,
+    ._close = (void *)hci_uart_tl_deinit,
+    ._finish_transfers = (void *)hci_uart_tl_finish_transfers,
+    ._recv = (void *)hci_uart_tl_recv_async,
+    ._send = (void *)hci_uart_tl_send_async,
+    ._flow_on = (void *)hci_uart_tl_flow_on,
+    ._flow_off = (void *)hci_uart_tl_flow_off,
 };
 
 static bool hci_uart_tl_init(void)
@@ -165,8 +165,8 @@ static void hci_uart_tl_deinit(void)
 {
 }
 
-static IRAM_ATTR void hci_uart_tl_recv_async(uint8_t* buf, uint32_t size,
-    esp_bt_hci_tl_callback_t callback, void* arg)
+static IRAM_ATTR void hci_uart_tl_recv_async(uint8_t *buf, uint32_t size,
+        esp_bt_hci_tl_callback_t callback, void *arg)
 {
     assert(buf != NULL);
     assert(size != 0);
@@ -183,8 +183,8 @@ static IRAM_ATTR void hci_uart_tl_recv_async(uint8_t* buf, uint32_t size,
     gdma_start(s_rx_channel, (intptr_t)(&uart_env.rx.link));
 }
 
-static IRAM_ATTR void hci_uart_tl_send_async(uint8_t* buf, uint32_t size,
-    esp_bt_hci_tl_callback_t callback, void* arg)
+static IRAM_ATTR void hci_uart_tl_send_async(uint8_t *buf, uint32_t size,
+        esp_bt_hci_tl_callback_t callback, void *arg)
 {
     assert(buf != NULL);
     assert(size != 0);
@@ -215,12 +215,12 @@ static void hci_uart_tl_finish_transfers(void)
 }
 
 static IRAM_ATTR bool hci_uart_tl_rx_eof_callback(gdma_channel_handle_t dma_chan,
-    gdma_event_data_t* event_data, void* user_data)
+        gdma_event_data_t *event_data, void *user_data)
 {
     assert(dma_chan == s_rx_channel);
     assert(uart_env.rx.callback != NULL);
     esp_bt_hci_tl_callback_t callback = uart_env.rx.callback;
-    void* arg = uart_env.rx.arg;
+    void *arg = uart_env.rx.arg;
 
     // clear callback pointer
     uart_env.rx.callback = NULL;
@@ -236,12 +236,12 @@ static IRAM_ATTR bool hci_uart_tl_rx_eof_callback(gdma_channel_handle_t dma_chan
 }
 
 static IRAM_ATTR bool hci_uart_tl_tx_eof_callback(gdma_channel_handle_t dma_chan,
-    gdma_event_data_t* event_data, void* user_data)
+        gdma_event_data_t *event_data, void *user_data)
 {
     assert(dma_chan == s_tx_channel);
     assert(uart_env.tx.callback != NULL);
     esp_bt_hci_tl_callback_t callback = uart_env.tx.callback;
-    void* arg = uart_env.tx.arg;
+    void *arg = uart_env.tx.arg;
 
     // clear callback pointer
     uart_env.tx.callback = NULL;
@@ -291,12 +291,12 @@ static void init_uart(void)
 #endif
 
     ESP_ERROR_CHECK(uart_set_pin(BLUETOOTH_UART, BT_TX_PIN,
-        BT_RX_PIN, BT_RTS_PIN, BT_CTS_PIN));
+                                 BT_RX_PIN, BT_RTS_PIN, BT_CTS_PIN));
 
 #ifdef CONFIG_IDF_TARGET_ESP32C3
     // configure UART1
     ESP_LOGI(BT_TAG, "baud rate for HCI uart :: %d \n",
-        CONFIG_EXAMPLE_ESP32C3_HCI_UART_BAUDRATE);
+             CONFIG_EXAMPLE_ESP32C3_HCI_UART_BAUDRATE);
 
     uart_config_t uart_config = {
         .baud_rate = CONFIG_EXAMPLE_ESP32C3_HCI_UART_BAUDRATE,

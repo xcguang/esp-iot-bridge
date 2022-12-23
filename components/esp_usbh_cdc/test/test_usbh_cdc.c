@@ -46,7 +46,7 @@ static usb_ep_desc_t bulk_in_ep_desc = {
     .bInterval = 0,
 };
 
-static void usb_read_task(void* param)
+static void usb_read_task(void *param)
 {
     size_t data_len = 0;
     uint8_t buf[256];

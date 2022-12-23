@@ -20,9 +20,9 @@
 #include "ping/ping_sock.h"
 #include "lwip/netdb.h"
 
-static const char* TAG = "modem_console_ping";
+static const char *TAG = "modem_console_ping";
 
-static void cmd_ping_on_ping_success(esp_ping_handle_t hdl, void* args)
+static void cmd_ping_on_ping_success(esp_ping_handle_t hdl, void *args)
 {
     uint8_t ttl;
     uint16_t seqno;
@@ -34,10 +34,10 @@ static void cmd_ping_on_ping_success(esp_ping_handle_t hdl, void* args)
     esp_ping_get_profile(hdl, ESP_PING_PROF_SIZE, &recv_len, sizeof(recv_len));
     esp_ping_get_profile(hdl, ESP_PING_PROF_TIMEGAP, &elapsed_time, sizeof(elapsed_time));
     ESP_LOGI(TAG, "%d bytes from %s icmp_seq=%d ttl=%d time=%d ms\n",
-        recv_len, inet_ntoa(target_addr.u_addr.ip4), seqno, ttl, elapsed_time);
+             recv_len, inet_ntoa(target_addr.u_addr.ip4), seqno, ttl, elapsed_time);
 }
 
-static void cmd_ping_on_ping_timeout(esp_ping_handle_t hdl, void* args)
+static void cmd_ping_on_ping_timeout(esp_ping_handle_t hdl, void *args)
 {
     uint16_t seqno;
     ip_addr_t target_addr;
@@ -46,7 +46,7 @@ static void cmd_ping_on_ping_timeout(esp_ping_handle_t hdl, void* args)
     ESP_LOGE(TAG, "From %s icmp_seq=%d timeout\n", inet_ntoa(target_addr.u_addr.ip4), seqno);
 }
 
-static void cmd_ping_on_ping_end(esp_ping_handle_t hdl, void* args)
+static void cmd_ping_on_ping_end(esp_ping_handle_t hdl, void *args)
 {
     ip_addr_t target_addr;
     uint32_t transmitted;
@@ -65,24 +65,24 @@ static void cmd_ping_on_ping_end(esp_ping_handle_t hdl, void* args)
     }
 
     ESP_LOGI(TAG, "%d packets transmitted, %d received, %d%% packet loss, time %dms\n",
-        transmitted, received, loss, total_time_ms);
+             transmitted, received, loss, total_time_ms);
     // delete the ping sessions, so that we clean up all resources and can create a new ping session
     // we don't have to call delete function in the callback, instead we can call delete function from other tasks
     esp_ping_delete_session(hdl);
 }
 
 static struct {
-    struct arg_dbl* timeout;
-    struct arg_int* count;
-    struct arg_str* host;
-    struct arg_end* end;
+    struct arg_dbl *timeout;
+    struct arg_int *count;
+    struct arg_str *host;
+    struct arg_end *end;
 } ping_args;
 
-static int do_ping_cmd(int argc, char** argv)
+static int do_ping_cmd(int argc, char **argv)
 {
     esp_ping_config_t config = ESP_PING_DEFAULT_CONFIG();
 
-    int nerrors = arg_parse(argc, argv, (void**)&ping_args);
+    int nerrors = arg_parse(argc, argv, (void **)&ping_args);
 
     if (nerrors != 0) {
         arg_print_errors(stderr, ping_args.end, argv[0]);
@@ -100,7 +100,7 @@ static int do_ping_cmd(int argc, char** argv)
     // parse IP address
     ip_addr_t target_addr;
     struct addrinfo hint;
-    struct addrinfo* res = NULL;
+    struct addrinfo *res = NULL;
     memset(&hint, 0, sizeof(hint));
     memset(&target_addr, 0, sizeof(target_addr));
 
@@ -111,10 +111,10 @@ static int do_ping_cmd(int argc, char** argv)
     }
 
     if (res->ai_family == AF_INET) {
-        struct in_addr addr4 = ((struct sockaddr_in*)(res->ai_addr))->sin_addr;
+        struct in_addr addr4 = ((struct sockaddr_in *)(res->ai_addr))->sin_addr;
         inet_addr_to_ip4addr(ip_2_ip4(&target_addr), &addr4);
     } else {
-        struct in6_addr addr6 = ((struct sockaddr_in6*)(res->ai_addr))->sin6_addr;
+        struct in6_addr addr6 = ((struct sockaddr_in6 *)(res->ai_addr))->sin6_addr;
         inet6_addr_to_ip6addr(ip_2_ip6(&target_addr), &addr6);
     }
 

@@ -9,32 +9,32 @@
  *
  ******************************************************************************/
 
- /**
-  \ingroup usbstick
-  \defgroup RNDIS RNDIS Support
-  @{
-  */
+/**
+ \ingroup usbstick
+ \defgroup RNDIS RNDIS Support
+ @{
+ */
 
-  /*
-   * ndis.h
-   *
-   * Modified by Colin O'Flynn <coflynn@newae.com>
-   * ntddndis.h modified by Benedikt Spranger <b.spranger@pengutronix.de>
-   *
-   * Thanks to the cygwin development team,
-   * espacially to Casper S. Hornstrup <chorns@users.sourceforge.net>
-   *
-   * THIS SOFTWARE IS NOT COPYRIGHTED
-   *
-   * This source code is offered for use in the public domain. You may
-   * use, modify or distribute it freely.
-   *
-   * This code is distributed in the hope that it will be useful but
-   * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
-   * DISCLAIMED. This includes but is not limited to warranties of
-   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-   *
-   */
+/*
+ * ndis.h
+ *
+ * Modified by Colin O'Flynn <coflynn@newae.com>
+ * ntddndis.h modified by Benedikt Spranger <b.spranger@pengutronix.de>
+ *
+ * Thanks to the cygwin development team,
+ * espacially to Casper S. Hornstrup <chorns@users.sourceforge.net>
+ *
+ * THIS SOFTWARE IS NOT COPYRIGHTED
+ *
+ * This source code is offered for use in the public domain. You may
+ * use, modify or distribute it freely.
+ *
+ * This code is distributed in the hope that it will be useful but
+ * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ * DISCLAIMED. This includes but is not limited to warranties of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
 
 #ifndef _LINUX_NDIS_H
 #define _LINUX_NDIS_H
@@ -44,7 +44,7 @@
 #define NDIS_STATUS_MULTICAST_EXISTS      0xC001000A
 #define NDIS_STATUS_MULTICAST_NOT_FOUND   0xC001000B
 
-   /* from drivers/net/sk98lin/h/skgepnmi.h */
+/* from drivers/net/sk98lin/h/skgepnmi.h */
 #define OID_PNP_CAPABILITIES                    0xFD010100
 #define OID_PNP_SET_POWER                       0xFD010101
 #define OID_PNP_QUERY_POWER                     0xFD010102

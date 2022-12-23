@@ -24,9 +24,9 @@
 #include <linux/mmc/host.h>
 #include "esp_sdio_api.h"
 
-static int esp_read_byte(struct esp_sdio_context* context, u32 reg, u8* data, u8 is_lock_needed)
+static int esp_read_byte(struct esp_sdio_context *context, u32 reg, u8 *data, u8 is_lock_needed)
 {
-    struct sdio_func* func = NULL;
+    struct sdio_func *func = NULL;
     int ret;
 
     if (!context || !context->func || !data) {
@@ -49,9 +49,9 @@ static int esp_read_byte(struct esp_sdio_context* context, u32 reg, u8* data, u8
     return ret;
 }
 
-static int esp_write_byte(struct esp_sdio_context* context, u32 reg, u8 data, u8 is_lock_needed)
+static int esp_write_byte(struct esp_sdio_context *context, u32 reg, u8 data, u8 is_lock_needed)
 {
-    struct sdio_func* func = NULL;
+    struct sdio_func *func = NULL;
     int ret;
 
     if (!context || !context->func) {
@@ -74,9 +74,9 @@ static int esp_write_byte(struct esp_sdio_context* context, u32 reg, u8 data, u8
     return ret;
 }
 
-static int esp_read_multi_byte(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, u8 is_lock_needed)
+static int esp_read_multi_byte(struct esp_sdio_context *context, u32 reg, u8 *data, u16 size, u8 is_lock_needed)
 {
-    struct sdio_func* func = NULL;
+    struct sdio_func *func = NULL;
     int ret;
 
     if (!context || !context->func || !data) {
@@ -99,9 +99,9 @@ static int esp_read_multi_byte(struct esp_sdio_context* context, u32 reg, u8* da
     return ret;
 }
 
-static int esp_write_multi_byte(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, u8 is_lock_needed)
+static int esp_write_multi_byte(struct esp_sdio_context *context, u32 reg, u8 *data, u16 size, u8 is_lock_needed)
 {
-    struct sdio_func* func = NULL;
+    struct sdio_func *func = NULL;
     int ret;
 
     if (!context || !context->func || !data) {
@@ -124,7 +124,7 @@ static int esp_write_multi_byte(struct esp_sdio_context* context, u32 reg, u8* d
     return ret;
 }
 
-int esp_read_reg(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, u8 is_lock_needed)
+int esp_read_reg(struct esp_sdio_context *context, u32 reg, u8 *data, u16 size, u8 is_lock_needed)
 {
     /* Need to apply address mask when reading/writing slave registers */
     reg &= ESP_ADDRESS_MASK;
@@ -136,7 +136,7 @@ int esp_read_reg(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, 
     }
 }
 
-int esp_read_block(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, u8 is_lock_needed)
+int esp_read_block(struct esp_sdio_context *context, u32 reg, u8 *data, u16 size, u8 is_lock_needed)
 {
     if (size <= 1) {
         return esp_read_byte(context, reg, data, is_lock_needed);
@@ -145,7 +145,7 @@ int esp_read_block(struct esp_sdio_context* context, u32 reg, u8* data, u16 size
     }
 }
 
-int esp_write_reg(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, u8 is_lock_needed)
+int esp_write_reg(struct esp_sdio_context *context, u32 reg, u8 *data, u16 size, u8 is_lock_needed)
 {
     /* Need to apply address mask when reading/writing slave registers */
     reg &= ESP_ADDRESS_MASK;
@@ -157,7 +157,7 @@ int esp_write_reg(struct esp_sdio_context* context, u32 reg, u8* data, u16 size,
     }
 }
 
-int esp_write_block(struct esp_sdio_context* context, u32 reg, u8* data, u16 size, u8 is_lock_needed)
+int esp_write_block(struct esp_sdio_context *context, u32 reg, u8 *data, u16 size, u8 is_lock_needed)
 {
     if (size <= 1) {
         return esp_write_byte(context, reg, *data, is_lock_needed);

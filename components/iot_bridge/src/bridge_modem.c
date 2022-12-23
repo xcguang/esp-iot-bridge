@@ -37,7 +37,7 @@
 #endif
 
 #define MODULE_BOOT_TIME 8
-static const char* TAG = "bridge_modem";
+static const char *TAG = "bridge_modem";
 
 static const int CONNECT_BIT = BIT0;
 static const int DISCONNECT_BIT = BIT1;
@@ -47,31 +47,31 @@ static led_indicator_handle_t led_wifi_handle = NULL;
 static led_indicator_handle_t led_4g_handle = NULL;
 static int active_station_num = 0;
 typedef struct {
-    esp_modem_dte_t* dte;
+    esp_modem_dte_t *dte;
     EventGroupHandle_t events_handle;
 } ip_event_arg_t;
 
-extern esp_modem_dce_t* sim7600_board_create(esp_modem_dce_config_t* config);
-extern esp_modem_dce_t* usb_modem_board_create(esp_modem_dce_config_t* config);
+extern esp_modem_dce_t *sim7600_board_create(esp_modem_dce_config_t *config);
+extern esp_modem_dce_t *usb_modem_board_create(esp_modem_dce_config_t *config);
 
-static void on_modem_event(void* arg, esp_event_base_t event_base,
-    int32_t event_id, void* event_data)
+static void on_modem_event(void *arg, esp_event_base_t event_base,
+                           int32_t event_id, void *event_data)
 {
     if (event_base == IP_EVENT) {
-        ip_event_arg_t* p_ip_event_arg = (ip_event_arg_t*)arg;
+        ip_event_arg_t *p_ip_event_arg = (ip_event_arg_t *)arg;
         ESP_LOGI(TAG, "IP event! %d", event_id);
 
         if (event_id == IP_EVENT_PPP_GOT_IP) {
             esp_netif_dns_info_t dns_info;
 
-            ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
-            esp_netif_t* netif = event->esp_netif;
+            ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+            esp_netif_t *netif = event->esp_netif;
 
             ESP_LOGI(TAG, "Modem Connected to PPP Server");
             ESP_LOGI(TAG, "%s ip: " IPSTR ", mask: " IPSTR ", gw: " IPSTR, esp_netif_get_desc(netif),
-                IP2STR(&event->ip_info.ip),
-                IP2STR(&event->ip_info.netmask),
-                IP2STR(&event->ip_info.gw));
+                     IP2STR(&event->ip_info.ip),
+                     IP2STR(&event->ip_info.netmask),
+                     IP2STR(&event->ip_info.gw));
             esp_netif_get_dns_info(netif, ESP_NETIF_DNS_MAIN, &dns_info);
             ESP_LOGI(TAG, "Main DNS: " IPSTR, IP2STR(&dns_info.ip.u_addr.ip4));
             esp_netif_get_dns_info(netif, ESP_NETIF_DNS_BACKUP, &dns_info);
@@ -101,7 +101,7 @@ static void on_modem_event(void* arg, esp_event_base_t event_base,
             ESP_LOGW(TAG, "Lost IP, Restart PPP");
         } else if (event_id == IP_EVENT_GOT_IP6) {
             ESP_LOGI(TAG, "GOT IPv6 event!");
-            ip_event_got_ip6_t* event = (ip_event_got_ip6_t*)event_data;
+            ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
             ESP_LOGI(TAG, "Got IPv6 address " IPV6STR, IPV62STR(event->ip6_info.ip));
         }
     } else if (event_base == ESP_MODEM_EVENT) {
@@ -160,7 +160,7 @@ static void on_modem_event(void* arg, esp_event_base_t event_base,
 }
 
 #if CONFIG_BRIDGE_MODEM_UART
-esp_netif_t* esp_bridge_modem_init(modem_config_t* config)
+esp_netif_t *esp_bridge_modem_init(modem_config_t *config)
 {
     EventGroupHandle_t connection_events = xEventGroupCreate();
 
@@ -179,13 +179,13 @@ esp_netif_t* esp_bridge_modem_init(modem_config_t* config)
     esp_netif_config_t ppp_netif_config = ESP_NETIF_DEFAULT_PPP();
 
     // Initialize esp-modem units, DTE, DCE, ppp-netif
-    esp_modem_dte_t* dte = esp_modem_dte_new(&dte_config);
+    esp_modem_dte_t *dte = esp_modem_dte_new(&dte_config);
 #if defined(CONFIG_BRIDGE_MODEM_CUSTOM_BOARD)
-    esp_modem_dce_t* dce = sim7600_board_create(&dce_config);
+    esp_modem_dce_t *dce = sim7600_board_create(&dce_config);
 #else
-    esp_modem_dce_t* dce = esp_modem_dce_new(&dce_config);
+    esp_modem_dce_t *dce = esp_modem_dce_new(&dce_config);
 #endif
-    esp_netif_t* ppp_netif = esp_netif_new(&ppp_netif_config);
+    esp_netif_t *ppp_netif = esp_netif_new(&ppp_netif_config);
     assert(ppp_netif);
 
     ip_event_arg_t ip_event_arg;
@@ -216,7 +216,7 @@ esp_netif_t* esp_bridge_modem_init(modem_config_t* config)
     return ppp_netif;
 }
 #elif CONFIG_BRIDGE_MODEM_USB
-esp_netif_t* esp_bridge_modem_init(modem_config_t* config)
+esp_netif_t *esp_bridge_modem_init(modem_config_t *config)
 {
     led_indicator_config_t led_config = {
         .off_level = 0,
@@ -249,11 +249,11 @@ esp_netif_t* esp_bridge_modem_init(modem_config_t* config)
     esp_netif_config_t ppp_netif_config = ESP_NETIF_DEFAULT_PPP();
 
     // Initialize esp-modem units, DTE, DCE, ppp-netif
-    esp_modem_dte_t* dte = esp_modem_dte_new(&dte_config);
+    esp_modem_dte_t *dte = esp_modem_dte_new(&dte_config);
     assert(dte != NULL);
-    esp_modem_dce_t* dce = usb_modem_board_create(&dce_config);
+    esp_modem_dce_t *dce = usb_modem_board_create(&dce_config);
     assert(dce != NULL);
-    esp_netif_t* ppp_netif = esp_netif_new(&ppp_netif_config);
+    esp_netif_t *ppp_netif = esp_netif_new(&ppp_netif_config);
     assert(ppp_netif != NULL);
 
     ip_event_arg_t ip_event_arg;
@@ -317,9 +317,9 @@ esp_netif_t* esp_bridge_modem_init(modem_config_t* config)
 #endif
 
 esp_timer_handle_t modem_powerup_timer;
-static void modem_powerup_timer_callback(void* arg)
+static void modem_powerup_timer_callback(void *arg)
 {
-    esp_netif_t* ppp_netif = (esp_netif_t*)arg;
+    esp_netif_t *ppp_netif = (esp_netif_t *)arg;
     modem_config_t modem_config = MODEM_DEFAULT_CONFIG();
     ESP_LOGI(TAG, "====================================");
     ESP_LOGI(TAG, "     ESP 4G Cat.1 Wi-Fi Router");
@@ -332,9 +332,9 @@ static void modem_powerup_timer_callback(void* arg)
     ESP_ERROR_CHECK(esp_timer_delete(modem_powerup_timer));
 }
 
-esp_netif_t* esp_bridge_create_modem_netif(esp_netif_ip_info_t* custom_ip_info, uint8_t custom_mac[6], bool data_forwarding, bool enable_dhcps)
+esp_netif_t *esp_bridge_create_modem_netif(esp_netif_ip_info_t *custom_ip_info, uint8_t custom_mac[6], bool data_forwarding, bool enable_dhcps)
 {
-    esp_netif_t* netif = NULL;
+    esp_netif_t *netif = NULL;
 
     if (data_forwarding || enable_dhcps) {
         return netif;

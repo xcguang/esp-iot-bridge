@@ -34,7 +34,7 @@
  * @brief Macro defined for error checking
  *
  */
-static const char* TAG = "esp-modem-dte";
+static const char *TAG = "esp-modem-dte";
 
 /**
  * @brief Returns true if the supplied string contains only CR or LF
@@ -42,7 +42,7 @@ static const char* TAG = "esp-modem-dte";
  * @param str string to check
  * @param len length of string
  */
-static inline bool is_only_cr_lf(const char* str, uint32_t len)
+static inline bool is_only_cr_lf(const char *str, uint32_t len)
 {
     for (int i = 0; i < len; ++i) {
         if (str[i] != '\r' && str[i] != '\n') {
@@ -53,9 +53,9 @@ static inline bool is_only_cr_lf(const char* str, uint32_t len)
     return true;
 }
 
-esp_err_t esp_modem_set_rx_cb(esp_modem_dte_t* dte, esp_modem_on_receive receive_cb, void* receive_cb_ctx)
+esp_err_t esp_modem_set_rx_cb(esp_modem_dte_t *dte, esp_modem_on_receive receive_cb, void *receive_cb_ctx)
 {
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     esp_dte->receive_cb_ctx = receive_cb_ctx;
     esp_dte->receive_cb = receive_cb;
     return ESP_OK;
@@ -70,12 +70,12 @@ esp_err_t esp_modem_set_rx_cb(esp_modem_dte_t* dte, esp_modem_on_receive receive
  *      - ESP_OK on success
  *      - ESP_FAIL on error
  */
-IRAM_ATTR static esp_err_t esp_dte_handle_line(esp_modem_dte_internal_t* esp_dte)
+IRAM_ATTR static esp_err_t esp_dte_handle_line(esp_modem_dte_internal_t *esp_dte)
 {
     esp_err_t err = ESP_FAIL;
-    esp_modem_dce_t* dce = esp_dte->parent.dce;
+    esp_modem_dce_t *dce = esp_dte->parent.dce;
     ESP_MODEM_ERR_CHECK(dce, "DTE has not yet bind with DCE", err);
-    const char* line = (const char*)(esp_dte->buffer);
+    const char *line = (const char *)(esp_dte->buffer);
     size_t len = strlen(line);
 
     /* Skip pure "\r\n" lines */
@@ -94,7 +94,7 @@ IRAM_ATTR static esp_err_t esp_dte_handle_line(esp_modem_dte_internal_t* esp_dte
 post_event_unknown:
     /* Send ESP_MODEM_EVENT_UNKNOWN signal to event loop */
     esp_event_post_to(esp_dte->event_loop_hdl, ESP_MODEM_EVENT, ESP_MODEM_EVENT_UNKNOWN,
-        (void*)line, strlen(line) + 1, pdMS_TO_TICKS(100));
+                      (void *)line, strlen(line) + 1, pdMS_TO_TICKS(100));
 err:
     return err;
 }
@@ -104,7 +104,7 @@ err:
  *
  * @param esp_dte ESP32 Modem DTE object
  */
-static void esp_handle_uart_pattern(esp_modem_dte_internal_t* esp_dte)
+static void esp_handle_uart_pattern(esp_modem_dte_internal_t *esp_dte)
 {
     int pos = uart_pattern_pop_pos(esp_dte->uart_port);
     int read_len = 0;
@@ -145,7 +145,7 @@ static void esp_handle_uart_pattern(esp_modem_dte_internal_t* esp_dte)
  *
  * @param esp_dte ESP32 Modem DTE object
  */
-static void esp_handle_uart_data(esp_modem_dte_internal_t* esp_dte)
+static void esp_handle_uart_data(esp_modem_dte_internal_t *esp_dte)
 {
     if (!esp_dte->parent.dce) {
         // we could possibly get a data event before
@@ -194,9 +194,9 @@ static void esp_handle_uart_data(esp_modem_dte_internal_t* esp_dte)
  *
  * @param param task parameter
  */
-static void uart_event_task_entry(void* param)
+static void uart_event_task_entry(void *param)
 {
-    esp_modem_dte_internal_t* esp_dte = (esp_modem_dte_internal_t*)param;
+    esp_modem_dte_internal_t *esp_dte = (esp_modem_dte_internal_t *)param;
     uart_event_t event;
     EventBits_t bits = xEventGroupWaitBits(esp_dte->process_group, (ESP_MODEM_START_BIT | ESP_MODEM_STOP_BIT), pdFALSE, pdFALSE, portMAX_DELAY);
 
@@ -262,13 +262,13 @@ static void uart_event_task_entry(void* param)
  *      - ESP_OK on success
  *      - ESP_FAIL on error
  */
-static esp_err_t esp_modem_dte_send_cmd(esp_modem_dte_t* dte, const char* command, uint32_t timeout)
+static esp_err_t esp_modem_dte_send_cmd(esp_modem_dte_t *dte, const char *command, uint32_t timeout)
 {
     esp_err_t ret = ESP_FAIL;
-    esp_modem_dce_t* dce = dte->dce;
+    esp_modem_dce_t *dce = dte->dce;
     ESP_MODEM_ERR_CHECK(dce, "DTE has not yet bind with DCE", err);
     ESP_MODEM_ERR_CHECK(command, "command is NULL", err);
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     /* Calculate timeout clock tick */
     /* Reset runtime information */
     dce->state = ESP_MODEM_STATE_PROCESSING;
@@ -291,10 +291,10 @@ err:
  * @param length length of data to send
  * @return int actual length of data that has been send out
  */
-static int esp_modem_dte_send_data(esp_modem_dte_t* dte, const char* data, uint32_t length)
+static int esp_modem_dte_send_data(esp_modem_dte_t *dte, const char *data, uint32_t length)
 {
     ESP_MODEM_ERR_CHECK(data, "data is NULL", err);
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
 
     if (esp_dte->parent.dce->mode == ESP_MODEM_TRANSITION_MODE) {
         ESP_LOGD(TAG, "Not sending data in transition mode");
@@ -320,21 +320,21 @@ err:
  *      ESP_OK on success
  *      ESP_FAIL on error
  */
-static esp_err_t esp_modem_dte_send_wait(esp_modem_dte_t* dte, const char* data, uint32_t length,
-    const char* prompt, uint32_t timeout)
+static esp_err_t esp_modem_dte_send_wait(esp_modem_dte_t *dte, const char *data, uint32_t length,
+        const char *prompt, uint32_t timeout)
 {
     ESP_MODEM_ERR_CHECK(data, "data is NULL", err_param);
     ESP_MODEM_ERR_CHECK(prompt, "prompt is NULL", err_param);
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     // We'd better disable pattern detection here for a moment in case prompt string contains the pattern character
     uart_disable_pattern_det_intr(esp_dte->uart_port);
     // uart_disable_rx_intr(esp_dte->uart_port);
     ESP_MODEM_ERR_CHECK(uart_write_bytes(esp_dte->uart_port, data, length) >= 0, "uart write bytes failed", err_write);
     uint32_t len = strlen(prompt);
-    uint8_t* buffer = calloc(len + 1, sizeof(uint8_t));
+    uint8_t *buffer = calloc(len + 1, sizeof(uint8_t));
     int res = uart_read_bytes(esp_dte->uart_port, buffer, len, pdMS_TO_TICKS(timeout));
     ESP_MODEM_ERR_CHECK(res >= len, "wait prompt [%s] timeout", err, prompt);
-    ESP_MODEM_ERR_CHECK(!strncmp(prompt, (const char*)buffer, len), "get wrong prompt: %s", err, buffer);
+    ESP_MODEM_ERR_CHECK(!strncmp(prompt, (const char *)buffer, len), "get wrong prompt: %s", err, buffer);
     free(buffer);
     uart_enable_pattern_det_baud_intr(esp_dte->uart_port, '\n', 1, MIN_PATTERN_INTERVAL, MIN_POST_IDLE, MIN_PRE_IDLE);
     return ESP_OK;
@@ -355,11 +355,11 @@ err_param:
  *      - ESP_OK on success
  *      - ESP_FAIL on error
  */
-static esp_err_t esp_modem_dte_change_mode(esp_modem_dte_t* dte, esp_modem_mode_t new_mode)
+static esp_err_t esp_modem_dte_change_mode(esp_modem_dte_t *dte, esp_modem_mode_t new_mode)
 {
-    esp_modem_dce_t* dce = dte->dce;
+    esp_modem_dce_t *dce = dte->dce;
     ESP_MODEM_ERR_CHECK(dce, "DTE has not yet bind with DCE", err);
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     ESP_MODEM_ERR_CHECK(dce->mode != new_mode, "already in mode: %d", err, new_mode);
     esp_modem_mode_t current_mode = dce->mode;
     ESP_MODEM_ERR_CHECK(current_mode != new_mode, "already in mode: %d", err, new_mode);
@@ -393,9 +393,9 @@ err:
     return ESP_FAIL;
 }
 
-static esp_err_t esp_modem_dte_process_cmd_done(esp_modem_dte_t* dte)
+static esp_err_t esp_modem_dte_process_cmd_done(esp_modem_dte_t *dte)
 {
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     EventBits_t bits = xEventGroupSetBits(esp_dte->process_group, ESP_MODEM_COMMAND_BIT);
     return bits & ESP_MODEM_STOP_BIT ? ESP_FAIL : ESP_OK; // report error if the group indicated MODEM_STOP condition
 }
@@ -408,9 +408,9 @@ static esp_err_t esp_modem_dte_process_cmd_done(esp_modem_dte_t* dte)
  *      - ESP_OK on success
  *      - ESP_FAIL on error
  */
-static esp_err_t esp_modem_dte_deinit(esp_modem_dte_t* dte)
+static esp_err_t esp_modem_dte_deinit(esp_modem_dte_t *dte)
 {
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     /* Clear the start bit */
     xEventGroupClearBits(esp_dte->process_group, ESP_MODEM_START_BIT);
     /* Delete UART event task */
@@ -436,11 +436,11 @@ static esp_err_t esp_modem_dte_deinit(esp_modem_dte_t* dte)
  * @brief Create and init Modem DTE object
  *
  */
-esp_modem_dte_t* esp_modem_dte_new(const esp_modem_dte_config_t* config)
+esp_modem_dte_t *esp_modem_dte_new(const esp_modem_dte_config_t *config)
 {
     esp_err_t res;
     /* malloc memory for esp_dte object */
-    esp_modem_dte_internal_t* esp_dte = calloc(1, sizeof(esp_modem_dte_internal_t));
+    esp_modem_dte_internal_t *esp_dte = calloc(1, sizeof(esp_modem_dte_internal_t));
     ESP_MODEM_ERR_CHECK(esp_dte, "calloc esp_dte failed", err_dte_mem);
     /* malloc memory to storing lines from modem dce */
     esp_dte->line_buffer_size = config->line_buffer_size;
@@ -474,10 +474,10 @@ esp_modem_dte_t* esp_modem_dte_new(const esp_modem_dte_config_t* config)
 
     if (config->flow_control == ESP_MODEM_FLOW_CONTROL_HW) {
         res = uart_set_pin(esp_dte->uart_port, config->tx_io_num, config->rx_io_num,
-            config->rts_io_num, config->cts_io_num);
+                           config->rts_io_num, config->cts_io_num);
     } else {
         res = uart_set_pin(esp_dte->uart_port, config->tx_io_num, config->rx_io_num,
-            UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+                           UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     }
 
     ESP_MODEM_ERR_CHECK(res == ESP_OK, "config uart gpio failed", err_uart_config);
@@ -492,7 +492,7 @@ esp_modem_dte_t* esp_modem_dte_new(const esp_modem_dte_config_t* config)
     ESP_MODEM_ERR_CHECK(res == ESP_OK, "config uart flow control failed", err_uart_config);
     /* Install UART driver and get event queue used inside driver */
     res = uart_driver_install(esp_dte->uart_port, config->rx_buffer_size, config->tx_buffer_size,
-        config->event_queue_size, &(esp_dte->event_queue), 0);
+                              config->event_queue_size, &(esp_dte->event_queue), 0);
     ESP_MODEM_ERR_CHECK(res == ESP_OK, "install uart driver failed", err_uart_config);
     res = uart_set_rx_timeout(esp_dte->uart_port, 1);
     ESP_MODEM_ERR_CHECK(res == ESP_OK, "set rx timeout failed", err_uart_config);
@@ -518,12 +518,12 @@ esp_modem_dte_t* esp_modem_dte_new(const esp_modem_dte_config_t* config)
     ESP_MODEM_ERR_CHECK(esp_dte->process_group, "create process semaphore failed", err_sem);
     /* Create UART Event task */
     BaseType_t ret = xTaskCreate(uart_event_task_entry,             //Task Entry
-        "uart_event",              //Task Name
-        config->event_task_stack_size,           //Task Stack Size(Bytes)
-        esp_dte,                           //Task Parameter
-        config->event_task_priority,             //Task Priority
-        &(esp_dte->uart_event_task_hdl)   //Task Handler
-    );
+                                 "uart_event",              //Task Name
+                                 config->event_task_stack_size,           //Task Stack Size(Bytes)
+                                 esp_dte,                           //Task Parameter
+                                 config->event_task_priority,             //Task Priority
+                                 & (esp_dte->uart_event_task_hdl)  //Task Handler
+                                );
     ESP_MODEM_ERR_CHECK(ret == pdTRUE, "create uart event task failed", err_tsk_create);
     return &(esp_dte->parent);
     /* Error handling */
@@ -543,8 +543,8 @@ err_dte_mem:
     return NULL;
 }
 
-esp_err_t esp_modem_dte_set_params(esp_modem_dte_t* dte, const esp_modem_dte_config_t* config)
+esp_err_t esp_modem_dte_set_params(esp_modem_dte_t *dte, const esp_modem_dte_config_t *config)
 {
-    esp_modem_dte_internal_t* esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
+    esp_modem_dte_internal_t *esp_dte = __containerof(dte, esp_modem_dte_internal_t, parent);
     return uart_set_baudrate(esp_dte->uart_port, config->baud_rate);
 }

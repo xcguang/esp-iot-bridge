@@ -83,7 +83,7 @@ typedef enum {
     BLINK_MAX,                     /**< INVALIED type */
 } led_indicator_blink_type_t;
 
-typedef void* led_indicator_handle_t; /*!< led indicator operation handle */
+typedef void *led_indicator_handle_t; /*!< led indicator operation handle */
 
 /**
  * @brief create a led indicator instance with gpio number and configuration
@@ -92,7 +92,7 @@ typedef void* led_indicator_handle_t; /*!< led indicator operation handle */
  * @param config configuration of the led, eg. gpio level when led off
  * @return led_indicator_handle_t handle of the led indicator, NULL if create failed.
  */
-led_indicator_handle_t led_indicator_create(int io_num, const led_indicator_config_t* config);
+led_indicator_handle_t led_indicator_create(int io_num, const led_indicator_config_t *config);
 
 /**
  * @brief get the handle of created led_indicator with gpio number
@@ -111,7 +111,7 @@ led_indicator_handle_t led_indicator_get_handle(int io_num);
  *     - ESP_FAIL Fail
  *     - ESP_OK Success
  */
-esp_err_t led_indicator_delete(led_indicator_handle_t* p_handle);
+esp_err_t led_indicator_delete(led_indicator_handle_t *p_handle);
 
 /**
  * @brief start a new blink_type on the led indicator. if mutiple blink_type started simultaneously,

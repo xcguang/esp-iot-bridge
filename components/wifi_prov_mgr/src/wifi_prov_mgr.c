@@ -35,7 +35,7 @@
 #endif /* CONFIG_ESP_BRIDGE_PROV_TRANSPORT_SOFTAP */
 #include "qrcode.h"
 
-static const char* TAG = "esp_bridge_wifi_prov_mgr";
+static const char *TAG = "esp_bridge_wifi_prov_mgr";
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 #if CONFIG_ESP_BRIDGE_PROV_SECURITY_VERSION_2
@@ -78,7 +78,7 @@ static const char sec2_verifier[] = {
 };
 #endif
 
-static esp_err_t esp_bridge_get_sec2_salt(const char** salt, uint16_t* salt_len)
+static esp_err_t esp_bridge_get_sec2_salt(const char **salt, uint16_t *salt_len)
 {
 #if CONFIG_ESP_BRIDGE_PROV_SEC2_DEV_MODE
     ESP_LOGI(TAG, "Development mode: using hard coded salt");
@@ -91,7 +91,7 @@ static esp_err_t esp_bridge_get_sec2_salt(const char** salt, uint16_t* salt_len)
 #endif
 }
 
-static esp_err_t esp_bridge_get_sec2_verifier(const char** verifier, uint16_t* verifier_len)
+static esp_err_t esp_bridge_get_sec2_verifier(const char **verifier, uint16_t *verifier_len)
 {
 #if CONFIG_ESP_BRIDGE_PROV_SEC2_DEV_MODE
     ESP_LOGI(TAG, "Development mode: using hard coded verifier");
@@ -126,10 +126,10 @@ bool wifi_provision_in_progress(void)
     return wifi_prov_status;
 }
 
-esp_err_t __attribute__((weak)) wifi_prov_wifi_connect(wifi_sta_config_t* conf)
+esp_err_t __attribute__((weak)) wifi_prov_wifi_connect(wifi_sta_config_t *conf)
 {
     esp_wifi_set_storage(WIFI_STORAGE_FLASH);
-    esp_err_t ret = esp_wifi_set_config(ESP_IF_WIFI_STA, (wifi_config_t*)conf);
+    esp_err_t ret = esp_wifi_set_config(ESP_IF_WIFI_STA, (wifi_config_t *)conf);
     esp_wifi_set_storage(WIFI_STORAGE_RAM);
     esp_wifi_disconnect();
     esp_wifi_connect();
@@ -137,7 +137,7 @@ esp_err_t __attribute__((weak)) wifi_prov_wifi_connect(wifi_sta_config_t* conf)
     return ret;
 }
 
-static void deinit_wifi_prov_mgr_timer_callback(void* arg)
+static void deinit_wifi_prov_mgr_timer_callback(void *arg)
 {
     ESP_LOGW(TAG, "Provisioning timed out. Please reboot device to restart provisioning.");
     wifi_prov_mgr_stop_provisioning();
@@ -145,8 +145,8 @@ static void deinit_wifi_prov_mgr_timer_callback(void* arg)
 }
 
 /* Event handler for catching system events */
-static void event_handler(void* arg, esp_event_base_t event_base,
-    int32_t event_id, void* event_data)
+static void event_handler(void *arg, esp_event_base_t event_base,
+                          int32_t event_id, void *event_data)
 {
     if (!wifi_prov_status) {
         return;
@@ -163,21 +163,21 @@ static void event_handler(void* arg, esp_event_base_t event_base,
             break;
 
         case WIFI_PROV_CRED_RECV: {
-            wifi_sta_config_t* wifi_sta_cfg = (wifi_sta_config_t*)event_data;
+            wifi_sta_config_t *wifi_sta_cfg = (wifi_sta_config_t *)event_data;
             ESP_LOGI(TAG, "Received Wi-Fi credentials"
-                "\n\tSSID     : %s\n\tPassword : %s",
-                (const char*)wifi_sta_cfg->ssid,
-                (const char*)wifi_sta_cfg->password);
+                     "\n\tSSID     : %s\n\tPassword : %s",
+                     (const char *)wifi_sta_cfg->ssid,
+                     (const char *)wifi_sta_cfg->password);
             wifi_prov_wifi_connect(wifi_sta_cfg);
             break;
         }
 
         case WIFI_PROV_CRED_FAIL: {
-            wifi_prov_sta_fail_reason_t* reason = (wifi_prov_sta_fail_reason_t*)event_data;
+            wifi_prov_sta_fail_reason_t *reason = (wifi_prov_sta_fail_reason_t *)event_data;
             ESP_LOGE(TAG, "Provisioning failed!\n\tReason : %s"
-                "\n\tPlease reset to factory and retry provisioning",
-                (*reason == WIFI_PROV_STA_AUTH_ERROR) ?
-                "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
+                     "\n\tPlease reset to factory and retry provisioning",
+                     (*reason == WIFI_PROV_STA_AUTH_ERROR) ?
+                     "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
 #ifdef CONFIG_ESP_BRIDGE_RESET_PROV_MGR_ON_FAILURE
             retries++;
 
@@ -212,7 +212,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-        ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
+        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         ESP_LOGI(TAG, "Connected with IP Address:" IPSTR, IP2STR(&event->ip_info.ip));
     }
 }
@@ -226,28 +226,28 @@ static void wifi_prov_event_register(void)
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
 }
 
-static void get_device_service_name(char* service_name, size_t max)
+static void get_device_service_name(char *service_name, size_t max)
 {
     uint8_t eth_mac[6];
-    const char* ssid_prefix = "PROV_";
+    const char *ssid_prefix = "PROV_";
     esp_wifi_get_mac(WIFI_IF_STA, eth_mac);
     snprintf(service_name, max, "%s%02X%02X%02X",
-        ssid_prefix, eth_mac[3], eth_mac[4], eth_mac[5]);
+             ssid_prefix, eth_mac[3], eth_mac[4], eth_mac[5]);
 }
 
 /* Handler for the optional provisioning endpoint registered by the application.
  * The data format can be chosen by applications. Here, we are using plain ascii text.
  * Applications can choose to use other formats like protobuf, JSON, XML, etc.
  */
-esp_err_t custom_prov_data_handler(uint32_t session_id, const uint8_t* inbuf, ssize_t inlen,
-    uint8_t** outbuf, ssize_t* outlen, void* priv_data)
+esp_err_t custom_prov_data_handler(uint32_t session_id, const uint8_t *inbuf, ssize_t inlen,
+                                   uint8_t **outbuf, ssize_t *outlen, void *priv_data)
 {
     if (inbuf) {
-        ESP_LOGI(TAG, "Received data: %.*s", inlen, (char*)inbuf);
+        ESP_LOGI(TAG, "Received data: %.*s", inlen, (char *)inbuf);
     }
 
     char response[] = "SUCCESS";
-    *outbuf = (uint8_t*)strdup(response);
+    *outbuf = (uint8_t *)strdup(response);
 
     if (*outbuf == NULL) {
         ESP_LOGE(TAG, "System out of memory");
@@ -259,7 +259,7 @@ esp_err_t custom_prov_data_handler(uint32_t session_id, const uint8_t* inbuf, ss
     return ESP_OK;
 }
 
-static void wifi_prov_print_qr(const char* name, const char* username, const char* pop, const char* transport)
+static void wifi_prov_print_qr(const char *name, const char *username, const char *pop, const char *transport)
 {
     if (!name || !transport) {
         ESP_LOGW(TAG, "Cannot generate QR code payload. Data missing.");
@@ -271,23 +271,23 @@ static void wifi_prov_print_qr(const char* name, const char* username, const cha
     if (pop) {
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
         snprintf(payload, sizeof(payload), "{\"ver\":\"%s\",\"name\":\"%s\"" \
-            ",\"pop\":\"%s\",\"transport\":\"%s\"}",
-            PROV_QR_VERSION, name, pop, transport);
+                 ",\"pop\":\"%s\",\"transport\":\"%s\"}",
+                 PROV_QR_VERSION, name, pop, transport);
 #else
 #if CONFIG_ESP_BRIDGE_PROV_SECURITY_VERSION_1
         snprintf(payload, sizeof(payload), "{\"ver\":\"%s\",\"name\":\"%s\"" \
-            ",\"pop\":\"%s\",\"transport\":\"%s\"}",
-            PROV_QR_VERSION, name, pop, transport);
+                 ",\"pop\":\"%s\",\"transport\":\"%s\"}",
+                 PROV_QR_VERSION, name, pop, transport);
 #elif CONFIG_ESP_BRIDGE_PROV_SECURITY_VERSION_2
         snprintf(payload, sizeof(payload), "{\"ver\":\"%s\",\"name\":\"%s\"" \
-            ",\"username\":\"%s\",\"pop\":\"%s\",\"transport\":\"%s\"}",
-            PROV_QR_VERSION, name, username, pop, transport);
+                 ",\"username\":\"%s\",\"pop\":\"%s\",\"transport\":\"%s\"}",
+                 PROV_QR_VERSION, name, username, pop, transport);
 #endif
 #endif /* ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0) */
     } else {
         snprintf(payload, sizeof(payload), "{\"ver\":\"%s\",\"name\":\"%s\"" \
-            ",\"transport\":\"%s\"}",
-            PROV_QR_VERSION, name, transport);
+                 ",\"transport\":\"%s\"}",
+                 PROV_QR_VERSION, name, transport);
     }
 
 #ifdef CONFIG_ESP_BRIDGE_PROV_SHOW_QR
@@ -367,16 +367,16 @@ void esp_bridge_wifi_prov_mgr(void)
      *      - this should be a string with length > 0
      *      - NULL if not used
      */
-    const char* pop = "abcd1234";
+    const char *pop = "abcd1234";
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 #ifdef CONFIG_ESP_BRIDGE_PROV_SECURITY_VERSION_1
     /* This is the structure for passing security parameters
      * for the protocomm security 1.
      */
-    wifi_prov_security1_params_t* sec_params = pop;
+    wifi_prov_security1_params_t *sec_params = pop;
 
-    const char* username = NULL;
+    const char *username = NULL;
 
 #elif CONFIG_ESP_BRIDGE_PROV_SECURITY_VERSION_2
     security = WIFI_PROV_SECURITY_2;
@@ -386,13 +386,13 @@ void esp_bridge_wifi_prov_mgr(void)
     /* This pop field represents the password that will be used to generate salt and verifier.
      * The field is present here in order to generate the QR code containing password.
      * In production this password field shall not be stored on the device */
-    const char* username = ESP_BRIDGE_PROV_SEC2_USERNAME;
+    const char *username = ESP_BRIDGE_PROV_SEC2_USERNAME;
     pop = ESP_BRIDGE_PROV_SEC2_PWD;
 #elif CONFIG_ESP_BRIDGE_PROV_SEC2_PROD_MODE
     /* The username and password shall not be embedded in the firmware,
      * they should be provided to the user by other means.
      * e.g. QR code sticker */
-    const char* username = NULL;
+    const char *username = NULL;
     pop = NULL;
 #endif
     /* This is the structure for passing security parameters
@@ -404,7 +404,7 @@ void esp_bridge_wifi_prov_mgr(void)
     ESP_ERROR_CHECK(esp_bridge_get_sec2_salt(&sec2_params.salt, &sec2_params.salt_len));
     ESP_ERROR_CHECK(esp_bridge_get_sec2_verifier(&sec2_params.verifier, &sec2_params.verifier_len));
 
-    wifi_prov_security2_params_t* sec_params = &sec2_params;
+    wifi_prov_security2_params_t *sec_params = &sec2_params;
 #endif
 #endif /* ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0) */
 
@@ -414,7 +414,7 @@ void esp_bridge_wifi_prov_mgr(void)
      *          (Minimum expected length: 8, maximum 64 for WPA2-PSK)
      *     - simply ignored when scheme is wifi_prov_scheme_ble
      */
-    const char* service_key = NULL;
+    const char *service_key = NULL;
 
 #ifdef CONFIG_ESP_BRIDGE_PROV_TRANSPORT_BLE
     /* This step is only useful when scheme is wifi_prov_scheme_ble. This will
@@ -449,7 +449,7 @@ void esp_bridge_wifi_prov_mgr(void)
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
     ESP_ERROR_CHECK(wifi_prov_mgr_start_provisioning(security, pop, service_name, service_key));
 #else
-    ESP_ERROR_CHECK(wifi_prov_mgr_start_provisioning(security, (const void*)sec_params, service_name, service_key));
+    ESP_ERROR_CHECK(wifi_prov_mgr_start_provisioning(security, (const void *)sec_params, service_name, service_key));
 #endif
 
     /* The handler for the optional endpoint created above.
@@ -461,9 +461,9 @@ void esp_bridge_wifi_prov_mgr(void)
     /* Uncomment the following to wait for the provisioning to finish and then release
      * the resources of the manager. Since in this case de-initialization is triggered
      * by the default event loop handler, we don't need to call the following */
-     // wifi_prov_mgr_wait();
-     // wifi_prov_mgr_deinit();
-     /* Print QR code for provisioning */
+    // wifi_prov_mgr_wait();
+    // wifi_prov_mgr_deinit();
+    /* Print QR code for provisioning */
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
 #ifdef CONFIG_ESP_BRIDGE_PROV_TRANSPORT_BLE
     wifi_prov_print_qr(service_name, NULL, pop, PROV_TRANSPORT_BLE);

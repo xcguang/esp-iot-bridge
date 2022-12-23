@@ -28,13 +28,13 @@
 #define EXAMPLE_ESP_WIFI_CHANNEL   CONFIG_ESP_WIFI_CHANNEL
 #define EXAMPLE_MAX_STA_CONN       CONFIG_ESP_MAX_STA_CONN
 
-static const char* TAG = "ap-2-pppos";
+static const char *TAG = "ap-2-pppos";
 static EventGroupHandle_t event_group = NULL;
 static const int CONNECT_BIT = BIT0;
 static const int DISCONNECT_BIT = BIT1;
 
-static void on_modem_event(void* arg, esp_event_base_t event_base,
-    int32_t event_id, void* event_data)
+static void on_modem_event(void *arg, esp_event_base_t event_base,
+                           int32_t event_id, void *event_data)
 {
     if (event_base == IP_EVENT) {
         ESP_LOGD(TAG, "IP event! %d", event_id);
@@ -42,8 +42,8 @@ static void on_modem_event(void* arg, esp_event_base_t event_base,
         if (event_id == IP_EVENT_PPP_GOT_IP) {
             esp_netif_dns_info_t dns_info;
 
-            ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
-            esp_netif_t* netif = event->esp_netif;
+            ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+            esp_netif_t *netif = event->esp_netif;
 
             ESP_LOGI(TAG, "Modem Connect to PPP Server");
             ESP_LOGI(TAG, "~~~~~~~~~~~~~~");
@@ -63,7 +63,7 @@ static void on_modem_event(void* arg, esp_event_base_t event_base,
             xEventGroupSetBits(event_group, DISCONNECT_BIT);
         } else if (event_id == IP_EVENT_GOT_IP6) {
             ESP_LOGI(TAG, "GOT IPv6 event!");
-            ip_event_got_ip6_t* event = (ip_event_got_ip6_t*)event_data;
+            ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
             ESP_LOGI(TAG, "Got IPv6 address " IPV6STR, IPV62STR(event->ip6_info.ip));
         }
     } else if (event_base == ESP_MODEM_EVENT) {
@@ -72,7 +72,7 @@ static void on_modem_event(void* arg, esp_event_base_t event_base,
     }
 }
 
-static esp_err_t set_dhcps_dns(esp_netif_t* netif, uint32_t addr)
+static esp_err_t set_dhcps_dns(esp_netif_t *netif, uint32_t addr)
 {
     esp_netif_dns_info_t dns;
     dns.ip.u_addr.ip4.addr = addr;
@@ -83,17 +83,17 @@ static esp_err_t set_dhcps_dns(esp_netif_t* netif, uint32_t addr)
     return ESP_OK;
 }
 
-static void wifi_event_handler(void* arg, esp_event_base_t event_base,
-    int32_t event_id, void* event_data)
+static void wifi_event_handler(void *arg, esp_event_base_t event_base,
+                               int32_t event_id, void *event_data)
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
-        wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*)event_data;
+        wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
         ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
-            MAC2STR(event->mac), event->aid);
+                 MAC2STR(event->mac), event->aid);
     } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
-        wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*)event_data;
+        wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
         ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d",
-            MAC2STR(event->mac), event->aid);
+                 MAC2STR(event->mac), event->aid);
     }
 }
 
@@ -104,10 +104,10 @@ void wifi_init_softap(void)
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-        ESP_EVENT_ANY_ID,
-        &wifi_event_handler,
-        NULL,
-        NULL));
+                    ESP_EVENT_ANY_ID,
+                    &wifi_event_handler,
+                    NULL,
+                    NULL));
 
     wifi_config_t wifi_config = {
         .ap = {
@@ -129,10 +129,10 @@ void wifi_init_softap(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-        EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
+             EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS, EXAMPLE_ESP_WIFI_CHANNEL);
 }
 
-esp_modem_dce_t* sim7600_board_create(esp_modem_dce_config_t* config);
+esp_modem_dce_t *sim7600_board_create(esp_modem_dce_config_t *config);
 
 void app_main(void)
 {
@@ -161,9 +161,9 @@ void app_main(void)
 
 
     // Initialize esp-modem units, DTE, DCE, ppp-netif
-    esp_modem_dte_t* dte = esp_modem_dte_new(&dte_config);
-    esp_modem_dce_t* dce = sim7600_board_create(&dce_config);
-    esp_netif_t* ppp_netif = esp_netif_new(&ppp_netif_config);
+    esp_modem_dte_t *dte = esp_modem_dte_new(&dte_config);
+    esp_modem_dce_t *dce = sim7600_board_create(&dce_config);
+    esp_netif_t *ppp_netif = esp_netif_new(&ppp_netif_config);
 
     assert(ppp_netif);
 
@@ -185,7 +185,7 @@ void app_main(void)
     } while ((bits & CONNECT_BIT) == 0);
 
     /* Init the AP with NAT enabled */
-    esp_netif_t* ap_netif = esp_netif_create_default_wifi_ap();
+    esp_netif_t *ap_netif = esp_netif_create_default_wifi_ap();
     assert(ap_netif);
     esp_netif_dns_info_t dns;
     ESP_ERROR_CHECK(esp_netif_get_dns_info(ppp_netif, ESP_NETIF_DNS_MAIN, &dns));

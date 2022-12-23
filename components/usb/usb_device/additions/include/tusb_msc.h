@@ -22,20 +22,20 @@ extern "C" {
 #include "tusb.h"
 #include "tinyusb.h"
 
-    /**
-     * @brief Configuration structure for MSC
-     */
-    typedef struct {
-        uint8_t pdrv;             /* Physical drive nmuber (0..) */
-    } tinyusb_config_msc_t;
+/**
+ * @brief Configuration structure for MSC
+ */
+typedef struct {
+    uint8_t pdrv;             /* Physical drive nmuber (0..) */
+} tinyusb_config_msc_t;
 
-    /**
-     * @brief Initialize MSC Device.
-     *
-     * @param cfg - init configuration structure
-     * @return esp_err_t
-     */
-    esp_err_t tusb_msc_init(const tinyusb_config_msc_t* cfg);
+/**
+ * @brief Initialize MSC Device.
+ *
+ * @param cfg - init configuration structure
+ * @return esp_err_t
+ */
+esp_err_t tusb_msc_init(const tinyusb_config_msc_t *cfg);
 
 #ifdef __cplusplus
 }

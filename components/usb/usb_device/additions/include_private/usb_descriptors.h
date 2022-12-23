@@ -23,11 +23,11 @@ extern "C" {
 
 #define _PID_MAP(itf, n) ((CFG_TUD_##itf) << (n))
 
-    extern tusb_desc_device_t descriptor_tinyusb;
-    extern tusb_desc_strarray_device_t descriptor_str_tinyusb;
+extern tusb_desc_device_t descriptor_tinyusb;
+extern tusb_desc_strarray_device_t descriptor_str_tinyusb;
 
-    extern tusb_desc_device_t descriptor_kconfig;
-    extern tusb_desc_strarray_device_t descriptor_str_kconfig;
+extern tusb_desc_device_t descriptor_kconfig;
+extern tusb_desc_strarray_device_t descriptor_str_kconfig;
 
 #ifdef __cplusplus
 }

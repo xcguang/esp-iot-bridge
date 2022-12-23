@@ -15,7 +15,7 @@
 
 #include "esp_rb.h"
 
-int esp_rb_init(esp_rb_t* rb, size_t sz)
+int esp_rb_init(esp_rb_t *rb, size_t sz)
 {
     init_waitqueue_head(&(rb->wq));
 
@@ -34,7 +34,7 @@ int esp_rb_init(esp_rb_t* rb, size_t sz)
     return 0;
 }
 
-int esp_rb_read_by_user(esp_rb_t* rb, const char __user* buf, size_t sz, int block)
+int esp_rb_read_by_user(esp_rb_t *rb, const char __user *buf, size_t sz, int block)
 {
     int read_len = 0, temp_len = 0;
 
@@ -64,7 +64,7 @@ int esp_rb_read_by_user(esp_rb_t* rb, const char __user* buf, size_t sz, int blo
         read_len = min(sz, (size_t)(rb->end - rb->rp));
     }
 
-    if (copy_to_user((void*)buf, rb->rp, read_len)) {
+    if (copy_to_user((void *)buf, rb->rp, read_len)) {
         up(&rb->sem);
         printk(KERN_WARNING "%s, %d: Incomplete/Failed read\n", __func__, __LINE__);
         return -EFAULT;
@@ -79,7 +79,7 @@ int esp_rb_read_by_user(esp_rb_t* rb, const char __user* buf, size_t sz, int blo
     if (read_len < sz) {
         temp_len = min(sz - read_len, (size_t)(rb->wp - rb->rp));
 
-        if (copy_to_user((void*)buf + read_len, rb->rp, temp_len)) {
+        if (copy_to_user((void *)buf + read_len, rb->rp, temp_len)) {
             up(&rb->sem);
             printk(KERN_WARNING "%s, %d: Incomplete/Failed read\n", __func__, __LINE__);
             return -EFAULT;
@@ -94,7 +94,7 @@ int esp_rb_read_by_user(esp_rb_t* rb, const char __user* buf, size_t sz, int blo
     return read_len;
 }
 
-int get_free_space(esp_rb_t* rb)
+int get_free_space(esp_rb_t *rb)
 {
     if (!rb || !rb->rp || !rb->wp) {
         return -EFAULT;
@@ -107,7 +107,7 @@ int get_free_space(esp_rb_t* rb)
     }
 }
 
-int esp_rb_write_by_kernel(esp_rb_t* rb, const char* buf, size_t sz)
+int esp_rb_write_by_kernel(esp_rb_t *rb, const char *buf, size_t sz)
 {
     int write_len = 0, temp_len = 0;
 
@@ -160,7 +160,7 @@ int esp_rb_write_by_kernel(esp_rb_t* rb, const char* buf, size_t sz)
     return write_len;
 }
 
-void esp_rb_cleanup(esp_rb_t* rb)
+void esp_rb_cleanup(esp_rb_t *rb)
 {
     kfree(rb->buf);
     rb->buf = rb->end = rb->rp = rb->wp = NULL;

@@ -33,13 +33,13 @@
 
 #include "dfu_device.h"
 
- //--------------------------------------------------------------------+
- // MACRO CONSTANT TYPEDEF
- //--------------------------------------------------------------------+
+//--------------------------------------------------------------------+
+// MACRO CONSTANT TYPEDEF
+//--------------------------------------------------------------------+
 
- //--------------------------------------------------------------------+
- // INTERNAL OBJECT & FUNCTION DECLARATION
- //--------------------------------------------------------------------+
+//--------------------------------------------------------------------+
+// INTERNAL OBJECT & FUNCTION DECLARATION
+//--------------------------------------------------------------------+
 typedef struct {
     uint8_t attrs;
     uint8_t alt;
@@ -85,9 +85,9 @@ static void reset_state(void)
     _dfu_ctx.flashing_in_progress = false;
 }
 
-static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const* request, dfu_state_t state, dfu_status_t status, uint32_t timeout);
-static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request);
-static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request);
+static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const *request, dfu_state_t state, dfu_status_t status, uint32_t timeout);
+static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
+static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
 
 //--------------------------------------------------------------------+
 // Debug
@@ -172,7 +172,7 @@ void dfu_moded_init(void)
     dfu_moded_reset(0);
 }
 
-uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16_t max_len)
+uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, uint16_t max_len)
 {
     (void)rhport;
 
@@ -193,18 +193,18 @@ uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, u
         alt_count++;
 
         drv_len += tu_desc_len(itf_desc);
-        itf_desc = (tusb_desc_interface_t const*)tu_desc_next(itf_desc);
+        itf_desc = (tusb_desc_interface_t const *)tu_desc_next(itf_desc);
     }
 
     //------------- DFU Functional descriptor -------------//
-    tusb_desc_dfu_functional_t const* func_desc = (tusb_desc_dfu_functional_t const*)itf_desc;
+    tusb_desc_dfu_functional_t const *func_desc = (tusb_desc_dfu_functional_t const *)itf_desc;
     TU_ASSERT(tu_desc_type(func_desc) == TUSB_DESC_FUNCTIONAL, 0);
     drv_len += sizeof(tusb_desc_dfu_functional_t);
 
     _dfu_ctx.attrs = func_desc->bAttributes;
 
     // CFG_TUD_DFU_XFER_BUFSIZE has to be set to the buffer size used in TUD_DFU_DESCRIPTOR
-    uint16_t const transfer_size = tu_le16toh(tu_unaligned_read16((uint8_t const*)func_desc + offsetof(tusb_desc_dfu_functional_t, wTransferSize)));
+    uint16_t const transfer_size = tu_le16toh(tu_unaligned_read16((uint8_t const *)func_desc + offsetof(tusb_desc_dfu_functional_t, wTransferSize)));
     TU_ASSERT(transfer_size <= CFG_TUD_DFU_XFER_BUFSIZE, drv_len);
 
     return drv_len;
@@ -213,7 +213,7 @@ uint16_t dfu_moded_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, u
 // Invoked when a control transfer occurred on an interface of this class
 // Driver response accordingly to the request and the transfer stage (setup/data/ack)
 // return false to stall control endpoint (e.g unsupported request)
-bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
+bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
 {
     TU_VERIFY(request->bmRequestType_bit.recipient == TUSB_REQ_RCPT_INTERFACE);
 
@@ -239,7 +239,7 @@ bool dfu_moded_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_reque
 
             break;
 
-            // unsupported request
+        // unsupported request
         default:
             return false;
         }
@@ -364,7 +364,7 @@ void tud_dfu_finish_flashing(uint8_t status)
             _dfu_ctx.state = DFU_DNLOAD_SYNC;
         } else if (_dfu_ctx.state == DFU_MANIFEST) {
             _dfu_ctx.state = (_dfu_ctx.attrs & DFU_ATTR_MANIFESTATION_TOLERANT)
-                ? DFU_MANIFEST_SYNC : DFU_MANIFEST_WAIT_RESET;
+                             ? DFU_MANIFEST_SYNC : DFU_MANIFEST_WAIT_RESET;
         }
     } else {
         // failed while flashing, move to dfuError
@@ -373,7 +373,7 @@ void tud_dfu_finish_flashing(uint8_t status)
     }
 }
 
-static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
+static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
 {
     if (stage == CONTROL_STAGE_SETUP) {
         // only transition to next state on CONTROL_STAGE_ACK
@@ -401,7 +401,7 @@ static bool process_download_get_status(uint8_t rhport, uint8_t stage, tusb_cont
     return true;
 }
 
-static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
+static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
 {
     if (stage == CONTROL_STAGE_SETUP) {
         // only transition to next state on CONTROL_STAGE_ACK
@@ -429,7 +429,7 @@ static bool process_manifest_get_status(uint8_t rhport, uint8_t stage, tusb_cont
     return true;
 }
 
-static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const* request, dfu_state_t state, dfu_status_t status, uint32_t timeout)
+static bool reply_getstatus(uint8_t rhport, tusb_control_request_t const *request, dfu_state_t state, dfu_status_t status, uint32_t timeout)
 {
     dfu_status_response_t resp;
     resp.bStatus = (uint8_t)status;

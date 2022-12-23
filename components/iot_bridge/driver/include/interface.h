@@ -34,7 +34,7 @@ typedef enum {
     LENGTH_4_BYTE = 4,
 } byte_length;
 
-typedef void* wlan_buf_handle_t;
+typedef void *wlan_buf_handle_t;
 
 typedef enum {
     SDIO = 0,
@@ -56,16 +56,16 @@ typedef struct {
 #endif
 #endif
         wlan_buf_handle_t   wlan_buf_handle;
-        void* priv_buffer_handle;
+        void *priv_buffer_handle;
     };
     uint8_t if_type;
     uint8_t if_num;
-    uint8_t* payload;
+    uint8_t *payload;
     uint8_t flag;
     uint16_t payload_len;
     uint16_t seq_num;
 
-    void (*free_buf_handle)(void* buf_handle);
+    void (*free_buf_handle)(void *buf_handle);
 } interface_buffer_handle_t;
 
 typedef struct {
@@ -77,21 +77,21 @@ typedef struct {
 } interface_handle_t;
 
 typedef struct {
-    interface_handle_t* (*init)(void);
-    int32_t(*write)(interface_handle_t* handle, interface_buffer_handle_t* buf_handle);
-    int (*read)(interface_handle_t* handle, interface_buffer_handle_t* buf_handle);
-    esp_err_t(*reset)(interface_handle_t* handle);
-    void (*deinit)(interface_handle_t* handle);
+    interface_handle_t *(*init)(void);
+    int32_t(*write)(interface_handle_t *handle, interface_buffer_handle_t *buf_handle);
+    int (*read)(interface_handle_t *handle, interface_buffer_handle_t *buf_handle);
+    esp_err_t(*reset)(interface_handle_t *handle);
+    void (*deinit)(interface_handle_t *handle);
 } if_ops_t;
 
 typedef struct {
     transport_layer type;
-    void* priv;
-    if_ops_t* if_ops;
+    void *priv;
+    if_ops_t *if_ops;
     int (*event_handler)(uint8_t bitmap);
 } interface_context_t;
 
-interface_context_t* interface_insert_driver(int (*callback)(uint8_t val));
+interface_context_t *interface_insert_driver(int (*callback)(uint8_t val));
 int interface_remove_driver();
 void generate_startup_event(uint8_t cap);
 #endif

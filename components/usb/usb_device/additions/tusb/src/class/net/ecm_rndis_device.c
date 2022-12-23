@@ -35,7 +35,7 @@
 #include "class/net/net_device.h"
 #include "rndis_protocol.h"
 
-void rndis_class_set_handler(uint8_t* data, int size); /* found in ./misc/networking/rndis_reports.c */
+void rndis_class_set_handler(uint8_t *data, int size); /* found in ./misc/networking/rndis_reports.c */
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF
@@ -53,7 +53,7 @@ typedef struct {
     // Endpoint descriptor use to open/close when receving SetInterface
     // TODO since configuration descriptor may not be long-lived memory, we should
     // keep a copy of endpoint attribute instead
-    uint8_t const* ecm_desc_epdata;
+    uint8_t const *ecm_desc_epdata;
 
 } netd_interface_t;
 
@@ -106,7 +106,7 @@ void tud_network_recv_renew(void)
     usbd_edpt_xfer(TUD_OPT_RHPORT, _netd_itf.ep_out, received, sizeof(received));
 }
 
-static void do_in_xfer(uint8_t* buf, uint16_t len)
+static void do_in_xfer(uint8_t *buf, uint16_t len)
 {
     can_xmit = false;
 
@@ -117,7 +117,7 @@ static void do_in_xfer(uint8_t* buf, uint16_t len)
     usbd_edpt_xfer(TUD_OPT_RHPORT, _netd_itf.ep_in, buf, len);
 }
 
-void netd_report(uint8_t* buf, uint16_t len)
+void netd_report(uint8_t *buf, uint16_t len)
 {
     // skip if previous report not yet acknowledged by host
     if (usbd_edpt_busy(TUD_OPT_RHPORT, _netd_itf.ep_notif)) {
@@ -142,15 +142,15 @@ void netd_reset(uint8_t rhport)
     netd_init();
 }
 
-uint16_t netd_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16_t max_len)
+uint16_t netd_open(uint8_t rhport, tusb_desc_interface_t const *itf_desc, uint16_t max_len)
 {
     bool const is_rndis = (TUD_RNDIS_ITF_CLASS == itf_desc->bInterfaceClass &&
-        TUD_RNDIS_ITF_SUBCLASS == itf_desc->bInterfaceSubClass &&
-        TUD_RNDIS_ITF_PROTOCOL == itf_desc->bInterfaceProtocol);
+                           TUD_RNDIS_ITF_SUBCLASS == itf_desc->bInterfaceSubClass &&
+                           TUD_RNDIS_ITF_PROTOCOL == itf_desc->bInterfaceProtocol);
 
     bool const is_ecm = (TUSB_CLASS_CDC == itf_desc->bInterfaceClass &&
-        CDC_COMM_SUBCLASS_ETHERNET_CONTROL_MODEL == itf_desc->bInterfaceSubClass &&
-        0x00 == itf_desc->bInterfaceProtocol);
+                         CDC_COMM_SUBCLASS_ETHERNET_CONTROL_MODEL == itf_desc->bInterfaceSubClass &&
+                         0x00 == itf_desc->bInterfaceProtocol);
 
     TU_VERIFY(is_rndis || is_ecm, 0);
 
@@ -164,7 +164,7 @@ uint16_t netd_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16
     _netd_itf.itf_num = itf_desc->bInterfaceNumber;
 
     uint16_t drv_len = sizeof(tusb_desc_interface_t);
-    uint8_t const* p_desc = tu_desc_next(itf_desc);
+    uint8_t const *p_desc = tu_desc_next(itf_desc);
 
     // Communication Functional Descriptors
     while (TUSB_DESC_CS_INTERFACE == tu_desc_type(p_desc) && drv_len <= max_len) {
@@ -174,9 +174,9 @@ uint16_t netd_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16
 
     // notification endpoint (if any)
     if (TUSB_DESC_ENDPOINT == tu_desc_type(p_desc)) {
-        TU_ASSERT(usbd_edpt_open(rhport, (tusb_desc_endpoint_t const*)p_desc), 0);
+        TU_ASSERT(usbd_edpt_open(rhport, (tusb_desc_endpoint_t const *)p_desc), 0);
 
-        _netd_itf.ep_notif = ((tusb_desc_endpoint_t const*)p_desc)->bEndpointAddress;
+        _netd_itf.ep_notif = ((tusb_desc_endpoint_t const *)p_desc)->bEndpointAddress;
 
         drv_len += tu_desc_len(p_desc);
         p_desc = tu_desc_next(p_desc);
@@ -190,7 +190,7 @@ uint16_t netd_open(uint8_t rhport, tusb_desc_interface_t const* itf_desc, uint16
     TU_ASSERT(TUSB_DESC_INTERFACE == tu_desc_type(p_desc), 0);
 
     do {
-        tusb_desc_interface_t const* data_itf_desc = (tusb_desc_interface_t const*)p_desc;
+        tusb_desc_interface_t const *data_itf_desc = (tusb_desc_interface_t const *)p_desc;
         TU_ASSERT(TUSB_CLASS_CDC_DATA == data_itf_desc->bInterfaceClass, 0);
 
         drv_len += tu_desc_len(p_desc);
@@ -236,7 +236,7 @@ void ecm_close(void)
         .wLength = 0,
     };
     notify_data.wIndex = _netd_itf.itf_num;
-    netd_report((uint8_t*)&notify_data, sizeof(notify_data));
+    netd_report((uint8_t *)&notify_data, sizeof(notify_data));
 }
 
 void ecm_open(void)
@@ -249,20 +249,20 @@ void ecm_open(void)
         .wLength = 0,
     };
     notify_data.wIndex = _netd_itf.itf_num;
-    netd_report((uint8_t*)&notify_data, sizeof(notify_data));
+    netd_report((uint8_t *)&notify_data, sizeof(notify_data));
 }
 
 static void ecm_report(bool nc)
 {
     notify.ecm_buf = (nc) ? ecm_notify_nc : ecm_notify_csc;
     notify.ecm_buf.header.wIndex = _netd_itf.itf_num;
-    netd_report((uint8_t*)&notify.ecm_buf, (nc) ? sizeof(notify.ecm_buf.header) : sizeof(notify.ecm_buf));
+    netd_report((uint8_t *)&notify.ecm_buf, (nc) ? sizeof(notify.ecm_buf.header) : sizeof(notify.ecm_buf));
 }
 
 // Invoked when a control transfer occurred on an interface of this class
 // Driver response accordingly to the request and the transfer stage (setup/data/ack)
 // return false to stall control endpoint (e.g unsupported request)
-bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
+bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
 {
     if (stage == CONTROL_STAGE_SETUP) {
         switch (request->bmRequestType_bit.type) {
@@ -274,7 +274,7 @@ bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
 
                 tud_control_xfer(rhport, request, &_netd_itf.itf_data_alt, 1);
             }
-                                       break;
+            break;
 
             case TUSB_REQ_SET_INTERFACE: {
                 uint8_t const req_itfnum = (uint8_t)request->wIndex;
@@ -315,9 +315,9 @@ bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
 
                 tud_control_status(rhport, request);
             }
-                                       break;
+            break;
 
-                                       // unsupported request
+            // unsupported request
             default:
                 return false;
             }
@@ -335,7 +335,7 @@ bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
                 }
             } else {
                 if (request->bmRequestType_bit.direction == TUSB_DIR_IN) {
-                    rndis_generic_msg_t* rndis_msg = (rndis_generic_msg_t*)((void*)notify.rndis_buf);
+                    rndis_generic_msg_t *rndis_msg = (rndis_generic_msg_t *)((void *)notify.rndis_buf);
                     uint32_t msglen = tu_le32toh(rndis_msg->MessageLength);
                     TU_ASSERT(msglen <= sizeof(notify.rndis_buf));
                     tud_control_xfer(rhport, request, notify.rndis_buf, msglen);
@@ -346,15 +346,15 @@ bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
 
             break;
 
-            // unsupported request
+        // unsupported request
         default:
             return false;
         }
     } else if (stage == CONTROL_STAGE_DATA) {
         // Handle RNDIS class control OUT only
         if (request->bmRequestType_bit.type == TUSB_REQ_TYPE_CLASS &&
-            request->bmRequestType_bit.direction == TUSB_DIR_OUT &&
-            _netd_itf.itf_num == request->wIndex) {
+                request->bmRequestType_bit.direction == TUSB_DIR_OUT &&
+                _netd_itf.itf_num == request->wIndex) {
             if (!_netd_itf.ecm_mode) {
                 rndis_class_set_handler(notify.rndis_buf, request->wLength);
             }
@@ -366,13 +366,13 @@ bool netd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
 
 static void handle_incoming_packet(uint32_t len)
 {
-    uint8_t* pnt = received;
+    uint8_t *pnt = received;
     uint32_t size = 0;
 
     if (_netd_itf.ecm_mode) {
         size = len;
     } else {
-        rndis_data_packet_t* r = (rndis_data_packet_t*)((void*)pnt);
+        rndis_data_packet_t *r = (rndis_data_packet_t *)((void *)pnt);
 
         if (len >= sizeof(rndis_data_packet_t))
             if ((r->MessageType == REMOTE_NDIS_PACKET_MSG) && (r->MessageLength <= len))
@@ -437,9 +437,9 @@ bool tud_network_can_xmit(void)
 }
 #endif /* ESP_IDF_VERSION >= 5.0.0 */
 
-void tud_network_xmit(void* ref, uint16_t arg)
+void tud_network_xmit(void *ref, uint16_t arg)
 {
-    uint8_t* data;
+    uint8_t *data;
     uint16_t len;
 
     if (!can_xmit) {
@@ -452,7 +452,7 @@ void tud_network_xmit(void* ref, uint16_t arg)
     len += tud_network_xmit_cb(data, ref, arg);
 
     if (!_netd_itf.ecm_mode) {
-        rndis_data_packet_t* hdr = (rndis_data_packet_t*)((void*)transmitted);
+        rndis_data_packet_t *hdr = (rndis_data_packet_t *)((void *)transmitted);
         memset(hdr, 0, sizeof(rndis_data_packet_t));
         hdr->MessageType = REMOTE_NDIS_PACKET_MSG;
         hdr->MessageLength = len;

@@ -20,11 +20,11 @@
 #include "interface.h"
 
 typedef struct {
-    interface_context_t* context;
+    interface_context_t *context;
 } adapter;
 
 void network_adapter_driver_init(void);
 
-esp_err_t pkt_dhcp_status_change(void* buffer, uint16_t len);
+esp_err_t pkt_dhcp_status_change(void *buffer, uint16_t len);
 
 #endif

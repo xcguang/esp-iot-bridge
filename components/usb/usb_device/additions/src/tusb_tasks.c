@@ -20,13 +20,13 @@
 #include "tinyusb.h"
 #include "tusb_tasks.h"
 
-const static char* TAG = "tusb_tsk";
+const static char *TAG = "tusb_tsk";
 static TaskHandle_t s_tusb_tskh;
 
 /**
  * @brief This top level thread processes all usb events and invokes callbacks
  */
-static void tusb_device_task(void* arg)
+static void tusb_device_task(void *arg)
 {
     ESP_LOGD(TAG, "tinyusb task started");
 

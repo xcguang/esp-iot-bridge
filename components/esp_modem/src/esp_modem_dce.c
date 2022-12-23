@@ -19,11 +19,11 @@
 #include "esp_modem_internal.h"
 #include "esp_log.h"
 
-static const char* TAG = "esp_modem_dce";
+static const char *TAG = "esp_modem_dce";
 
-esp_err_t esp_modem_dce_generic_command(esp_modem_dce_t* dce, const char* command, uint32_t timeout, esp_modem_dce_handle_line_t handle_line, void* ctx)
+esp_err_t esp_modem_dce_generic_command(esp_modem_dce_t *dce, const char *command, uint32_t timeout, esp_modem_dce_handle_line_t handle_line, void *ctx)
 {
-    esp_modem_dte_t* dte = dce->dte;
+    esp_modem_dte_t *dte = dce->dte;
     ESP_LOGD(TAG, "%s(%d): Sending command:%s\n", __func__, __LINE__, command);
     dce->handle_line = handle_line;
     dce->handle_line_ctx = ctx;
@@ -42,14 +42,14 @@ esp_err_t esp_modem_dce_generic_command(esp_modem_dce_t* dce, const char* comman
     return ESP_OK;
 }
 
-esp_err_t esp_modem_dce_set_params(esp_modem_dce_t* dce, esp_modem_dce_config_t* config)
+esp_err_t esp_modem_dce_set_params(esp_modem_dce_t *dce, esp_modem_dce_config_t *config)
 {
     // save the config
     memcpy(&dce->config, config, sizeof(esp_modem_dce_config_t));
     return ESP_OK;
 }
 
-esp_err_t esp_modem_dce_default_init(esp_modem_dce_t* dce, esp_modem_dce_config_t* config)
+esp_err_t esp_modem_dce_default_init(esp_modem_dce_t *dce, esp_modem_dce_config_t *config)
 {
     // Check parameters
     ESP_MODEM_ERR_CHECK(dce && config, "dce object or configuration is NULL", err);
@@ -84,7 +84,7 @@ err:
     return ESP_ERR_NO_MEM;
 }
 
-esp_err_t esp_modem_dce_default_destroy(esp_modem_dce_t* dce)
+esp_err_t esp_modem_dce_default_destroy(esp_modem_dce_t *dce)
 {
     ESP_MODEM_ERR_CHECK(esp_modem_command_list_deinit(dce) == ESP_OK, "failed", err);
     free(dce);
@@ -93,7 +93,7 @@ err:
     return ESP_FAIL;
 }
 
-esp_err_t esp_modem_dce_handle_response_default(esp_modem_dce_t* dce, const char* line)
+esp_err_t esp_modem_dce_handle_response_default(esp_modem_dce_t *dce, const char *line)
 {
     esp_err_t err = ESP_FAIL;
 
@@ -106,13 +106,13 @@ esp_err_t esp_modem_dce_handle_response_default(esp_modem_dce_t* dce, const char
     return err;
 }
 
-esp_err_t esp_modem_process_command_done(esp_modem_dce_t* dce, esp_modem_state_t state)
+esp_err_t esp_modem_process_command_done(esp_modem_dce_t *dce, esp_modem_state_t state)
 {
     dce->state = state;
     return dce->dte->process_cmd_done(dce->dte);
 }
 
-static esp_err_t esp_modem_switch_to_command_mode(esp_modem_dce_t* dce)
+static esp_err_t esp_modem_switch_to_command_mode(esp_modem_dce_t *dce)
 {
     esp_modem_wait_ms(1000);   // 1s delay for the device to recognize the data escape sequence
 
@@ -131,7 +131,7 @@ err:
     return ESP_FAIL;
 }
 
-static esp_err_t esp_modem_switch_to_data_mode(esp_modem_dce_t* dce)
+static esp_err_t esp_modem_switch_to_data_mode(esp_modem_dce_t *dce)
 {
     // before going to data mode, set the PDP data context
     ESP_MODEM_ERR_CHECK(dce->set_pdp_context(dce, &dce->config.pdp_context, NULL) == ESP_OK, "setting pdp context failed", err);
@@ -160,7 +160,7 @@ err:
  *      - ESP_OK on success
  *      - ESP_FAIL on error
  */
-esp_err_t esp_modem_dce_set_working_mode(esp_modem_dce_t* dce, esp_modem_mode_t mode)
+esp_err_t esp_modem_dce_set_working_mode(esp_modem_dce_t *dce, esp_modem_mode_t mode)
 {
     switch (mode) {
     case ESP_MODEM_COMMAND_MODE:
@@ -181,11 +181,11 @@ err:
     return ESP_FAIL;
 }
 
-esp_err_t esp_modem_dce_default_start_up(esp_modem_dce_t* dce)
+esp_err_t esp_modem_dce_default_start_up(esp_modem_dce_t *dce)
 {
     ESP_MODEM_ERR_CHECK(dce->sync(dce, NULL, NULL) == ESP_OK, "sending sync failed", err);
-    ESP_MODEM_ERR_CHECK(dce->set_echo(dce, (void*)false, NULL) == ESP_OK, "set_echo failed", err);
-    ESP_MODEM_ERR_CHECK(dce->set_flow_ctrl(dce, (void*)ESP_MODEM_FLOW_CONTROL_NONE, NULL) == ESP_OK, "set_flow_ctrl failed", err);
+    ESP_MODEM_ERR_CHECK(dce->set_echo(dce, (void *)false, NULL) == ESP_OK, "set_echo failed", err);
+    ESP_MODEM_ERR_CHECK(dce->set_flow_ctrl(dce, (void *)ESP_MODEM_FLOW_CONTROL_NONE, NULL) == ESP_OK, "set_flow_ctrl failed", err);
     ESP_MODEM_ERR_CHECK(dce->store_profile(dce, NULL, NULL) == ESP_OK, "store_profile failed", err);
     return ESP_OK;
 err:

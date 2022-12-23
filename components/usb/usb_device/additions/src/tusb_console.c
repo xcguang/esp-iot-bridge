@@ -24,12 +24,12 @@
 #define STRINGIFY(s) STRINGIFY2(s)
 #define STRINGIFY2(s) #s
 
-static const char* TAG = "tusb_console";
+static const char *TAG = "tusb_console";
 
 typedef struct {
-    FILE* in;
-    FILE* out;
-    FILE* err;
+    FILE *in;
+    FILE *out;
+    FILE *err;
 } console_handle_t;
 
 static console_handle_t con;
@@ -44,7 +44,7 @@ static console_handle_t con;
  * @param path - mount point
  * @return esp_err_t ESP_FAIL or ESP_OK
  */
-static esp_err_t redirect_std_streams_to(FILE** f_in, FILE** f_out, FILE** f_err, const char* path)
+static esp_err_t redirect_std_streams_to(FILE **f_in, FILE **f_out, FILE **f_err, const char *path)
 {
     if (f_in) {
         *f_in = freopen(path, "r", stdin);
@@ -84,9 +84,9 @@ static esp_err_t redirect_std_streams_to(FILE** f_in, FILE** f_out, FILE** f_err
  * @param f_err - pointer to a pointer of an err file updated with `redirect_std_streams_to` or NULL to don't change stderr
  * @return esp_err_t ESP_FAIL or ESP_OK
  */
-static esp_err_t restore_std_streams(FILE** f_in, FILE** f_out, FILE** f_err)
+static esp_err_t restore_std_streams(FILE **f_in, FILE **f_out, FILE **f_err)
 {
-    const char* default_uart_dev = "/dev/uart/" STRINGIFY(CONFIG_ESP_CONSOLE_UART_NUM);
+    const char *default_uart_dev = "/dev/uart/" STRINGIFY(CONFIG_ESP_CONSOLE_UART_NUM);
 
     if (f_in) {
         stdin = freopen(default_uart_dev, "r", *f_in);

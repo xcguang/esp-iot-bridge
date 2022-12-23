@@ -22,7 +22,7 @@
 
 #include "esp.h"
 
- /* Interrupt Status */
+/* Interrupt Status */
 #define ESP_SLAVE_BIT0_INT             BIT(0)
 #define ESP_SLAVE_BIT1_INT             BIT(1)
 #define ESP_SLAVE_BIT2_INT             BIT(2)
@@ -89,8 +89,8 @@ enum context_state {
 };
 
 struct esp_sdio_context {
-    struct esp_adapter* adapter;
-    struct sdio_func* func;
+    struct esp_adapter *adapter;
+    struct sdio_func *func;
     enum context_state     state;
     struct sk_buff_head    tx_q[MAX_PRIORITY_QUEUES];
     u32                    rx_byte_count;

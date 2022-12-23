@@ -36,21 +36,21 @@
 #define ESP_RX_RB_SIZE        4096
 #define ESP_SERIAL_MAX_TX     4096
 
- //#define ESP_SERIAL_TEST
+//#define ESP_SERIAL_TEST
 
 static struct esp_serial_devs {
     struct cdev cdev;
     int dev_index;
     esp_rb_t rb;
-    void* priv;
+    void *priv;
     struct mutex lock;
 } devs[ESP_SERIAL_MINOR_MAX];
 
-static ssize_t esp_serial_read(struct file* file, char __user* user_buffer, size_t size, loff_t* offset)
+static ssize_t esp_serial_read(struct file *file, char __user *user_buffer, size_t size, loff_t *offset)
 {
-    struct esp_serial_devs* dev = NULL;
+    struct esp_serial_devs *dev = NULL;
     int ret_size = 0;
-    dev = (struct esp_serial_devs*)file->private_data;
+    dev = (struct esp_serial_devs *)file->private_data;
     ret_size = esp_rb_read_by_user(&dev->rb, user_buffer, size, !(file->f_flags & O_NONBLOCK));
 
     if (ret_size == 0) {
@@ -60,19 +60,19 @@ static ssize_t esp_serial_read(struct file* file, char __user* user_buffer, size
     return ret_size;
 }
 
-static ssize_t esp_serial_write(struct file* file, const char __user* user_buffer, size_t size, loff_t* offset)
+static ssize_t esp_serial_write(struct file *file, const char __user *user_buffer, size_t size, loff_t *offset)
 {
-    struct esp_payload_header* hdr = NULL;
-    u8* tx_buf = NULL;
-    struct esp_serial_devs* dev = NULL;
-    struct sk_buff* tx_skb = NULL;
+    struct esp_payload_header *hdr = NULL;
+    u8 *tx_buf = NULL;
+    struct esp_serial_devs *dev = NULL;
+    struct sk_buff *tx_skb = NULL;
     int ret = 0;
     size_t total_len = 0;
     size_t frag_len = 0;
     u32 left_len = size;
     static u16 seq_num = 0;
     u8 flag = 0;
-    u8* pos;
+    u8 *pos;
 
     if (size > ESP_SERIAL_MAX_TX) {
         printk(KERN_ERR "%s: Exceed max tx buffer size [%d]\n", __func__, size);
@@ -80,8 +80,8 @@ static ssize_t esp_serial_write(struct file* file, const char __user* user_buffe
     }
 
     seq_num++;
-    dev = (struct esp_serial_devs*)file->private_data;
-    pos = (u8*)user_buffer;
+    dev = (struct esp_serial_devs *)file->private_data;
+    pos = (u8 *)user_buffer;
 
     do {
         /* Fragmentation support
@@ -107,7 +107,7 @@ static ssize_t esp_serial_write(struct file* file, const char __user* user_buffe
 
         tx_buf = skb_put(tx_skb, total_len);
 
-        hdr = (struct esp_payload_header*)tx_buf;
+        hdr = (struct esp_payload_header *)tx_buf;
 
         memset(hdr, 0, sizeof(struct esp_payload_header));
 
@@ -144,15 +144,15 @@ static ssize_t esp_serial_write(struct file* file, const char __user* user_buffe
     return size;
 }
 
-static long esp_serial_ioctl(struct file* file, unsigned int cmd, unsigned long arg)
+static long esp_serial_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
     printk(KERN_INFO "%s IOCTL %d\n", __func__, cmd);
     return 0;
 }
 
-static int esp_serial_open(struct inode* inode, struct file* file)
+static int esp_serial_open(struct inode *inode, struct file *file)
 {
-    struct esp_serial_devs* devs = NULL;
+    struct esp_serial_devs *devs = NULL;
 
     devs = container_of(inode->i_cdev, struct esp_serial_devs, cdev);
     file->private_data = devs;
@@ -160,9 +160,9 @@ static int esp_serial_open(struct inode* inode, struct file* file)
     return 0;
 }
 
-static unsigned int esp_serial_poll(struct file* file, poll_table* wait)
+static unsigned int esp_serial_poll(struct file *file, poll_table *wait)
 {
-    struct esp_serial_devs* dev = (struct esp_serial_devs*)file->private_data;
+    struct esp_serial_devs *dev = (struct esp_serial_devs *)file->private_data;
     unsigned int mask = 0;
 
     mutex_lock(&dev->lock);
@@ -189,7 +189,7 @@ const struct file_operations esp_serial_fops = {
     .poll = esp_serial_poll
 };
 
-int esp_serial_data_received(int dev_index, const char* data, size_t len)
+int esp_serial_data_received(int dev_index, const char *data, size_t len)
 {
     int ret = 0, ret_len = 0;
 
@@ -199,7 +199,7 @@ int esp_serial_data_received(int dev_index, const char* data, size_t len)
 
     while (ret_len != len) {
         ret = esp_rb_write_by_kernel(&devs[dev_index].rb,
-            data + ret_len, (len - ret_len));
+                                     data + ret_len, (len - ret_len));
 
         if (ret <= 0) {
             break;
@@ -220,7 +220,7 @@ int esp_serial_data_received(int dev_index, const char* data, size_t len)
 }
 
 #ifdef ESP_SERIAL_TEST
-static int thread_fn(void* unused)
+static int thread_fn(void *unused)
 {
     int i = 100;
 
@@ -235,7 +235,7 @@ static int thread_fn(void* unused)
 }
 #endif
 
-int esp_serial_init(void* priv)
+int esp_serial_init(void *priv)
 {
     int err = 0, i = 0;
 

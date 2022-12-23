@@ -23,25 +23,25 @@
  *
  */
 
- /* This example demonstrates WebUSB as web serial with browser with WebUSB support (e.g Chrome).
-  * After enumerated successfully, browser will pop-up notification
-  * with URL to landing page, click on it to test
-  *  - Click "Connect" and select device, When connected the on-board LED will litted up.
-  *  - Any charters received from either webusb/Serial will be echo back to webusb and Serial
-  *
-  * Note:
-  * - The WebUSB landing page notification is currently disabled in Chrome
-  * on Windows due to Chromium issue 656702 (https://crbug.com/656702). You have to
-  * go to landing page (below) to test
-  *
-  * - On Windows 7 and prior: You need to use Zadig tool to manually bind the
-  * WebUSB interface with the WinUSB driver for Chrome to access. From windows 8 and 10, this
-  * is done automatically by firmware.
-  *
-  * - On Linux/macOS, udev permission may need to be updated by
-  *   - copying '/examples/device/99-tinyusb.rules' file to /etc/udev/rules.d/ then
-  *   - run 'sudo udevadm control --reload-rules && sudo udevadm trigger'
-  */
+/* This example demonstrates WebUSB as web serial with browser with WebUSB support (e.g Chrome).
+ * After enumerated successfully, browser will pop-up notification
+ * with URL to landing page, click on it to test
+ *  - Click "Connect" and select device, When connected the on-board LED will litted up.
+ *  - Any charters received from either webusb/Serial will be echo back to webusb and Serial
+ *
+ * Note:
+ * - The WebUSB landing page notification is currently disabled in Chrome
+ * on Windows due to Chromium issue 656702 (https://crbug.com/656702). You have to
+ * go to landing page (below) to test
+ *
+ * - On Windows 7 and prior: You need to use Zadig tool to manually bind the
+ * WebUSB interface with the WinUSB driver for Chrome to access. From windows 8 and 10, this
+ * is done automatically by firmware.
+ *
+ * - On Linux/macOS, udev permission may need to be updated by
+ *   - copying '/examples/device/99-tinyusb.rules' file to /etc/udev/rules.d/ then
+ *   - run 'sudo udevadm control --reload-rules && sudo udevadm trigger'
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -61,7 +61,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 
-static char* TAG = "web_usb";
+static char *TAG = "web_usb";
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -140,7 +140,7 @@ uint8_t const desc_bos[] = {
     TUD_BOS_MS_OS_20_DESCRIPTOR(MS_OS_20_DESC_LEN, VENDOR_REQUEST_MICROSOFT)
 };
 
-uint8_t const* _tud_descriptor_bos_cb(void)
+uint8_t const *_tud_descriptor_bos_cb(void)
 {
     return desc_bos;
 }
@@ -175,9 +175,9 @@ uint8_t const desc_ms_os_20[] = {
 
 TU_VERIFY_STATIC(sizeof(desc_ms_os_20) == MS_OS_20_DESC_LEN, "Incorrect size");
 
-extern esp_err_t wifi_cmd_sta_join(const char* ssid, const char* pass);
+extern esp_err_t wifi_cmd_sta_join(const char *ssid, const char *pass);
 
-static void webusb_task(void* pvParameters)
+static void webusb_task(void *pvParameters)
 {
     esp_err_t ret;
     uint32_t recv_len = 0;
@@ -282,7 +282,7 @@ void tud_resume_cb(void)
 // Invoked when a control transfer occurred on an interface of this class
 // Driver response accordingly to the request and the transfer stage (setup/data/ack)
 // return false to stall control endpoint (e.g unsupported request)
-bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const* request)
+bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request)
 {
     // nothing to with DATA & ACK stage
     if (stage != CONTROL_STAGE_SETUP) {
@@ -297,7 +297,7 @@ bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_requ
         case VENDOR_REQUEST_WEBUSB:
             // match vendor request in BOS descriptor
             // Get landing page url
-            return tud_control_xfer(rhport, request, (void*)(uintptr_t)&desc_url, desc_url.bLength);
+            return tud_control_xfer(rhport, request, (void *)(uintptr_t)&desc_url, desc_url.bLength);
 
         case VENDOR_REQUEST_MICROSOFT:
             if (request->wIndex == 7) {
@@ -305,7 +305,7 @@ bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_requ
                 uint16_t total_len;
                 memcpy(&total_len, desc_ms_os_20 + 8, 2);
 
-                return tud_control_xfer(rhport, request, (void*)(uintptr_t)desc_ms_os_20, total_len);
+                return tud_control_xfer(rhport, request, (void *)(uintptr_t)desc_ms_os_20, total_len);
             } else {
                 return false;
             }

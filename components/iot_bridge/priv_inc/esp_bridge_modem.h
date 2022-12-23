@@ -55,32 +55,32 @@ extern "C"
                                                             .event_task_stack_size = 3072                            \
     }
 
-    typedef struct {
-        int rx_buffer_size;             /*!< USB RX Buffer Size */
-        int tx_buffer_size;             /*!< USB TX Buffer Size */
-        int line_buffer_size;           /*!< Line buffer size for command mode */
-        int event_task_priority;        /*!< USB Event/Data Handler Task Priority*/
-        int event_task_stack_size;      /*!< USB Event/Data Handler Task Stack Size*/
-    } modem_config_t;
+typedef struct {
+    int rx_buffer_size;             /*!< USB RX Buffer Size */
+    int tx_buffer_size;             /*!< USB TX Buffer Size */
+    int line_buffer_size;           /*!< Line buffer size for command mode */
+    int event_task_priority;        /*!< USB Event/Data Handler Task Priority*/
+    int event_task_stack_size;      /*!< USB Event/Data Handler Task Stack Size*/
+} modem_config_t;
 
-    /**
-    * @brief Initialize esp-modem units, DTE, DCE, ppp-netif and start ppp.
-    *
-    * @param[in] config: modem configuration
-    *
-    * @return
-    *     - instance: create modem netif instance successfully
-    *     - NULL: create modem netif instance failed because some error occurred
-    */
-    esp_netif_t* esp_bridge_modem_init(modem_config_t* config);
+/**
+* @brief Initialize esp-modem units, DTE, DCE, ppp-netif and start ppp.
+*
+* @param[in] config: modem configuration
+*
+* @return
+*     - instance: create modem netif instance successfully
+*     - NULL: create modem netif instance failed because some error occurred
+*/
+esp_netif_t *esp_bridge_modem_init(modem_config_t *config);
 
-    /**
-    * @brief Force reset 4g module and development board.
-    *
-    * @return
-     *    - ESP_OK: request mac successfully
-    */
-    esp_err_t esp_modem_board_force_reset(void);
+/**
+* @brief Force reset 4g module and development board.
+*
+* @return
+ *    - ESP_OK: request mac successfully
+*/
+esp_err_t esp_modem_board_force_reset(void);
 
 #ifdef __cplusplus
 }

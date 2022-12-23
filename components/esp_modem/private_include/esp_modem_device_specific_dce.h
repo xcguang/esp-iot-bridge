@@ -19,32 +19,32 @@ extern "C" {
 
 #include "esp_modem.h"
 
-    /**
-     * @brief Specific init of SIM800 device
-     *
-     * @param dce Modem DCE object
-     *
-     * @return ESP_OK on success
-     */
-    esp_err_t esp_modem_sim800_specific_init(esp_modem_dce_t* dce);
+/**
+ * @brief Specific init of SIM800 device
+ *
+ * @param dce Modem DCE object
+ *
+ * @return ESP_OK on success
+ */
+esp_err_t esp_modem_sim800_specific_init(esp_modem_dce_t *dce);
 
-    /**
-     * @brief Specific init of SIM7600 device
-     *
-     * @param dce Modem DCE object
-     *
-     * @return ESP_OK on success
-     */
-    esp_err_t esp_modem_sim7600_specific_init(esp_modem_dce_t* dce);
+/**
+ * @brief Specific init of SIM7600 device
+ *
+ * @param dce Modem DCE object
+ *
+ * @return ESP_OK on success
+ */
+esp_err_t esp_modem_sim7600_specific_init(esp_modem_dce_t *dce);
 
-    /**
-     * @brief Specific init of BG96 device
-     *
-     * @param dce Modem DCE object
-     *
-     * @return ESP_OK on success
-     */
-    esp_err_t esp_modem_bg96_specific_init(esp_modem_dce_t* dce);
+/**
+ * @brief Specific init of BG96 device
+ *
+ * @param dce Modem DCE object
+ *
+ * @return ESP_OK on success
+ */
+esp_err_t esp_modem_bg96_specific_init(esp_modem_dce_t *dce);
 
 #ifdef __cplusplus
 }

@@ -43,7 +43,7 @@
 #include "slave_bt.h"
 #endif
 
-extern esp_netif_t* network_adapter_netif;
+extern esp_netif_t *network_adapter_netif;
 static bool flag = true;
 
 #define EV_STR(s) "================ "s" ================"
@@ -71,8 +71,8 @@ uint32_t to_host_count = 0;
 uint32_t to_host_sent_count = 0;
 #endif
 
-interface_context_t* if_context = NULL;
-interface_handle_t* if_handle = NULL;
+interface_context_t *if_context = NULL;
+interface_handle_t *if_handle = NULL;
 
 QueueHandle_t to_host_queue[MAX_PRIORITY_QUEUES] = { NULL };
 
@@ -119,11 +119,11 @@ static uint8_t get_capabilities()
     return cap;
 }
 
-static esp_err_t compose_sta_if_pkt(interface_buffer_handle_t* buf_handle, void* buffer, uint16_t len, uint8_t flag)
+static esp_err_t compose_sta_if_pkt(interface_buffer_handle_t *buf_handle, void *buffer, uint16_t len, uint8_t flag)
 {
-    uint8_t* netif_buf = NULL;
+    uint8_t *netif_buf = NULL;
 
-    netif_buf = (uint8_t*)malloc(len);
+    netif_buf = (uint8_t *)malloc(len);
 
     if (!netif_buf) {
         ESP_LOGE(TAG, "Netif Send packet: memory allocation failed");
@@ -143,7 +143,7 @@ static esp_err_t compose_sta_if_pkt(interface_buffer_handle_t* buf_handle, void*
     return ESP_OK;
 }
 
-esp_err_t pkt_netif2driver(void* buffer, uint16_t len)
+esp_err_t pkt_netif2driver(void *buffer, uint16_t len)
 {
     if (flag) {
         return ESP_FAIL;
@@ -173,7 +173,7 @@ esp_err_t pkt_netif2driver(void* buffer, uint16_t len)
     return ESP_OK;
 }
 
-esp_err_t pkt_dhcp_status_change(void* buffer, uint16_t len)
+esp_err_t pkt_dhcp_status_change(void *buffer, uint16_t len)
 {
     if (flag) {
         return ESP_FAIL;
@@ -203,7 +203,7 @@ esp_err_t pkt_dhcp_status_change(void* buffer, uint16_t len)
     return ESP_OK;
 }
 
-void process_tx_pkt(interface_buffer_handle_t* buf_handle)
+void process_tx_pkt(interface_buffer_handle_t *buf_handle)
 {
     /* Check if data path is not yet open */
     if (!datapath) {
@@ -233,7 +233,7 @@ void process_tx_pkt(interface_buffer_handle_t* buf_handle)
 }
 
 /* Send data to host */
-void send_task(void* pvParameters)
+void send_task(void *pvParameters)
 {
 #ifdef ESP_DEBUG_STATS
     int t1, t2, t_total = 0;
@@ -261,13 +261,13 @@ void send_task(void* pvParameters)
     }
 }
 
-void process_rx_pkt(interface_buffer_handle_t* buf_handle)
+void process_rx_pkt(interface_buffer_handle_t *buf_handle)
 {
-    struct esp_payload_header* header = NULL;
-    uint8_t* payload = NULL;
+    struct esp_payload_header *header = NULL;
+    uint8_t *payload = NULL;
     uint16_t payload_len = 0;
 
-    header = (struct esp_payload_header*)buf_handle->payload;
+    header = (struct esp_payload_header *)buf_handle->payload;
     payload = buf_handle->payload + le16toh(header->offset);
     payload_len = le16toh(header->len);
 
@@ -302,7 +302,7 @@ void process_rx_pkt(interface_buffer_handle_t* buf_handle)
 }
 
 /* Get data from host */
-void recv_task(void* pvParameters)
+void recv_task(void *pvParameters)
 {
     interface_buffer_handle_t buf_handle;
 
@@ -365,7 +365,7 @@ int event_handler(uint8_t val)
  */
 static esp_err_t print_real_time_stats(TickType_t xTicksToWait)
 {
-    TaskStatus_t* start_array = NULL, * end_array = NULL;
+    TaskStatus_t *start_array = NULL, * end_array = NULL;
     UBaseType_t start_array_size, end_array_size;
     uint32_t start_run_time, end_run_time;
     esp_err_t ret;
@@ -466,7 +466,7 @@ exit:    //Common return path
     return ret;
 }
 
-void task_runtime_stats_task(void* pvParameters)
+void task_runtime_stats_task(void *pvParameters)
 {
     while (1) {
         printf("\n\nGetting real time stats over %d ticks\n", STATS_TICKS);
@@ -502,7 +502,7 @@ void network_adapter_driver_init(void)
         ESP_LOGE(TAG, "Failed to read BT Mac addr\n");
     } else {
         ESP_LOGI(TAG, "ESP Bluetooth MAC addr: %2x-%2x-%2x-%2x-%2x-%2x\n",
-            mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+                 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     }
 
 #endif
@@ -536,7 +536,7 @@ void network_adapter_driver_init(void)
     assert(xTaskCreate(send_task, "send_task", 4096, NULL, 22, NULL) == pdTRUE);
 #ifdef CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
     assert(xTaskCreate(task_runtime_stats_task, "task_runtime_stats_task",
-        4096, NULL, 1, NULL) == pdTRUE);
+                       4096, NULL, 1, NULL) == pdTRUE);
 #endif
 
     flag = false;

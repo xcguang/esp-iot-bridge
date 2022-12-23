@@ -18,7 +18,7 @@
 #include "esp_modem_internal.h"
 #include "esp_modem_dce_common_commands.h"
 
-static const char* TAG = "esp_modem_command_lib";
+static const char *TAG = "esp_modem_command_lib";
 
 typedef struct cmd_item_s cmd_item_t;
 
@@ -26,7 +26,7 @@ typedef struct cmd_item_s cmd_item_t;
  * struct for one item in command list
  */
 struct cmd_item_s {
-    const char* command;            //!< command name
+    const char *command;            //!< command name
     dce_command_t function;         //!< function pointer
     SLIST_ENTRY(cmd_item_s) next;   //!< next command in the list
 };
@@ -65,7 +65,7 @@ static const cmd_item_t s_command_list[] = {
     {.command = "set_baud", .function = esp_modem_dce_set_baud_temp },
 };
 
-static esp_err_t update_internal_command_refs(esp_modem_dce_t* dce)
+static esp_err_t update_internal_command_refs(esp_modem_dce_t *dce)
 {
     ESP_MODEM_ERR_CHECK(dce->set_data_mode = esp_modem_dce_find_command(dce, "set_data_mode"), "cmd not found", err);
     ESP_MODEM_ERR_CHECK(dce->resume_data_mode = esp_modem_dce_find_command(dce, "resume_data_mode"), "cmd not found", err);
@@ -82,7 +82,7 @@ err:
     return ESP_FAIL;
 }
 
-static esp_err_t esp_modem_dce_init_command_list(esp_modem_dce_t* dce, size_t commands, const cmd_item_t* command_list)
+static esp_err_t esp_modem_dce_init_command_list(esp_modem_dce_t *dce, size_t commands, const cmd_item_t *command_list)
 {
     if (commands < 1 || command_list == NULL || dce->dce_cmd_list == NULL) {
         return ESP_ERR_INVALID_ARG;
@@ -91,7 +91,7 @@ static esp_err_t esp_modem_dce_init_command_list(esp_modem_dce_t* dce, size_t co
     SLIST_INIT(&dce->dce_cmd_list->command_list);
 
     for (int i = 0; i < commands; ++i) {
-        cmd_item_t* new_item = calloc(1, sizeof(struct cmd_item_s));
+        cmd_item_t *new_item = calloc(1, sizeof(struct cmd_item_s));
         new_item->command = command_list[i].command;
         new_item->function = command_list[i].function;
         SLIST_INSERT_HEAD(&dce->dce_cmd_list->command_list, new_item, next);
@@ -102,7 +102,7 @@ static esp_err_t esp_modem_dce_init_command_list(esp_modem_dce_t* dce, size_t co
 
 
 
-esp_err_t esp_modem_set_default_command_list(esp_modem_dce_t* dce)
+esp_err_t esp_modem_set_default_command_list(esp_modem_dce_t *dce)
 {
     esp_err_t err = esp_modem_dce_init_command_list(dce, sizeof(s_command_list) / sizeof(cmd_item_t), s_command_list);
 
@@ -114,15 +114,14 @@ esp_err_t esp_modem_set_default_command_list(esp_modem_dce_t* dce)
 
 }
 
-esp_err_t esp_modem_command_list_run(esp_modem_dce_t* dce, const char* command, void* param, void* result)
+esp_err_t esp_modem_command_list_run(esp_modem_dce_t *dce, const char *command, void *param, void *result)
 {
     if (dce == NULL || dce->dce_cmd_list == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    cmd_item_t* item;
-    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next)
-    {
+    cmd_item_t *item;
+    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next) {
         if (strcmp(item->command, command) == 0) {
             return item->function(dce, param, result);
         }
@@ -131,15 +130,14 @@ esp_err_t esp_modem_command_list_run(esp_modem_dce_t* dce, const char* command, 
 }
 
 
-dce_command_t esp_modem_dce_find_command(esp_modem_dce_t* dce, const char* command)
+dce_command_t esp_modem_dce_find_command(esp_modem_dce_t *dce, const char *command)
 {
     if (dce == NULL || dce->dce_cmd_list == NULL) {
         return NULL;
     }
 
-    cmd_item_t* item;
-    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next)
-    {
+    cmd_item_t *item;
+    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next) {
         if (strcmp(item->command, command) == 0) {
             return item->function;
         }
@@ -147,11 +145,11 @@ dce_command_t esp_modem_dce_find_command(esp_modem_dce_t* dce, const char* comma
     return NULL;
 }
 
-esp_err_t esp_modem_dce_delete_all_commands(esp_modem_dce_t* dce)
+esp_err_t esp_modem_dce_delete_all_commands(esp_modem_dce_t *dce)
 {
     if (dce->dce_cmd_list) {
         while (!SLIST_EMPTY(&dce->dce_cmd_list->command_list)) {
-            cmd_item_t* item = SLIST_FIRST(&dce->dce_cmd_list->command_list);
+            cmd_item_t *item = SLIST_FIRST(&dce->dce_cmd_list->command_list);
             SLIST_REMOVE_HEAD(&dce->dce_cmd_list->command_list, next);
             free(item);
         }
@@ -160,11 +158,10 @@ esp_err_t esp_modem_dce_delete_all_commands(esp_modem_dce_t* dce)
     return ESP_OK;
 }
 
-esp_err_t esp_modem_dce_delete_command(esp_modem_dce_t* dce, const char* command_id)
+esp_err_t esp_modem_dce_delete_command(esp_modem_dce_t *dce, const char *command_id)
 {
-    cmd_item_t* item;
-    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next)
-    {
+    cmd_item_t *item;
+    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next) {
         if (strcmp(item->command, command_id) == 0) {
             SLIST_REMOVE(&dce->dce_cmd_list->command_list, item, cmd_item_s, next);
             free(item);
@@ -174,21 +171,20 @@ esp_err_t esp_modem_dce_delete_command(esp_modem_dce_t* dce, const char* command
     return ESP_ERR_NOT_FOUND;
 }
 
-esp_err_t esp_modem_command_list_set_cmd(esp_modem_dce_t* dce, const char* command_id, dce_command_t command)
+esp_err_t esp_modem_command_list_set_cmd(esp_modem_dce_t *dce, const char *command_id, dce_command_t command)
 {
     if (dce == NULL || dce->dce_cmd_list == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    cmd_item_t* item;
-    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next)
-    {
+    cmd_item_t *item;
+    SLIST_FOREACH(item, &dce->dce_cmd_list->command_list, next) {
         if (strcmp(item->command, command_id) == 0) {
             item->function = command;
             return update_internal_command_refs(dce);
         }
     }
-    cmd_item_t* new_item = calloc(1, sizeof(struct cmd_item_s));
+    cmd_item_t *new_item = calloc(1, sizeof(struct cmd_item_s));
     new_item->command = command_id;
     new_item->function = command;
     SLIST_INSERT_HEAD(&dce->dce_cmd_list->command_list, new_item, next);
@@ -196,12 +192,12 @@ esp_err_t esp_modem_command_list_set_cmd(esp_modem_dce_t* dce, const char* comma
 
 }
 
-struct esp_modem_dce_cmd_list* esp_modem_command_list_create(void)
+struct esp_modem_dce_cmd_list *esp_modem_command_list_create(void)
 {
     return calloc(1, sizeof(struct esp_modem_dce_cmd_list));
 }
 
-esp_err_t esp_modem_command_list_deinit(esp_modem_dce_t* dce)
+esp_err_t esp_modem_command_list_deinit(esp_modem_dce_t *dce)
 {
     if (dce->dte) {
         dce->dte->dce = NULL;

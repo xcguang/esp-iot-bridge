@@ -36,14 +36,14 @@
 
 #define BRIDGE_EVENT_STA_CONNECTED  BIT0
 
-static const char* TAG = "bridge_wifi";
+static const char *TAG = "bridge_wifi";
 static bool esp_bridge_softap_dhcps = false;
 static EventGroupHandle_t s_wifi_event_group = NULL;
 
 esp_err_t esp_bridge_wifi_set(wifi_mode_t mode,
-    const char* ssid,
-    const char* password,
-    const char* bssid)
+                              const char *ssid,
+                              const char *password,
+                              const char *bssid)
 {
     ESP_PARAM_CHECK(ssid);
     ESP_PARAM_CHECK(password);
@@ -52,12 +52,12 @@ esp_err_t esp_bridge_wifi_set(wifi_mode_t mode,
     memset(&wifi_cfg, 0x0, sizeof(wifi_config_t));
 
     if (mode & WIFI_MODE_STA) {
-        memcpy((char*)wifi_cfg.sta.ssid, ssid, sizeof(wifi_cfg.sta.ssid));
-        strlcpy((char*)wifi_cfg.sta.password, password, sizeof(wifi_cfg.sta.password));
+        memcpy((char *)wifi_cfg.sta.ssid, ssid, sizeof(wifi_cfg.sta.ssid));
+        strlcpy((char *)wifi_cfg.sta.password, password, sizeof(wifi_cfg.sta.password));
 
         if (bssid != NULL) {
             wifi_cfg.sta.bssid_set = 1;
-            memcpy((char*)wifi_cfg.sta.bssid, bssid, sizeof(wifi_cfg.sta.bssid));
+            memcpy((char *)wifi_cfg.sta.bssid, bssid, sizeof(wifi_cfg.sta.bssid));
             ESP_LOGI(TAG, "sta ssid: %s password: %s MAC "MACSTR"", ssid, password, MAC2STR(wifi_cfg.sta.bssid));
         } else {
             ESP_LOGI(TAG, "sta ssid: %s password: %s", ssid, password);

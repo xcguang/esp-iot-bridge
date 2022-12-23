@@ -19,16 +19,16 @@ extern "C"
 {
 #endif
 
-    /**
-     * @brief Maximum MAC size
-     *
-     */
+/**
+ * @brief Maximum MAC size
+ *
+ */
 #define ESP_BRIDGE_MAC_MAX_LEN     (6)
 
-     /**
-      * @brief Maximum SSID size
-      *
-      */
+/**
+ * @brief Maximum SSID size
+ *
+ */
 #define ESP_BRIDGE_SSID_MAX_LEN    (32)
 
 #ifdef CONFIG_ESP_BRIDGE_SOFTAP_MAX_CONNECT_NUMBER
@@ -37,19 +37,19 @@ extern "C"
 #define ESP_BRIDGE_SOFTAP_MAX_CONNECT_NUMBER 8
 #endif
 
-    enum {
-        ESP_BRIDGE_EXTERNAL_NETIF_INVALID = -1,
+enum {
+    ESP_BRIDGE_EXTERNAL_NETIF_INVALID = -1,
 #ifdef CONFIG_BRIDGE_EXTERNAL_NETIF_STATION
-        ESP_BRIDGE_EXTERNAL_NETIF_STATION,
+    ESP_BRIDGE_EXTERNAL_NETIF_STATION,
 #endif
 #ifdef CONFIG_BRIDGE_EXTERNAL_NETIF_MODEM
-        ESP_BRIDGE_EXTERNAL_NETIF_MODEM,
+    ESP_BRIDGE_EXTERNAL_NETIF_MODEM,
 #endif
 #ifdef CONFIG_BRIDGE_EXTERNAL_NETIF_ETHERNET
-        ESP_BRIDGE_EXTERNAL_NETIF_ETHERNET,
+    ESP_BRIDGE_EXTERNAL_NETIF_ETHERNET,
 #endif
-        ESP_BRIDGE_EXTERNAL_NETIF_MAX
-    };
+    ESP_BRIDGE_EXTERNAL_NETIF_MAX
+};
 
 #ifdef __cplusplus
 }

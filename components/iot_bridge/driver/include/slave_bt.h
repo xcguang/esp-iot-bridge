@@ -66,7 +66,7 @@
 #define BT_CTS_PIN  23
 #endif
 #elif BLUETOOTH_HCI
-void process_hci_rx_pkt(uint8_t* payload, uint16_t payload_len);
+void process_hci_rx_pkt(uint8_t *payload, uint16_t payload_len);
 #endif
 
 void deinitialize_bluetooth(void);

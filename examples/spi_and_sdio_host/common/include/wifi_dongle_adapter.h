@@ -128,7 +128,7 @@ struct esp_priv_event {
 } __attribute__((packed));
 
 
-static inline uint16_t compute_checksum(uint8_t* buf, uint16_t len)
+static inline uint16_t compute_checksum(uint8_t *buf, uint16_t len)
 {
     uint16_t checksum = 0;
     uint16_t i = 0;

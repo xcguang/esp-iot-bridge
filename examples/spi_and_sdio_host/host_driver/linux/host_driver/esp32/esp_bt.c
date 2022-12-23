@@ -31,7 +31,7 @@
 
 ESP_BT_SEND_FRAME_PROTOTYPE();
 
-void esp_hci_update_tx_counter(struct hci_dev* hdev, u8 pkt_type, size_t len)
+void esp_hci_update_tx_counter(struct hci_dev *hdev, u8 pkt_type, size_t len)
 {
     if (hdev) {
         if (pkt_type == HCI_COMMAND_PKT) {
@@ -46,7 +46,7 @@ void esp_hci_update_tx_counter(struct hci_dev* hdev, u8 pkt_type, size_t len)
     }
 }
 
-void esp_hci_update_rx_counter(struct hci_dev* hdev, u8 pkt_type, size_t len)
+void esp_hci_update_rx_counter(struct hci_dev *hdev, u8 pkt_type, size_t len)
 {
     if (hdev) {
         if (pkt_type == HCI_EVENT_PKT) {
@@ -61,33 +61,33 @@ void esp_hci_update_rx_counter(struct hci_dev* hdev, u8 pkt_type, size_t len)
     }
 }
 
-static int esp_bt_open(struct hci_dev* hdev)
+static int esp_bt_open(struct hci_dev *hdev)
 {
     return 0;
 }
 
-static int esp_bt_close(struct hci_dev* hdev)
+static int esp_bt_close(struct hci_dev *hdev)
 {
     return 0;
 }
 
-static int esp_bt_flush(struct hci_dev* hdev)
+static int esp_bt_flush(struct hci_dev *hdev)
 {
     return 0;
 }
 
 ESP_BT_SEND_FRAME_PROTOTYPE()
 {
-    struct esp_payload_header* hdr;
+    struct esp_payload_header *hdr;
     size_t total_len, len = skb->len;
     int ret = 0;
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 13, 0))
-    struct hci_dev* hdev = (struct hci_dev*)(skb->dev);
+    struct hci_dev *hdev = (struct hci_dev *)(skb->dev);
 #endif
-    struct esp_adapter* adapter = hci_get_drvdata(hdev);
-    struct sk_buff* new_skb;
+    struct esp_adapter *adapter = hci_get_drvdata(hdev);
+    struct sk_buff *new_skb;
     u8 pad_len = 0, realloc_skb = 0;
-    u8* pos = NULL;
+    u8 *pos = NULL;
     u8 pkt_type;
 
     if (!adapter) {
@@ -142,7 +142,7 @@ ESP_BT_SEND_FRAME_PROTOTYPE()
         skb_push(skb, pad_len);
     }
 
-    hdr = (struct esp_payload_header*)skb->data;
+    hdr = (struct esp_payload_header *)skb->data;
 
     memset(hdr, 0, sizeof(struct esp_payload_header));
 
@@ -170,22 +170,22 @@ ESP_BT_SEND_FRAME_PROTOTYPE()
 }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
-static int esp_bt_setup(struct hci_dev* hdev)
+static int esp_bt_setup(struct hci_dev *hdev)
 {
     return 0;
 }
 #endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
-static int esp_bt_set_bdaddr(struct hci_dev* hdev, const bdaddr_t* bdaddr)
+static int esp_bt_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
 {
     return 0;
 }
 #endif
 
-int esp_deinit_bt(struct esp_adapter* adapter)
+int esp_deinit_bt(struct esp_adapter *adapter)
 {
-    struct hci_dev* hdev = NULL;
+    struct hci_dev *hdev = NULL;
 
     if (!adapter || !adapter->hcidev) {
         return 0;
@@ -201,10 +201,10 @@ int esp_deinit_bt(struct esp_adapter* adapter)
     return 0;
 }
 
-int esp_init_bt(struct esp_adapter* adapter)
+int esp_init_bt(struct esp_adapter *adapter)
 {
     int ret = 0;
-    struct hci_dev* hdev = NULL;
+    struct hci_dev *hdev = NULL;
 
     if (!adapter) {
         return -EINVAL;
