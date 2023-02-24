@@ -7,8 +7,6 @@ dependencies:
     version: 0.*
   espressif/esp_modem_usb_dte:
     version: 1.*
-    rules:
-      - if: "target in [esp32s2, esp32s3]"
 examples:
   - path: ../../examples/wifi_router
   - path: ../../examples/4g_hotspot
