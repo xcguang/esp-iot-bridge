@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - shell: bash
+        run:
+          python -m pip install --upgrade idf-component-manager
 
       - name: Upload components to component service
         uses: espressif/upload-components-ci-action@v1
